@@ -2,7 +2,7 @@
 // @name        LaCalv Battle Logs
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     0.1
+// @version     0.2
 // ==/UserScript==
 
 const MAX_CONSOLE_MESSAGES = 100
@@ -87,15 +87,15 @@ function parseBattleOpponentResponse(response) {
 
 function printNotifs() {
     const reward = getRewardsInNotifs(Update.notifs)
-    execution.worldboss_reward = reward.worldboss
-    execution.admin_reward = reward.admin
+    Execution.worldboss_reward = reward.worldboss
+    Execution.admin_reward = reward.admin
 
-    if (null != execution.worldboss_reward && (execution.worldboss_reward_printed === null || execution.worldboss_reward.date !== execution.worldboss_reward_printed.date)) {
-        appendToConsole(`Combat Boss: ${execution.worldboss_reward.text}`)
-        execution.worldboss_reward_printed = execution.worldboss_reward
-    } else if (null != execution.admin_reward && (execution.admin_reward_printed === null || execution.admin_reward.date !== execution.admin_reward_printed.date)) {
-        appendToConsole(`Admin: ${execution.admin_reward.text}`)
-        execution.admin_reward_printed = execution.admin_reward
+    if (null != Execution.worldboss_reward && (Execution.worldboss_reward_printed === null || Execution.worldboss_reward.date !== Execution.worldboss_reward_printed.date)) {
+        appendToConsole(`Combat Boss: ${Execution.worldboss_reward.text}`)
+        Execution.worldboss_reward_printed = Execution.worldboss_reward
+    } else if (null != Execution.admin_reward && (Execution.admin_reward_printed === null || Execution.admin_reward.date !== Execution.admin_reward_printed.date)) {
+        appendToConsole(`Admin: ${Execution.admin_reward.text}`)
+        Execution.admin_reward_printed = Execution.admin_reward
     }
 }
 
