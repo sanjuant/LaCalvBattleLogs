@@ -1,8 +1,14 @@
 // ==UserScript==
 // @name        LaCalv Battle Logs
+// @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     0.2
+// @version     0.3
+
+// @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
+// @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
+// @downloadURL   https://github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js
+// @updateURL     https://github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js
 // ==/UserScript==
 
 const MAX_CONSOLE_MESSAGES = 100
