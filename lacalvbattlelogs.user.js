@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     0.3
+// @version     0.4
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -88,7 +88,8 @@ function parseBattleOpponentResponse(response) {
     const data = JSON.parse(response)
     const {player, opponent} = getStatsFromBattle(data);
     const infos = [(data.eloUser > 0) ? `Elo: ${(player.result === 'looser') ? '-' : ''}${data.eloUser}` : '', (data.aloUser > 0) ? `Alopièces: ${data.aloUser}` : '', (data.event > 0) ? `Event: ${data.event}` : '', (data.expUser > 0) ? `Expérience: ${data.expUser}` : '',];
-    appendToConsole(`PvP: Vous avez ${player.result === 'winner' ? "gagné" : "perdu"}, contre ${opponent.name}. ${infos.filter(Boolean).join(' - ')}`);
+    const infosLose = [(opponent.soinTotal > 0 || opponent.pvRecover !== -1) ? `Soins: ${opponent.soinTotal}` : '', (opponent._bouclier > 0) ? `Bouclier: ${opponent.bouclier}` : '', `Vie: ${opponent.pvFinal}`];
+    appendToConsole(`PvP: Vous avez ${player.result === 'winner' ? "gagné" : "perdu"}, contre ${opponent.name}. ${infos.filter(Boolean).join(' - ')}${player.result === 'looser' ? infosLose.filter(Boolean).join(' - ') : ''}`);
 }
 
 function printNotifs() {
