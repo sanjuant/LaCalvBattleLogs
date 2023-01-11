@@ -22,6 +22,6 @@ Pour utiliser ce script, vous avez besoin d'un extension de navigateur compatibl
 
 Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce script" ci-dessous pour installer le script sur votre navigateur.
 
-## **LaCalv Battle Logs** ([lacalvbattlelogs.user.js](//github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js)) ([Ajouter ce script](//github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js))
+## **LaCalv Battle Logs** ([lacalvbattlelogs.user.js](//github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js)) ([Ajouter ce script](//github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js))
 
 ![Screenshot of LaCalv Battle Logs script in action](https://media.discordapp.net/attachments/304686654202052618/1062472478254972928/image.png)
