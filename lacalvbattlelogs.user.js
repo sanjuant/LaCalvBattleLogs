@@ -3,12 +3,12 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     0.4
+// @version     0.5
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
-// @downloadURL   https://github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js
-// @updateURL     https://github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js
+// @downloadURL   https://github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js
+// @updateURL     https://github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js
 // ==/UserScript==
 
 const MAX_CONSOLE_MESSAGES = 100
