@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.0
+// @version     1.1
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -15,7 +15,7 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.1
+const BL_LOCALSTORAGE_VERSION = 0.2
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -30,7 +30,7 @@ const _bl = {
     bl_x10: [],
     bl_x50: [],
     bl_x100: [],
-    bl_filters: {},
+    bl_filters: {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true},
     bl_notif: []
 }
 
@@ -39,39 +39,39 @@ if (getItemStorage(BL_VERSION) == null) {
 }
 
 if (getItemStorage(BL_BOSS) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_BOSS, []);
+    setItemStorage(BL_BOSS, [], true);
 }
 
 if (getItemStorage(BL_PVP) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_PVP, []);
+    setItemStorage(BL_PVP, [], true);
 }
 
 if (getItemStorage(BL_TOB) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_TOB, []);
+    setItemStorage(BL_TOB, [], true);
 }
 
 if (getItemStorage(BL_TOB) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_TOB, []);
+    setItemStorage(BL_TOB, [], true);
 }
 
 if (getItemStorage(BL_FILTERS) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_FILTERS, {});
+    setItemStorage(BL_FILTERS, {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true}, true);
 }
 
 if (getItemStorage(BL_X10) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_X10, []);
+    setItemStorage(BL_X10, [], true);
 }
 
 if (getItemStorage(BL_X50) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_X50, []);
+    setItemStorage(BL_X50, [], true);
 }
 
 if (getItemStorage(BL_X100) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_X100, []);
+    setItemStorage(BL_X100, [], true);
 }
 
 if (getItemStorage(BL_NOTIF) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_NOTIF, []);
+    setItemStorage(BL_NOTIF, [], true);
 }
 
 if (_bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
@@ -103,7 +103,7 @@ const battleLogsHtml = `
 
         </button>
     </div>
-    <div>
+    <div class="wrapper">
         <div class="settings">
             <div class="clear">
                 <button id="btn_clear">
@@ -147,7 +147,7 @@ const battleLogsCss = `
         right: 0;
         width: 500px;
         height: 100%;
-        background: #0c0c0d;
+        background: #232327;
         opacity: 1;
         color: #fff;
         overflow: auto;
@@ -175,6 +175,10 @@ const battleLogsCss = `
         align-items: center;
         justify-content: space-between;
         padding: 0.3rem 0.6rem;
+    }
+    
+    .wrapper {
+        height: calc(100% - 36px);
     }
 
     .settings {
@@ -548,11 +552,10 @@ function appendSummaryBossLogs(count, log=null) {
 function appendPvpBattleLogs(log) {
     const msg = "Vous avez {}, contre {}."
     let message = msg.format(log.result === "winner" ? "gagné" : "perdu", log.opponent);
-    if (log.result === "winner") {
+    if (log.result === "winner" && formatRewardsLogs(log.rewards) !== '') {
         message = message.concat(' ', formatRewardsLogs(log.rewards))
-    } else {
-        message = message.concat(' ', formatInfosLogs(log.infos))
     }
+    message = message.concat(' ', formatInfosLogs(log.infos))
 
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
@@ -571,6 +574,12 @@ function appendSummaryPvpLogs(count, log=null) {
                 "event": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
                 "exp": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
             },
+            "infos": {
+                "vie": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
+                "bouclier": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
+                "soin": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
+                "esquive": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+            },
         }
         setItemStorage("bl_" + log.type, log)
     }
@@ -578,6 +587,9 @@ function appendSummaryPvpLogs(count, log=null) {
     let message = msg.format(count, log.win, log.loose);
     if (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0) {
         message = message.concat("\nRécompenses moyennes : ", formatRewardsLogs(log.rewards))
+    }
+    if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
+        message = message.concat("\nStatistiques moyennes : ", formatInfosLogs(log.infos))
     }
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
