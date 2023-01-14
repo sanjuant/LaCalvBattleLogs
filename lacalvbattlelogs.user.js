@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.3
+// @version     1.4
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -15,12 +15,13 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.3
+const BL_LOCALSTORAGE_VERSION = 0.4
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
 const BL_X100 = "bl_x100"
 const BL_NOTIF = "bl_notif"
+const FILTERS = {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true}
 
 const _bl = {
     bl_localstorage_version: -1,
@@ -30,52 +31,29 @@ const _bl = {
     bl_x10: [],
     bl_x50: [],
     bl_x100: [],
-    bl_filters: {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true},
+    bl_filters: FILTERS,
     bl_notif: []
 }
 
 if (getItemStorage(BL_VERSION) == null) {
     setItemStorage(BL_VERSION, BL_LOCALSTORAGE_VERSION);
 }
-
-if (getItemStorage(BL_BOSS) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_BOSS, [], true);
-}
-
-if (getItemStorage(BL_PVP) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_PVP, [], true);
-}
-
-if (getItemStorage(BL_TOB) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_TOB, [], true);
-}
-
-if (getItemStorage(BL_TOB) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_TOB, [], true);
-}
-
-if (getItemStorage(BL_FILTERS) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_FILTERS, {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true}, true);
-}
-
-if (getItemStorage(BL_X10) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_X10, [], true);
-}
-
-if (getItemStorage(BL_X50) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_X50, [], true);
-}
-
-if (getItemStorage(BL_X100) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_X100, [], true);
-}
-
-if (getItemStorage(BL_NOTIF) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
-    setItemStorage(BL_NOTIF, [], true);
-}
-
+setDefaultItemStorage(BL_BOSS, []);
+setDefaultItemStorage(BL_PVP, []);
+setDefaultItemStorage(BL_TOB, []);
+setDefaultItemStorage(BL_FILTERS, FILTERS);
+setDefaultItemStorage(BL_X10, []);
+setDefaultItemStorage(BL_X50, []);
+setDefaultItemStorage(BL_X100, []);
+setDefaultItemStorage(BL_NOTIF, []);
 if (_bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
     setItemStorage(BL_VERSION, BL_LOCALSTORAGE_VERSION)
+}
+
+function setDefaultItemStorage(key, defaultValue) {
+    if (getItemStorage(key) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+        setItemStorage(key, defaultValue, true);
+    }
 }
 
 function getItemStorage(key) {
@@ -269,7 +247,6 @@ const battleLogsCss = `
     }
 `
 
-// const elConsole = document.getElementById("el_console")
 const elConsole = document.createElement("div")
 elConsole.classList.add("console")
 elConsole.style.height = "100%"
@@ -280,7 +257,7 @@ document.querySelector(".game-out").appendChild(elConsole)
 addGlobalStyle(battleLogsCss);
 
 String.prototype.format = function () {
-    var i = 0, args = arguments;
+    let i = 0, args = arguments;
     return this.replace(/{}/g, function () {
         return typeof args[i] != 'undefined' ? args[i++] : '';
     });
@@ -377,13 +354,12 @@ function toggleSelectedClass(element) {
 }
 
 function addGlobalStyle(css) {
-    var head, style;
+    let head, style;
     head = document.getElementsByTagName('head')[0];
     if (!head) {
         return;
     }
     style = document.createElement('style');
-    style.type = 'text/css';
     style.innerHTML = css;
     head.appendChild(style);
 }
@@ -395,69 +371,40 @@ function updateMessages() {
 }
 
 function appendBattleLogs(battleLogs) {
+    const logFunctions = {
+        Boss: appendBossBattleLogs,
+        PvP: appendPvpBattleLogs,
+        ToB: appendTobBattleLogs,
+        Notif: appendNotifBattleLogs,
+    }
+
     battleLogs.forEach((log) => {
         switch (log.type) {
-            case "Boss":
-                appendBossBattleLogs(log)
-                break
-            case "PvP":
-                appendPvpBattleLogs(log)
-                break
-            case "ToB":
-                appendTobBattleLogs(log)
-                break
             case "x10":
-                switch (log.bl_type) {
-                    case "boss":
-                        appendSummaryBossLogs(10, log)
-                        break
-                    case "pvp":
-                        appendSummaryPvpLogs(10, log)
-                        break
-                    case "tob":
-                        appendSummaryTobLogs(10, log)
-                        break
-                    default:
-                        break
-                }
-                break
             case "x50":
-                switch (log.bl_type) {
-                    case "boss":
-                        appendSummaryBossLogs(50, log)
-                        break
-                    case "pvp":
-                        appendSummaryPvpLogs(50, log)
-                        break
-                    case "tob":
-                        appendSummaryTobLogs(50, log)
-                        break
-                    default:
-                        break
-                }
-                break
             case "x100":
-                switch (log.bl_type) {
-                    case "boss":
-                        appendSummaryBossLogs(100, log)
-                        break
-                    case "pvp":
-                        appendSummaryPvpLogs(100, log)
-                        break
-                    case "tob":
-                        appendSummaryTobLogs(100, log)
-                        break
-                    default:
-                        break
-                }
-                break
-            case "Notif":
-                appendNotifBattleLogs(log)
-                break
+                appendSummaryLogs(log);
+                break;
             default:
-                break
+                if (logFunctions[log.type]) {
+                    logFunctions[log.type](log);
+                }
+                break;
         }
-    })
+    });
+}
+
+function appendSummaryLogs(log) {
+    let count = parseInt(log.type.slice(1));
+    let appendSummaryFunc = {
+        boss: appendSummaryBossLogs,
+        pvp: appendSummaryPvpLogs,
+        tob: appendSummaryTobLogs,
+    }[log.bl_type];
+
+    if (appendSummaryFunc) {
+        appendSummaryFunc(count, log);
+    }
 }
 
 function appendBossBattle(damages, infos) {
@@ -490,10 +437,11 @@ function appendPvpBattle(result, opponent, reward, infos) {
     if (_bl.bl_pvp.length % 10 === 0) appendSummaryPvpLogs(10)
 }
 
-function appendTobBattle(result, opponent, reward, infos) {
+function appendTobBattle(result, opponent, reward, infos, stage) {
     let battle = {
         "type": "ToB",
         "time": new Date(),
+        "stage": stage,
         "result": result,
         "opponent": opponent,
         "rewards": reward,
@@ -520,7 +468,6 @@ function appendBossBattleLogs(log) {
     const msg = "Vous avez causé {} dommage{}."
     let message = msg.format(log.damages, log.damages > 1 ? 's' : '');
     message = message.concat(' ', formatInfosLogs(log.infos))
-
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
@@ -549,11 +496,7 @@ function appendSummaryBossLogs(count, log=null) {
 function appendPvpBattleLogs(log) {
     const msg = "Vous avez {}, contre {}."
     let message = msg.format(log.result === "winner" ? "gagné" : "perdu", log.opponent);
-    if (log.result === "winner" && formatRewardsLogs(log.rewards) !== '') {
-        message = message.concat(' ', formatRewardsLogs(log.rewards))
-    }
-    message = message.concat(' ', formatInfosLogs(log.infos))
-
+    message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
@@ -582,29 +525,18 @@ function appendSummaryPvpLogs(count, log=null) {
     }
     const msg = "Résultat des {} derniers combats PvP : Victoire {}% - Défaite {}%"
     let message = msg.format(count, log.win, log.loose);
-    if (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0) {
-        message = message.concat("\nRécompenses moyennes - ", formatRewardsLogs(log.rewards))
-    }
-    if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
-        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
-    }
+    message = concatRewardsAndInfosSummaries(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
 function appendTobBattleLogs(log) {
-    const msg = "Vous avez {}."
-    let message = msg.format(log.result === "winner" ? "gagné" : "perdu");
-    if (log.result === "winner") {
-        message = message.concat(' ', formatRewardsLogs(log.rewards))
-    } else {
-        message = message.concat(' ', formatInfosLogs(log.infos))
-    }
-
+    const msg = "Vous avez {} à l'étage {}."
+    let message = msg.format(log.result === "winner" ? "vaincu" : "échoué", log.stage);
+    message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
 function appendSummaryTobLogs(count, log=null) {
-    console.log(count)
     if (null === log) {
         log = {
             "type": "x" + count,
@@ -612,6 +544,11 @@ function appendSummaryTobLogs(count, log=null) {
             "time": new Date(),
             "win": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
             "loose": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
+            "rewards": {
+                "alo": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count,
+                "event": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count,
+                "exp": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count,
+            },
             "infos": {
                 "vie": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count,
                 "bouclier": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count,
@@ -623,9 +560,7 @@ function appendSummaryTobLogs(count, log=null) {
     }
     const msg = "Résultat des {} derniers combats ToB : Victoire {}% - Défaite {}%"
     let message = msg.format(count, log.win, log.loose);
-    if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
-        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
-    }
+    message = concatRewardsAndInfosSummaries(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
@@ -649,6 +584,24 @@ function appendMessageToBattleLogs(time, message, type) {
     pEl.appendChild(spanTypeEl);
     elMessages.appendChild(pEl);
     elMessages.scrollTop = elMessages.scrollHeight;
+}
+
+function concatRewardsAndInfos(message, log) {
+    if (log.result === "winner" && formatRewardsLogs(log.rewards) !== '') {
+        message = message.concat(' ', formatRewardsLogs(log.rewards))
+    }
+    message = message.concat(' ', formatInfosLogs(log.infos))
+    return message
+}
+
+function concatRewardsAndInfosSummaries(message, log) {
+    if (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0) {
+        message = message.concat("\nRécompenses moyennes - ", formatRewardsLogs(log.rewards))
+    }
+    if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
+        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
+    }
+    return message
 }
 
 function formatRewardsLogs(rewards) {
@@ -704,15 +657,15 @@ appendBattleLogs(battleLogs)
 
 realProcess = function (xhr) {
     if (xhr.responseURL.startsWith("https://lacalv.fr/play/battle?opponent")) {
-        parseBattleOpponentResponse(xhr.response)
+        parseBattleOpponentResponse(xhr)
     } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battlepve")) {
-        parseBattleTobResponse(xhr.response)
+        parseBattleTobResponse(xhr)
     } else if (xhr.responseURL === "https://lacalv.fr/play/battlewb") {
-        parseBattleWbResponse(xhr.response)
+        parseBattleWbResponse(xhr)
     } else if (xhr.responseURL === "https://lacalv.fr/play/update") {
-        parseUpdateResponse(xhr.response)
+        parseUpdateResponse(xhr)
     } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
-        parseWbClassementResponse(xhr.response)
+        parseWbClassementResponse(xhr)
     }
 }
 
@@ -727,7 +680,7 @@ function hijackAjax(process) {
     }, false);
 
     function injection() {
-        var open = XMLHttpRequest.prototype.open;
+        let open = XMLHttpRequest.prototype.open;
         XMLHttpRequest.prototype.open = function () {
             this.addEventListener("load", function () {
                 window.dispatchEvent(new CustomEvent("hijack_ajax", {detail: this}));
@@ -757,8 +710,8 @@ class Update {
 }
 
 
-function parseUpdateResponse(response) {
-    const data = JSON.parse(response)
+function parseUpdateResponse(xhr) {
+    const data = JSON.parse(xhr.response)
     if (Update.streaming !== data['streaming']) {
         Update.streaming = data['streaming'];
         // appendToConsole(`Stream: ${Update.streaming ? "En Ligne" : "Hors Ligne"}`);
@@ -767,29 +720,31 @@ function parseUpdateResponse(response) {
     Update.wb = data['wb']
 }
 
-function parseBattleWbResponse(response) {
-    const data = JSON.parse(response)
+function parseBattleWbResponse(xhr) {
+    const data = JSON.parse(xhr.response)
     const {player, opponent} = getStatsFromBattle(data);
     const infos_wb = {'esquive': player.oblocked}
 
     appendBossBattle(player.dmg, infos_wb)
 }
 
-function parseWbClassementResponse(response) {
-    const data = JSON.parse(response)
+function parseWbClassementResponse(xhr) {
+    const data = JSON.parse(xhr.response)
     Execution.wbclassement['top'] = data['top']
 }
 
-function parseBattleOpponentResponse(response) {
-    const data = JSON.parse(response)
+function parseBattleOpponentResponse(xhr) {
+    const data = JSON.parse(xhr.response)
     const {player, opponent} = getStatsFromBattle(data);
     const rewards = {'elo': data.eloUser, 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
     const infos_opponent = {'vie': opponent.pvFinal, 'bouclier': opponent.bouclier, 'soin': opponent.soinTotal, 'esquive': player.oblocked, '_bouclier': opponent._bouclier}
     appendPvpBattle(player.result, opponent.name, rewards, infos_opponent)
 }
 
-function parseBattleTobResponse(response) {
-    const data = JSON.parse(response)
+function parseBattleTobResponse(xhr) {
+    const data = JSON.parse(xhr.response)
+    const url = new URL(xhr.responseURL)
+    const stage = new URLSearchParams(url.search).get('step')
     const {player, opponent} = getStatsFromBattle(data);
     let itemsWin = [];
     if ('item' in data.rewards) {
@@ -801,7 +756,7 @@ function parseBattleTobResponse(response) {
     const rewards = {'alo': data.rewards.alopieces, 'exp': data.expUser, 'event': data.rewards.event, 'items': itemsWin }
     const infos_opponent = {'vie': opponent.pvFinal, 'bouclier': opponent.bouclier, 'soin': opponent.soinTotal, 'esquive': player.oblocked, '_bouclier': opponent._bouclier}
 
-    appendTobBattle(player.result, opponent.name, rewards, infos_opponent)
+    appendTobBattle(player.result, opponent.name, rewards, infos_opponent, stage)
 }
 
 
