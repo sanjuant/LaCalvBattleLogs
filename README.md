@@ -24,4 +24,4 @@ Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce 
 
 ## **LaCalv Battle Logs** ([lacalvbattlelogs.user.js](//github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js)) ([Ajouter ce script](//github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js))
 
-![Screenshot of LaCalv Battle Logs script in action](https://media.discordapp.net/attachments/304686654202052618/1062472478254972928/image.png)
+![Screenshot of LaCalv Battle Logs script in action](https://cdn.discordapp.com/attachments/304686654202052618/1063614301333639319/image.png)
