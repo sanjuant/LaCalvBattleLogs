@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.1
+// @version     1.2
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -15,7 +15,7 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.2
+const BL_LOCALSTORAGE_VERSION = 0.3
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -540,12 +540,18 @@ function appendSummaryBossLogs(count, log=null) {
             "type": "x" + count,
             "bl_type": "boss",
             "time": new Date(),
-            "averageDamages": averageDamages
+            "averageDamages": averageDamages,
+            "infos": {
+                "esquive": Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+            },
         }
         setItemStorage("bl_" + log.type, log)
     }
     const msg = "Le Boss a subi en moyenne {} points de dommages lors des {} derniers combats."
     let message = msg.format(log.averageDamages, count);
+    if (log.infos.esquive > 0) {
+        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
+    }
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
@@ -586,10 +592,10 @@ function appendSummaryPvpLogs(count, log=null) {
     const msg = "Résultat des {} derniers combats PvP : Victoire {}% - Défaite {}%"
     let message = msg.format(count, log.win, log.loose);
     if (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0) {
-        message = message.concat("\nRécompenses moyennes : ", formatRewardsLogs(log.rewards))
+        message = message.concat("\nRécompenses moyennes - ", formatRewardsLogs(log.rewards))
     }
     if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
-        message = message.concat("\nStatistiques moyennes : ", formatInfosLogs(log.infos))
+        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
     }
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
@@ -627,7 +633,7 @@ function appendSummaryTobLogs(count, log=null) {
     const msg = "Résultat des {} derniers combats ToB : Victoire {}% - Défaite {}%"
     let message = msg.format(count, log.win, log.loose);
     if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
-        message = message.concat("\nStatistiques moyennes : ", formatInfosLogs(log.infos))
+        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
     }
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
