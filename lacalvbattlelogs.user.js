@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.2
+// @version     1.3
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -138,9 +138,6 @@ const battleLogsHtml = `
 `
 
 const battleLogsCss = `
-    body {
-        background-color: #333334;
-    }
     .console {
         position: absolute;
         top: 0;
@@ -232,7 +229,8 @@ const battleLogsCss = `
 
     .message {
         height: calc(98% - 36px);
-        overflow: auto
+        overflow: auto;
+        background-color: #0c0c0d;
     }
 
 
@@ -250,6 +248,11 @@ const battleLogsCss = `
         align-items: center;
         gap: 1rem;
         color: #F6F6F6;
+    }
+    
+    .message > p:nth-last-child(1) {
+        border-bottom: 0;
+        padding-bottom:0.25rem;
     }
 
     .time {
@@ -466,13 +469,9 @@ function appendBossBattle(damages, infos) {
     }
     setItemStorage(BL_BOSS, battle)
     appendBossBattleLogs(battle)
-    if (_bl.bl_boss.length % 100 === 0) {
-        appendSummaryBossLogs(100)
-    } else if (_bl.bl_boss.length % 50 === 0) {
-        appendSummaryBossLogs(50)
-    } else if (_bl.bl_boss.length % 10 === 0) {
-        appendSummaryBossLogs(10)
-    }
+    if (_bl.bl_boss.length % 100 === 0) appendSummaryBossLogs(100)
+    if (_bl.bl_boss.length % 50 === 0) appendSummaryBossLogs(50)
+    if (_bl.bl_boss.length % 10 === 0) appendSummaryBossLogs(10)
 }
 
 function appendPvpBattle(result, opponent, reward, infos) {
@@ -486,13 +485,9 @@ function appendPvpBattle(result, opponent, reward, infos) {
     }
     setItemStorage(BL_PVP, battle)
     appendPvpBattleLogs(battle)
-    if (_bl.bl_pvp.length % 100 === 0) {
-        appendSummaryPvpLogs(100)
-    } else if (_bl.bl_pvp.length % 50 === 0) {
-        appendSummaryPvpLogs(50)
-    } else if (_bl.bl_pvp.length % 10 === 0) {
-        appendSummaryPvpLogs(10)
-    }
+    if (_bl.bl_pvp.length % 100 === 0) appendSummaryPvpLogs(100)
+    if (_bl.bl_pvp.length % 50 === 0) appendSummaryPvpLogs(50)
+    if (_bl.bl_pvp.length % 10 === 0) appendSummaryPvpLogs(10)
 }
 
 function appendTobBattle(result, opponent, reward, infos) {
@@ -506,13 +501,9 @@ function appendTobBattle(result, opponent, reward, infos) {
     }
     setItemStorage(BL_TOB, battle)
     appendTobBattleLogs(battle)
-    if (_bl.bl_tob.length % 100 === 0) {
-        appendSummaryTobLogs(100)
-    } else if (_bl.bl_tob.length % 50 === 0) {
-        appendSummaryTobLogs(50)
-    } else if (_bl.bl_tob.length % 10 === 0) {
-        appendSummaryTobLogs(10)
-    }
+    if (_bl.bl_tob.length % 100 === 0) appendSummaryTobLogs(100)
+    if (_bl.bl_tob.length % 50 === 0) appendSummaryTobLogs(50)
+    if (_bl.bl_tob.length % 10 === 0) appendSummaryTobLogs(10)
 }
 
 function appendNotifBattle(message) {
@@ -542,7 +533,7 @@ function appendSummaryBossLogs(count, log=null) {
             "time": new Date(),
             "averageDamages": averageDamages,
             "infos": {
-                "esquive": Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+                "esquive": _bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count,
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -575,16 +566,16 @@ function appendSummaryPvpLogs(count, log=null) {
             "win": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
             "loose": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
             "rewards": {
-                "elo": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.elo, 0) / count),
-                "alo": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count),
-                "event": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
-                "exp": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
+                "elo": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.elo, 0) / count,
+                "alo": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count,
+                "event": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count,
+                "exp": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count,
             },
             "infos": {
-                "vie": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
-                "bouclier": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
-                "soin": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
-                "esquive": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+                "vie": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count,
+                "bouclier": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count,
+                "soin": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count,
+                "esquive": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count,
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -622,10 +613,10 @@ function appendSummaryTobLogs(count, log=null) {
             "win": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
             "loose": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
             "infos": {
-                "vie": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
-                "bouclier": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
-                "soin": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
-                "esquive": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+                "vie": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count,
+                "bouclier": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count,
+                "soin": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count,
+                "esquive": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count,
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -643,6 +634,7 @@ function appendNotifBattleLogs(log) {
 }
 
 function appendMessageToBattleLogs(time, message, type) {
+    if (_bl.bl_filters[type.toLowerCase()] === false) return
     const pEl = document.createElement('p');
     const spanTimeEl = document.createElement('span')
     spanTimeEl.classList.add("time")
