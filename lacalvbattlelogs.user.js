@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     0.6
+// @version     1.0
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -11,7 +11,726 @@
 // @updateURL     https://github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js
 // ==/UserScript==
 
-const MAX_CONSOLE_MESSAGES = 100
+const BL_VERSION = "bl_localstorage_version"
+const BL_BOSS = "bl_boss"
+const BL_PVP = "bl_pvp"
+const BL_TOB = "bl_tob"
+const BL_LOCALSTORAGE_VERSION = 0.1
+const BL_FILTERS = "bl_filters"
+const BL_X10 = "bl_x10"
+const BL_X50 = "bl_x50"
+const BL_X100 = "bl_x100"
+const BL_NOTIF = "bl_notif"
+
+const _bl = {
+    bl_localstorage_version: -1,
+    bl_boss: [],
+    bl_pvp: [],
+    bl_tob: [],
+    bl_x10: [],
+    bl_x50: [],
+    bl_x100: [],
+    bl_filters: {},
+    bl_notif: []
+}
+
+if (getItemStorage(BL_VERSION) == null) {
+    setItemStorage(BL_VERSION, BL_LOCALSTORAGE_VERSION);
+}
+
+if (getItemStorage(BL_BOSS) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_BOSS, []);
+}
+
+if (getItemStorage(BL_PVP) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_PVP, []);
+}
+
+if (getItemStorage(BL_TOB) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_TOB, []);
+}
+
+if (getItemStorage(BL_TOB) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_TOB, []);
+}
+
+if (getItemStorage(BL_FILTERS) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_FILTERS, {});
+}
+
+if (getItemStorage(BL_X10) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_X10, []);
+}
+
+if (getItemStorage(BL_X50) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_X50, []);
+}
+
+if (getItemStorage(BL_X100) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_X100, []);
+}
+
+if (getItemStorage(BL_NOTIF) == null || _bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_NOTIF, []);
+}
+
+if (_bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
+    setItemStorage(BL_VERSION, BL_LOCALSTORAGE_VERSION)
+}
+
+function getItemStorage(key) {
+    const value = JSON.parse(localStorage.getItem(key))
+    _bl[key] = value
+    return value
+}
+
+function setItemStorage(key, value, overwrite=false) {
+    const itemStorage = getItemStorage(key)
+    if (!overwrite && Array.isArray(itemStorage)) {
+        itemStorage.push(value);
+        value = itemStorage
+    }
+    localStorage.setItem(key, JSON.stringify(value));
+    _bl[key] = value
+}
+
+const battleLogsHtml = `
+    <div id="el_resize"></div>
+    <div class="header">
+        <div class="title">LaCalv Battle Logs
+        </div>
+        <button id="btn_expand">
+
+        </button>
+    </div>
+    <div>
+        <div class="settings">
+            <div class="clear">
+                <button id="btn_clear">
+                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor" color="#fff">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="settings-right">
+                <div class="averages">
+                    <button id="btn_average_x10">x10</button>
+                    <button id="btn_average_x50">x50</button>
+                    <button id="btn_average_x100">x100</button>
+                </div>
+                <div class="vl"></div>
+                <div class="filters">
+                    <button id="btn_filter_boss">Boss</button>
+                    <button id="btn_filter_pvp">PvP</button>
+                    <button id="btn_filter_tob">ToB</button>
+                    <button id="btn_filter_notif">Notif</button>
+                </div>
+            </div>
+        </div>
+        <div id="el_messages" class="message">
+<!--            <p><span class="time">21:07:05</span><span class="text">[Top 26%] Tu as obtenu 3660 alopièces, et x10 "Coquille dégarnie"</span><span class="type">Boss</span></p>-->
+<!--            <p><span class="time">21:21:13</span><span class="text">NahusOmega: Perdu - Vie&nbsp;:&nbsp;590</span><span class="type">PvP</span></p>-->
+        </div>
+    </div>
+`
+
+const battleLogsCss = `
+    body {
+        background-color: #333334;
+    }
+    .console {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 500px;
+        height: 100%;
+        background: #0c0c0d;
+        opacity: 1;
+        color: #fff;
+        overflow: auto;
+        z-index: 9999
+    }
+
+    #el_resize {
+        background-color: #35393b;
+        position: absolute;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        cursor: w-resize;
+    }
+
+    .vl {
+        border-left: 1px solid #919191;
+        height: 16px;
+    }
+
+    .header {
+        background: #0c0c0d;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .settings {
+        background: #232327;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.3rem 0.6rem;
+        gap: 4px;
+        cursor: default;
+        border-bottom: 1px solid #919191;
+        font-size: 13px;
+    }
+
+    .settings-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        color: #ccc;
+    }
+
+    .settings-right button {
+        padding: 0 0.5rem;
+    }
+
+    button:hover {
+        background-color: #434346;
+    }
+
+    button.selected {
+        background-color: #58585c;
+        color: #fff;
+    }
+
+    .settings > {
+        border: none;
+        padding: 0 0.5rem;
+    }
+
+    .title {
+        font-weight: 700;
+        font-family: 'Roboto Condensed', sans-serif;
+    }
+
+    .message {
+        height: calc(98% - 36px);
+        overflow: auto
+    }
+
+
+    .message > p {
+        margin: 0;
+        font-family: monospace;
+        font-size: 13px;
+        line-height: 18px;
+        padding: 0.2rem 0.5rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+        border-bottom: 1px solid #919191;
+        background-color: #232327;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #F6F6F6;
+    }
+
+    .time {
+        flex: none;
+        color: #9d9d9f;
+        font-family: Calibri,sans-serif;
+    }
+
+    .type {
+        flex: none;
+        margin-left: auto;
+        color: #00A7FF;
+        font-family: Calibri,sans-serif;
+    }
+`
+
+// const elConsole = document.getElementById("el_console")
+const elConsole = document.createElement("div")
+elConsole.classList.add("console")
+elConsole.style.height = "100%"
+elConsole.innerHTML = battleLogsHtml
+
+document.querySelector(".game-out").appendChild(elConsole)
+
+addGlobalStyle(battleLogsCss);
+
+String.prototype.format = function () {
+    var i = 0, args = arguments;
+    return this.replace(/{}/g, function () {
+        return typeof args[i] != 'undefined' ? args[i++] : '';
+    });
+};
+
+let m_pos;
+function resize(e) {
+    let parent = elResize.parentNode;
+    let dx = m_pos - e.x;
+    m_pos = e.x;
+    parent.style.width = (parseInt(getComputedStyle(parent, '').width) + dx) + "px";
+
+    elResize.addEventListener("mouseup", function () {
+        // Supprimez l'écouteur d'événements de souris pour les mouvements de souris lorsque l'utilisateur relâche le bouton de la souris
+        document.removeEventListener("mousemove", resize);
+    });
+}
+
+const elResize = document.getElementById("el_resize");
+elResize.addEventListener("mousedown", function (e) {
+    m_pos = e.x;
+    document.addEventListener("mousemove", resize, false);
+}, false);
+
+
+const btnExpand = document.getElementById("btn_expand")
+btnExpand.innerHTML = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
+btnExpand.addEventListener('click', () => {
+    console.log(elConsole.style.height)
+    if (elConsole.style.height === '100%') {
+        elConsole.style.height = '36px';
+        btnExpand.innerHTML = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
+    } else {
+        elConsole.style.height = '100%';
+        btnExpand.innerHTML = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
+    }
+});
+
+const btnClear = document.getElementById("btn_clear")
+btnClear.addEventListener("click", () => {
+    for (const [key, value] of Object.entries(_bl.bl_filters)) {
+        if (value === true) {
+            setItemStorage("bl_" + key, [], true);
+        }
+    }
+    updateMessages()
+});
+
+const btnAverage10 = document.getElementById("btn_average_x10")
+if (_bl.bl_filters["x10"] !== false) btnAverage10.classList.add("selected")
+btnAverage10.addEventListener("click", () => toggleSelectedClass(btnAverage10));
+
+const btnAverage50 = document.getElementById("btn_average_x50")
+if (_bl.bl_filters["x50"] !== false) btnAverage50.classList.add("selected")
+btnAverage50.addEventListener("click", () => toggleSelectedClass(btnAverage50));
+
+const btnAverage100 = document.getElementById("btn_average_x100")
+if (_bl.bl_filters["x100"] !== false) btnAverage100.classList.add("selected")
+btnAverage100.addEventListener("click", () => toggleSelectedClass(btnAverage100));
+
+const btnFilterBoss = document.getElementById("btn_filter_boss")
+if (_bl.bl_filters["boss"] !== false) btnFilterBoss.classList.add("selected")
+btnFilterBoss.addEventListener("click", () => toggleSelectedClass(btnFilterBoss));
+
+const btnFilterPvp = document.getElementById("btn_filter_pvp")
+if (_bl.bl_filters["pvp"] !== false) btnFilterPvp.classList.add("selected")
+btnFilterPvp.addEventListener("click", () => toggleSelectedClass(btnFilterPvp));
+
+const btnFilterTob = document.getElementById("btn_filter_tob")
+if (_bl.bl_filters["tob"] !== false) btnFilterTob.classList.add("selected")
+btnFilterTob.addEventListener("click", () => toggleSelectedClass(btnFilterTob));
+
+const btnFilterNotif = document.getElementById("btn_filter_notif")
+if (_bl.bl_filters["notif"] !== false) btnFilterNotif.classList.add("selected")
+btnFilterNotif.addEventListener("click", () => toggleSelectedClass(btnFilterNotif));
+
+const elMessages = document.getElementById("el_messages")
+
+
+function toggleSelectedClass(element) {
+    if (element.classList.contains("selected")) {
+        element.classList.remove("selected")
+        element.id.split(/_/).pop();
+        const filters = getItemStorage(BL_FILTERS)
+        filters[element.id.split(/_/).pop()] = false
+        setItemStorage(BL_FILTERS, filters)
+    } else {
+        element.classList.add("selected")
+        const filters = getItemStorage(BL_FILTERS)
+        filters[element.id.split(/_/).pop()] = true
+        setItemStorage(BL_FILTERS, filters)
+    }
+    updateMessages()
+}
+
+function addGlobalStyle(css) {
+    var head, style;
+    head = document.getElementsByTagName('head')[0];
+    if (!head) {
+        return;
+    }
+    style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = css;
+    head.appendChild(style);
+}
+
+function updateMessages() {
+    elMessages.innerHTML = ""
+    const battleLogs = getBattleLogsInOrderAsc()
+    appendBattleLogs(battleLogs)
+}
+
+function appendBattleLogs(battleLogs) {
+    battleLogs.forEach((log) => {
+        switch (log.type) {
+            case "Boss":
+                appendBossBattleLogs(log)
+                break
+            case "PvP":
+                appendPvpBattleLogs(log)
+                break
+            case "ToB":
+                appendTobBattleLogs(log)
+                break
+            case "x10":
+                switch (log.bl_type) {
+                    case "boss":
+                        appendSummaryBossLogs(10, log)
+                        break
+                    case "pvp":
+                        appendSummaryPvpLogs(10, log)
+                        break
+                    case "tob":
+                        appendSummaryTobLogs(10, log)
+                        break
+                    default:
+                        break
+                }
+                break
+            case "x50":
+                switch (log.bl_type) {
+                    case "boss":
+                        appendSummaryBossLogs(50, log)
+                        break
+                    case "pvp":
+                        appendSummaryPvpLogs(50, log)
+                        break
+                    case "tob":
+                        appendSummaryTobLogs(50, log)
+                        break
+                    default:
+                        break
+                }
+                break
+            case "x100":
+                switch (log.bl_type) {
+                    case "boss":
+                        appendSummaryBossLogs(100, log)
+                        break
+                    case "pvp":
+                        appendSummaryPvpLogs(100, log)
+                        break
+                    case "tob":
+                        appendSummaryTobLogs(100, log)
+                        break
+                    default:
+                        break
+                }
+                break
+            case "Notif":
+                appendNotifBattleLogs(log)
+                break
+            default:
+                break
+        }
+    })
+}
+
+function appendBossBattle(damages, infos) {
+    let battle = {
+        "type": "Boss",
+        "time": new Date(),
+        "damages": damages,
+        "infos": infos,
+    }
+    setItemStorage(BL_BOSS, battle)
+    appendBossBattleLogs(battle)
+    if (_bl.bl_boss.length % 100 === 0) {
+        appendSummaryBossLogs(100)
+    } else if (_bl.bl_boss.length % 50 === 0) {
+        appendSummaryBossLogs(50)
+    } else if (_bl.bl_boss.length % 10 === 0) {
+        appendSummaryBossLogs(10)
+    }
+}
+
+function appendPvpBattle(result, opponent, reward, infos) {
+    let battle = {
+        "type": "PvP",
+        "time": new Date(),
+        "result": result,
+        "opponent": opponent,
+        "rewards": reward,
+        "infos": infos,
+    }
+    setItemStorage(BL_PVP, battle)
+    appendPvpBattleLogs(battle)
+    if (_bl.bl_pvp.length % 100 === 0) {
+        appendSummaryPvpLogs(100)
+    } else if (_bl.bl_pvp.length % 50 === 0) {
+        appendSummaryPvpLogs(50)
+    } else if (_bl.bl_pvp.length % 10 === 0) {
+        appendSummaryPvpLogs(10)
+    }
+}
+
+function appendTobBattle(result, opponent, reward, infos) {
+    let battle = {
+        "type": "ToB",
+        "time": new Date(),
+        "result": result,
+        "opponent": opponent,
+        "rewards": reward,
+        "infos": infos,
+    }
+    setItemStorage(BL_TOB, battle)
+    appendTobBattleLogs(battle)
+    if (_bl.bl_tob.length % 100 === 0) {
+        appendSummaryTobLogs(100)
+    } else if (_bl.bl_tob.length % 50 === 0) {
+        appendSummaryTobLogs(50)
+    } else if (_bl.bl_tob.length % 10 === 0) {
+        appendSummaryTobLogs(10)
+    }
+}
+
+function appendNotifBattle(message) {
+    let notif = {
+        "type": "Notif",
+        "time": new Date(),
+        "message": message
+    }
+    setItemStorage(BL_NOTIF, notif)
+    appendNotifBattleLogs(notif)
+}
+
+function appendBossBattleLogs(log) {
+    const msg = "Vous avez causé {} dommage{}."
+    let message = msg.format(log.damages, log.damages > 1 ? 's' : '');
+    message = message.concat(' ', formatInfosLogs(log.infos))
+
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
+}
+
+function appendSummaryBossLogs(count, log=null) {
+    if (null === log) {
+        const averageDamages = Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.damages, 0) / count);
+        log = {
+            "type": "x" + count,
+            "bl_type": "boss",
+            "time": new Date(),
+            "averageDamages": averageDamages
+        }
+        setItemStorage("bl_" + log.type, log)
+    }
+    const msg = "Le Boss a subi en moyenne {} points de dommages lors des {} derniers combats."
+    let message = msg.format(log.averageDamages, count);
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
+}
+
+function appendPvpBattleLogs(log) {
+    const msg = "Vous avez {}, contre {}."
+    let message = msg.format(log.result === "winner" ? "gagné" : "perdu", log.opponent);
+    if (log.result === "winner") {
+        message = message.concat(' ', formatRewardsLogs(log.rewards))
+    } else {
+        message = message.concat(' ', formatInfosLogs(log.infos))
+    }
+
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
+}
+
+function appendSummaryPvpLogs(count, log=null) {
+    if (null === log) {
+        log = {
+            "type": "x" + count,
+            "bl_type": "pvp",
+            "time": new Date(),
+            "win": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
+            "loose": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
+            "rewards": {
+                "elo": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.elo, 0) / count),
+                "alo": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count),
+                "event": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
+                "exp": Math.floor(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
+            },
+        }
+        setItemStorage("bl_" + log.type, log)
+    }
+    const msg = "Résultat des {} derniers combats PvP : Victoire {}% - Défaite {}%"
+    let message = msg.format(count, log.win, log.loose);
+    if (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0) {
+        message = message.concat("\nRécompenses moyennes : ", formatRewardsLogs(log.rewards))
+    }
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
+}
+
+function appendTobBattleLogs(log) {
+    const msg = "Vous avez {}."
+    let message = msg.format(log.result === "winner" ? "gagné" : "perdu");
+    if (log.result === "winner") {
+        message = message.concat(' ', formatRewardsLogs(log.rewards))
+    } else {
+        message = message.concat(' ', formatInfosLogs(log.infos))
+    }
+
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
+}
+
+function appendSummaryTobLogs(count, log=null) {
+    console.log(count)
+    if (null === log) {
+        log = {
+            "type": "x" + count,
+            "bl_type": "tob",
+            "time": new Date(),
+            "win": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
+            "loose": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
+            "infos": {
+                "vie": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
+                "bouclier": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
+                "soin": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
+                "esquive": Math.floor(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+            },
+        }
+        setItemStorage("bl_" + log.type, log)
+    }
+    const msg = "Résultat des {} derniers combats ToB : Victoire {}% - Défaite {}%"
+    let message = msg.format(count, log.win, log.loose);
+    if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
+        message = message.concat("\nStatistiques moyennes : ", formatInfosLogs(log.infos))
+    }
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
+}
+
+function appendNotifBattleLogs(log) {
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), log.message, log.type)
+}
+
+function appendMessageToBattleLogs(time, message, type) {
+    const pEl = document.createElement('p');
+    const spanTimeEl = document.createElement('span')
+    spanTimeEl.classList.add("time")
+    spanTimeEl.innerHTML = time
+    const spanMsdEl = document.createElement('span')
+    spanMsdEl.innerHTML = message
+    const spanTypeEl = document.createElement('span')
+    spanTypeEl.classList.add("type")
+    spanTypeEl.innerHTML = type
+    pEl.appendChild(spanTimeEl);
+    pEl.appendChild(spanMsdEl);
+    pEl.appendChild(spanTypeEl);
+    elMessages.appendChild(pEl);
+    elMessages.scrollTop = elMessages.scrollHeight;
+}
+
+function formatRewardsLogs(rewards) {
+    let messages = []
+    if (rewards.elo > 0) {
+        messages.push("Elo&nbsp;:&nbsp;{}".format(rewards.elo))
+    }
+    if (rewards.alo > 0) {
+        messages.push("Alopièce{}&nbsp;:&nbsp;{}".format(rewards.alo > 1 ? 's' : '', rewards.alo))
+    }
+    if (rewards.event > 0) {
+        messages.push("Event{}&nbsp;:&nbsp;{}".format(rewards.event > 1 ? 's' : '', rewards.event))
+    }
+    if (rewards.exp > 0) {
+        messages.push("Expérience{}&nbsp;:&nbsp;{}".format(rewards.exp > 1 ? 's' : '', rewards.exp))
+    }
+    return messages.join(', ')
+}
+
+function formatInfosLogs(infos) {
+    let messages = []
+    if (infos.bouclier > 0 || infos._bouclier > 0) {
+        messages.push("Bouclier&nbsp;:&nbsp;{}".format(infos.bouclier))
+    }
+    if (infos.vie > 0) {
+        messages.push("Vie&nbsp;:&nbsp;{}".format(infos.vie))
+    }
+    if (infos.soin > 0) {
+        messages.push("Soin{}&nbsp;:&nbsp;{}".format(infos.soin > 1 ? 's' : '', infos.soin))
+    }
+    if (infos.esquive > 0) {
+        messages.push("Esquive{}&nbsp;:&nbsp;{}".format(infos.esquive > 1 ? 's' : '', infos.esquive))
+    }
+    return messages.join(', ')
+}
+
+function getBattleLogsInOrderAsc() {
+    let logs = [].concat(
+        _bl.bl_filters["boss"] !== false ? _bl.bl_boss : [],
+        _bl.bl_filters["pvp"] !== false ? _bl.bl_pvp : [],
+        _bl.bl_filters["tob"] !== false ? _bl.bl_tob : [],
+        _bl.bl_filters["x10"] !== false ? _bl.bl_x10 : [],
+        _bl.bl_filters["x50"] !== false ? _bl.bl_x50 : [],
+        _bl.bl_filters["x100"] !== false ? _bl.bl_x100 : [],
+        _bl.bl_filters["notif"] !== false ? _bl.bl_notif : [],
+    )
+    return logs.sort((a, b) => new Date(a.time) - new Date(b.time));
+}
+
+let battleLogs = getBattleLogsInOrderAsc()
+appendBattleLogs(battleLogs)
+
+
+realProcess = function (xhr) {
+    if (xhr.responseURL.startsWith("https://lacalv.fr/play/battle?opponent")) {
+        parseBattleOpponentResponse(xhr.response)
+    } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battlepve")) {
+        parseBattleTobResponse(xhr.response)
+    } else if (xhr.responseURL === "https://lacalv.fr/play/battlewb") {
+        parseBattleWbResponse(xhr.response)
+    } else if (xhr.responseURL === "https://lacalv.fr/play/update") {
+        parseUpdateResponse(xhr.response)
+    } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
+        parseWbClassementResponse(xhr.response)
+    }
+}
+
+function hijackAjax(process) {
+    if (typeof process != "function") {
+        process = function (e) {
+            console.log(e);
+        };
+    }
+    window.addEventListener("hijack_ajax", function (event) {
+        process(event.detail);
+    }, false);
+
+    function injection() {
+        var open = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function () {
+            this.addEventListener("load", function () {
+                window.dispatchEvent(new CustomEvent("hijack_ajax", {detail: this}));
+            }, false);
+            open.apply(this, arguments);
+        };
+    }
+
+    window.setTimeout("(" + injection.toString() + ")()", 0);
+}
+
+hijackAjax(realProcess);
+
 
 class Execution {
     static worldboss_reward = null;
@@ -27,19 +746,6 @@ class Update {
     static wb = -1
 }
 
-realProcess = function (xhr) {
-    if (xhr.responseURL === "https://lacalv.fr/play/update") {
-        parseUpdateResponse(xhr.response)
-    }else if (xhr.responseURL === "https://lacalv.fr/play/battlewb") {
-        parseBattleWbResponse(xhr.response)
-    } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battle?opponent")) {
-        parseBattleOpponentResponse(xhr.response)
-    } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battlepve")) {
-        parseBattlePveResponse(xhr.response)
-    } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
-        parseWbClassementResponse(xhr.response)
-    }
-}
 
 function parseUpdateResponse(response) {
     const data = JSON.parse(response)
@@ -54,7 +760,9 @@ function parseUpdateResponse(response) {
 function parseBattleWbResponse(response) {
     const data = JSON.parse(response)
     const {player, opponent} = getStatsFromBattle(data);
-    appendToConsole(`Boss&nbsp;: Vous avez causé ${player.dmg} dommages.`);
+    const infos_wb = {'esquive': player.oblocked}
+
+    appendBossBattle(player.dmg, infos_wb)
 }
 
 function parseWbClassementResponse(response) {
@@ -62,7 +770,15 @@ function parseWbClassementResponse(response) {
     Execution.wbclassement['top'] = data['top']
 }
 
-function parseBattlePveResponse(response) {
+function parseBattleOpponentResponse(response) {
+    const data = JSON.parse(response)
+    const {player, opponent} = getStatsFromBattle(data);
+    const rewards = {'elo': data.eloUser, 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
+    const infos_opponent = {'vie': opponent.pvFinal, 'bouclier': opponent.bouclier, 'soin': opponent.soinTotal, 'esquive': player.oblocked, '_bouclier': opponent._bouclier}
+    appendPvpBattle(player.result, opponent.name, rewards, infos_opponent)
+}
+
+function parseBattleTobResponse(response) {
     const data = JSON.parse(response)
     const {player, opponent} = getStatsFromBattle(data);
     let itemsWin = [];
@@ -72,33 +788,12 @@ function parseBattlePveResponse(response) {
             itemsWin.push(itemWin);
         }
     }
+    const rewards = {'alo': data.rewards.alopieces, 'exp': data.expUser, 'event': data.rewards.event, 'items': itemsWin }
+    const infos_opponent = {'vie': opponent.pvFinal, 'bouclier': opponent.bouclier, 'soin': opponent.soinTotal, 'esquive': player.oblocked, '_bouclier': opponent._bouclier}
 
-    const infosWin = [('alopieces' in data.rewards && data.rewards.alopieces > 0) ? `Alopièces&nbsp;:&nbsp;${data.rewards.alopieces}` : '', ('event' in data.rewards && data.rewards.event > 0) ? `Events&nbsp;:&nbsp;${data.rewards.event}` : '', ('expUser' in data && data.expUser > 0) ? `Expériences&nbsp;:&nbsp;${data.expUser}` : '', (itemsWin.length > 0) ? `Items&nbsp;:&nbsp;${itemsWin.join(', ')}` : ''];
-
-    const infosLose = [(opponent.soinTotal > 0 || opponent.pvRecover !== -1) ? `Soins&nbsp;:&nbsp;${opponent.soinTotal}` : '', (opponent._bouclier > 0) ? `Bouclier&nbsp;:&nbsp;${opponent.bouclier}` : '', `Vie&nbsp;:&nbsp;${opponent.pvFinal}`];
-
-    if (player.result === 'winner') {
-        appendToConsole(`ToB&nbsp;: Vous avez gagné. ${infosWin.filter(Boolean).join(', ')}`);
-    } else {
-        appendToConsole(`ToB&nbsp;: Vous avez perdu. ${infosLose.filter(Boolean).join(', ')}`);
-    }
+    appendTobBattle(player.result, opponent.name, rewards, infos_opponent)
 }
 
-function parseBattleOpponentResponse(response) {
-    const data = JSON.parse(response)
-    const {player, opponent} = getStatsFromBattle(data);
-    const infos = [
-        [ (data.eloUser > 0) ? `Elo&nbsp;:&nbsp;${(player.result === 'looser') ? '-' : ''}${data.eloUser}` : '',
-        (data.aloUser > 0) ? `Alopièces&nbsp;:&nbsp;${data.aloUser}` : '', (data.event > 0) ? `Event: ${data.event}` : '',
-        (data.expUser > 0) ? `Expérience&nbsp;:&nbsp;${data.expUser}` : ''
-        ].filter(Boolean).join(', '),
-        [(player.result === 'looser' && (opponent.soinTotal > 0 || opponent.pvRecover !== -1)) ? `Soins&nbsp;:&nbsp;${opponent.soinTotal}` : '',
-        (player.result === 'looser' && opponent._bouclier > 0) ? `Bouclier&nbsp;:&nbsp;${opponent.bouclier}` : '',
-        (player.result === 'looser') ? `Vie&nbsp;:&nbsp;${opponent.pvFinal}` : ''].filter(Boolean).join(', ')
-    ];
-
-    appendToConsole(`PvP&nbsp;: Vous avez ${player.result === 'winner' ? "gagné" : "perdu"}, contre ${opponent.name}. ${infos.filter(Boolean).join(' - ')}`);
-}
 
 function printNotifs() {
     const reward = getRewardsInNotifs(Update.notifs)
@@ -106,10 +801,10 @@ function printNotifs() {
     Execution.admin_reward = reward.admin
 
     if (null != Execution.worldboss_reward && (Execution.worldboss_reward_printed === null || Execution.worldboss_reward.date !== Execution.worldboss_reward_printed.date)) {
-        appendToConsole(`Combat Boss&nbsp;: ${Execution.worldboss_reward.text}`)
+        appendNotifBattle(Execution.worldboss_reward.text)
         Execution.worldboss_reward_printed = Execution.worldboss_reward
     } else if (null != Execution.admin_reward && (Execution.admin_reward_printed === null || Execution.admin_reward.date !== Execution.admin_reward_printed.date)) {
-        appendToConsole(`Admin&nbsp;: ${Execution.admin_reward.text}`)
+        appendNotifBattle(Execution.admin_reward.text)
         Execution.admin_reward_printed = Execution.admin_reward
     }
 }
@@ -124,8 +819,7 @@ function printWbclassement() {
             msg += `${i + 1} ${i < 9 ? " " : ""} - ${user['pseudoTwitch']} ${user['damage'].toString().padStart(spacing)} dommages`;
         }
 
-        appendToConsole(msg)
-
+        appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
     }
 }
@@ -275,139 +969,4 @@ function getStatsFromBattle(data) {
     opponent.soinTotal = opponent.pvRecover + opponent.vdv;
 
     return {player: player, opponent: opponent};
-}
-
-function hijackAjax(process) {
-    if (typeof process != "function") {
-        process = function (e) {
-            console.log(e);
-        };
-    }
-    window.addEventListener("hijack_ajax", function (event) {
-        process(event.detail);
-    }, false);
-
-    function injection() {
-        var open = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function () {
-            this.addEventListener("load", function () {
-                window.dispatchEvent(new CustomEvent("hijack_ajax", {detail: this}));
-            }, false);
-            open.apply(this, arguments);
-        };
-    }
-
-    window.setTimeout("(" + injection.toString() + ")()", 0);
-}
-
-hijackAjax(realProcess);
-
-function appendToConsole(text, save = true) {
-    const time = new Date().toLocaleTimeString();
-    let message = {'time': time, 'text': text}
-    let consoleMessages = JSON.parse(localStorage.getItem('consoleMessages'))
-    consoleMessages.push(message);
-
-    const preEl = document.createElement('p');
-    preEl.innerHTML = `[${message.time}] ${message.text}`;
-    msgEl.appendChild(preEl);
-    msgEl.scrollTop = msgEl.scrollHeight;
-
-    if (consoleMessages.length > MAX_CONSOLE_MESSAGES) {
-        consoleMessages = consoleMessages.slice(-MAX_CONSOLE_MESSAGES);
-        msgEl.removeChild(msgEl.firstElementChild);
-    }
-    localStorage.setItem('consoleMessages', JSON.stringify(consoleMessages));
-}
-
-const consoleEl = document.createElement('div');
-consoleEl.classList.add("console-element")
-
-// Create the chat header
-const headerEl = document.createElement('div');
-headerEl.classList.add("header-element")
-
-// Create the chat title
-const titleEl = document.createElement('div');
-titleEl.classList.add("title-element")
-titleEl.textContent = 'LaCalv Battle Logs';
-
-// Create the expand/collapse button
-const expandButtonEl = document.createElement('button');
-expandButtonEl.classList.add("expand-button-element")
-console.log(localStorage.getItem('expanded'))
-if (JSON.parse(localStorage.getItem('expanded')) === true) {
-    expandButtonEl.textContent = '-';
-    consoleEl.style.height = '100%';
-} else {
-    expandButtonEl.textContent = '+';
-    consoleEl.style.height = '36px';
-}
-
-const msgEl = document.createElement('div');
-msgEl.classList.add("message-element")
-
-const clearButtonEl = document.createElement('button');
-clearButtonEl.innerHTML = '&nbsp;&nbsp;&nbsp;<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.5" stroke="#fff" ><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>';
-clearButtonEl.addEventListener("click", () => {
-    msgEl.innerHTML = "";
-    localStorage.setItem('consoleMessages', JSON.stringify([]));
-});
-
-// Add an event listener to toggle the height of the console
-expandButtonEl.addEventListener('click', () => {
-    console.log(consoleEl.style.height)
-    if (consoleEl.style.height === '100%') {
-        consoleEl.style.height = '36px';
-        expandButtonEl.textContent = '+';
-        localStorage.setItem('expanded', "false");
-    } else {
-        consoleEl.style.height = '100%';
-        expandButtonEl.textContent = '-';
-        localStorage.setItem('expanded', "true");
-    }
-});
-
-// Append the title and expand/collapse button to the header
-headerEl.appendChild(titleEl);
-titleEl.appendChild(clearButtonEl);
-headerEl.appendChild(expandButtonEl);
-
-// Append the header to the console
-consoleEl.appendChild(headerEl);
-consoleEl.appendChild(msgEl)
-
-if (null === localStorage.getItem('consoleMessages')) {
-    localStorage.setItem('consoleMessages', JSON.stringify([]));
-}
-
-const messages = JSON.parse(localStorage.getItem('consoleMessages'));
-messages.forEach(message => {
-    const preEl = document.createElement('p');
-    preEl.innerHTML = `[${message.time}] ${message.text}`;
-    msgEl.appendChild(preEl);
-    msgEl.scrollTop = msgEl.scrollHeight;
-})
-
-document.querySelector(".game-out").appendChild(consoleEl)
-
-
-addGlobalStyle('.console-element{position:absolute;top:0;right:0;width:500px;height:100%;background:#36393f;opacity:1;color:#fff;overflow:auto;z-index:9999}');
-addGlobalStyle('.header-element{background:#2e3136;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-radius:5px 5px 0 0}');
-addGlobalStyle('.title-element{font-weight:700}');
-addGlobalStyle('.expand-button-element{background:0 0;color:#fff;border:none;cursor:pointer}');
-addGlobalStyle('.message-element {height:calc(98% - 36px);overflow:auto}');
-addGlobalStyle('.message-element > pre {margin:0;font-family:monospace;font-size:13px;line-height:18px;padding:0.2rem 0.5rem;white-space:pre-wrap;word-break:break-word;border-bottom:1px solid #ccc;--darkreader-inline-border-bottom:#3e4446}');
-addGlobalStyle('.message-element > p {margin:0;font-family:monospace;font-size:13px;line-height:18px;padding:0.2rem 0.5rem;white-space:pre-wrap;word-break:break-word;border-bottom:1px solid #ccc;--darkreader-inline-border-bottom:#3e4446}');
-
-function addGlobalStyle(css) {
-    var head, style;
-    head = document.getElementsByTagName('head')[0];
-    if (!head) {
-        return;
-    }
-    style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = css;
-    head.appendChild(style);
 }
