@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.4
+// @version     1.5
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -22,6 +22,8 @@ const BL_X50 = "bl_x50"
 const BL_X100 = "bl_x100"
 const BL_NOTIF = "bl_notif"
 const FILTERS = {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true}
+const BL_SETTINGS = "bl_settings"
+const SETTINGS = {'width':'500px', 'side':'right', 'expanded': false}
 
 const _bl = {
     bl_localstorage_version: -1,
@@ -32,7 +34,8 @@ const _bl = {
     bl_x50: [],
     bl_x100: [],
     bl_filters: FILTERS,
-    bl_notif: []
+    bl_notif: [],
+    bl_settings:SETTINGS
 }
 
 if (getItemStorage(BL_VERSION) == null) {
@@ -46,6 +49,7 @@ setDefaultItemStorage(BL_X10, []);
 setDefaultItemStorage(BL_X50, []);
 setDefaultItemStorage(BL_X100, []);
 setDefaultItemStorage(BL_NOTIF, []);
+setDefaultItemStorage(BL_SETTINGS, SETTINGS);
 if (_bl.bl_localstorage_version !== BL_LOCALSTORAGE_VERSION) {
     setItemStorage(BL_VERSION, BL_LOCALSTORAGE_VERSION)
 }
@@ -62,7 +66,7 @@ function getItemStorage(key) {
     return value
 }
 
-function setItemStorage(key, value, overwrite=false) {
+function setItemStorage(key, value, overwrite = false) {
     const itemStorage = getItemStorage(key)
     if (!overwrite && Array.isArray(itemStorage)) {
         itemStorage.push(value);
@@ -72,14 +76,24 @@ function setItemStorage(key, value, overwrite=false) {
     _bl[key] = value
 }
 
+function setSettingsStorage(key, value) {
+    const settings = getItemStorage(BL_SETTINGS)
+    settings[key] = value
+    setItemStorage(BL_SETTINGS, settings)
+}
+
 const battleLogsHtml = `
     <div id="el_resize"></div>
     <div class="header">
-        <div class="title">LaCalv Battle Logs
-        </div>
-        <button id="btn_expand">
+        <div class="title">LaCalv Battle Logs</div>
+        <div class="btn_headers">
+            <button id="btn_side">
 
-        </button>
+            </button>
+            <button id="btn_expand">
+    
+            </button>
+        </div>
     </div>
     <div class="wrapper">
         <div class="settings">
@@ -119,23 +133,40 @@ const battleLogsCss = `
     .console {
         position: absolute;
         top: 0;
-        right: 0;
         width: 500px;
         height: 100%;
         background: #232327;
         opacity: 1;
         color: #fff;
-        overflow: auto;
+        overflow: hidden;
         z-index: 9999
     }
+    
+    .console.side-right {
+        right: 0;
+        left: auto;
+    }
+    .console.side-left {
+        right: auto;
+        left: 0;
+    }
+    
 
     #el_resize {
         background-color: #35393b;
         position: absolute;
-        left: 0;
         width: 4px;
         height: 100%;
         cursor: w-resize;
+    }
+    
+    #el_resize.side-right {
+        left: 0;
+        right: auto;
+    }
+    #el_resize.side-left {
+        left: auto;
+        right: 0;
     }
 
     .vl {
@@ -195,10 +226,6 @@ const battleLogsCss = `
         color: #fff;
     }
 
-    .settings > {
-        border: none;
-        padding: 0 0.5rem;
-    }
 
     .title {
         font-weight: 700;
@@ -210,7 +237,6 @@ const battleLogsCss = `
         overflow: auto;
         background-color: #0c0c0d;
     }
-
 
     .message > p {
         margin: 0;
@@ -247,12 +273,17 @@ const battleLogsCss = `
     }
 `
 
+const gameOut = document.querySelector(".game-out")
+const game = gameOut.querySelector(".game")
+
 const elConsole = document.createElement("div")
+elConsole.style.width = _bl.bl_settings.width
 elConsole.classList.add("console")
-elConsole.style.height = "100%"
+elConsole.classList.add("side-" + _bl.bl_settings.side)
+elConsole.style.height = _bl.bl_settings.expanded ? "100%" : "36px"
 elConsole.innerHTML = battleLogsHtml
 
-document.querySelector(".game-out").appendChild(elConsole)
+gameOut.appendChild(elConsole)
 
 addGlobalStyle(battleLogsCss);
 
@@ -264,35 +295,100 @@ String.prototype.format = function () {
 };
 
 let m_pos;
-function resize(e) {
+
+function resizeRight(e) {
     let parent = elResize.parentNode;
     let dx = m_pos - e.x;
     m_pos = e.x;
     parent.style.width = (parseInt(getComputedStyle(parent, '').width) + dx) + "px";
-
     elResize.addEventListener("mouseup", function () {
-        // Supprimez l'écouteur d'événements de souris pour les mouvements de souris lorsque l'utilisateur relâche le bouton de la souris
-        document.removeEventListener("mousemove", resize);
+        document.removeEventListener("mousemove", resizeRight);
+        setSettingsStorage("width", parent.style.width);
+    });
+}
+
+function resizeLeft(e) {
+    console.log("resizeLeft")
+    let parent = elResize.parentNode;
+    let dx = m_pos - e.x;
+    m_pos = e.x;
+    parent.style.width = (parseInt(getComputedStyle(parent, '').width) - dx) + "px";
+    elResize.addEventListener("mouseup", function () {
+        document.removeEventListener("mousemove", resizeLeft);
+        setSettingsStorage("width", parent.style.width);
     });
 }
 
 const elResize = document.getElementById("el_resize");
+elResize.classList.add("side-" + _bl.bl_settings.side)
 elResize.addEventListener("mousedown", function (e) {
     m_pos = e.x;
-    document.addEventListener("mousemove", resize, false);
+    if (elResize.classList.contains("side-right")) {
+        document.addEventListener("mousemove", resizeRight, false);
+    } else {
+        document.addEventListener("mousemove", resizeLeft, false);
+    }
 }, false);
 
 
+const btnSide = document.getElementById("btn_side")
+const right = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z\" fill=\"#fff\"></path></svg>";
+const left = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z\" fill=\"#fff\"/></svg>";
+if (_bl.bl_settings.side === "right") {
+    btnSide.innerHTML = left;
+    btnSide.classList.add("side-right")
+    btnSide.title = "Ancrer à gauche"
+} else {
+    btnSide.innerHTML = right;
+    btnSide.classList.add("side-left")
+    btnSide.title = "Ancrer à droite"
+    game.style.margin = null
+    game.style.marginLeft = "auto"
+    game.style.marginRight = "50px"
+}
+btnSide.addEventListener("click", () => {
+    if (elConsole.classList.contains("side-right")) {
+        btnSide.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z\" fill=\"#fff\"></path></svg>"
+        elConsole.classList.remove("side-right")
+        elConsole.classList.add("side-left")
+        elResize.classList.remove("side-right")
+        elResize.classList.add("side-left")
+        btnSide.title = "Ancrer à droite"
+        game.style.margin = null
+        game.style.marginLeft = "auto"
+        game.style.marginRight = "50px"
+        setSettingsStorage("side", "left");
+    } else {
+        btnSide.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z\" fill=\"#fff\"/></svg>"
+        elConsole.classList.remove("side-left")
+        elConsole.classList.add("side-right")
+        elResize.classList.remove("side-left")
+        elResize.classList.add("side-right")
+        btnSide.title = "Ancrer à gauche"
+        game.style.margin = null
+        game.style.marginLeft = "auto"
+        game.style.marginRight = "auto"
+        setSettingsStorage("side", "right");
+    }
+});
+
 const btnExpand = document.getElementById("btn_expand")
-btnExpand.innerHTML = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
+const down = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
+const up = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
+if (_bl.bl_settings.expanded) {
+    btnExpand.innerHTML = up;
+} else {
+    btnExpand.innerHTML = down;
+}
 btnExpand.addEventListener('click', () => {
-    console.log(elConsole.style.height)
     if (elConsole.style.height === '100%') {
         elConsole.style.height = '36px';
-        btnExpand.innerHTML = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
+        btnExpand.innerHTML = down;
+        setSettingsStorage("expanded", false);
     } else {
         elConsole.style.height = '100%';
-        btnExpand.innerHTML = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
+        btnExpand.innerHTML = up;
+        setSettingsStorage("expanded", true);
     }
 });
 
@@ -471,7 +567,7 @@ function appendBossBattleLogs(log) {
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
-function appendSummaryBossLogs(count, log=null) {
+function appendSummaryBossLogs(count, log = null) {
     if (null === log) {
         const averageDamages = Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.damages, 0) / count);
         log = {
@@ -500,7 +596,7 @@ function appendPvpBattleLogs(log) {
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
-function appendSummaryPvpLogs(count, log=null) {
+function appendSummaryPvpLogs(count, log = null) {
     if (null === log) {
         log = {
             "type": "x" + count,
@@ -536,7 +632,7 @@ function appendTobBattleLogs(log) {
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
-function appendSummaryTobLogs(count, log=null) {
+function appendSummaryTobLogs(count, log = null) {
     if (null === log) {
         log = {
             "type": "x" + count,
@@ -737,7 +833,13 @@ function parseBattleOpponentResponse(xhr) {
     const data = JSON.parse(xhr.response)
     const {player, opponent} = getStatsFromBattle(data);
     const rewards = {'elo': data.eloUser, 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
-    const infos_opponent = {'vie': opponent.pvFinal, 'bouclier': opponent.bouclier, 'soin': opponent.soinTotal, 'esquive': player.oblocked, '_bouclier': opponent._bouclier}
+    const infos_opponent = {
+        'vie': opponent.pvFinal,
+        'bouclier': opponent.bouclier,
+        'soin': opponent.soinTotal,
+        'esquive': player.oblocked,
+        '_bouclier': opponent._bouclier
+    }
     appendPvpBattle(player.result, opponent.name, rewards, infos_opponent)
 }
 
@@ -753,8 +855,14 @@ function parseBattleTobResponse(xhr) {
             itemsWin.push(itemWin);
         }
     }
-    const rewards = {'alo': data.rewards.alopieces, 'exp': data.expUser, 'event': data.rewards.event, 'items': itemsWin }
-    const infos_opponent = {'vie': opponent.pvFinal, 'bouclier': opponent.bouclier, 'soin': opponent.soinTotal, 'esquive': player.oblocked, '_bouclier': opponent._bouclier}
+    const rewards = {'alo': data.rewards.alopieces, 'exp': data.expUser, 'event': data.rewards.event, 'items': itemsWin}
+    const infos_opponent = {
+        'vie': opponent.pvFinal,
+        'bouclier': opponent.bouclier,
+        'soin': opponent.soinTotal,
+        'esquive': player.oblocked,
+        '_bouclier': opponent._bouclier
+    }
 
     appendTobBattle(player.result, opponent.name, rewards, infos_opponent, stage)
 }
