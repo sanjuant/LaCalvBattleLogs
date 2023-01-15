@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.6
+// @version     1.7
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -15,7 +15,7 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.4
+const BL_LOCALSTORAGE_VERSION = 0.5
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -91,40 +91,47 @@ const battleLogsHtml = `
 
             </button>
             <button id="btn_expand">
-    
+
             </button>
         </div>
     </div>
-    <div class="wrapper">
-        <div class="settings">
-            <div class="clear">
-                <button id="btn_clear">
-                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                         stroke="currentColor" color="#fff">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </button>
-            </div>
+    <div class="settings">
+        <div class="clear">
+            <button id="btn_clear">
+                <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor" color="#fff">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </button>
+        </div>
 
-            <div class="settings-right">
-                <div class="averages">
-                    <button id="btn_average_x10">x10</button>
-                    <button id="btn_average_x50">x50</button>
-                    <button id="btn_average_x100">x100</button>
-                </div>
-                <div class="vl"></div>
-                <div class="filters">
-                    <button id="btn_filter_boss">Boss</button>
-                    <button id="btn_filter_pvp">PvP</button>
-                    <button id="btn_filter_tob">ToB</button>
-                    <button id="btn_filter_notif">Notif</button>
-                </div>
+        <div class="settings-right">
+            <div class="averages">
+                <button id="btn_average_x10">x10</button>
+                <button id="btn_average_x50">x50</button>
+                <button id="btn_average_x100">x100</button>
+            </div>
+            <div class="vl"></div>
+            <div class="filters">
+                <button id="btn_filter_boss">Boss</button>
+                <button id="btn_filter_pvp">PvP</button>
+                <button id="btn_filter_tob">ToB</button>
+                <button id="btn_filter_notif">Notif</button>
             </div>
         </div>
+    </div>
+    <div class="wrapper">
         <div id="el_messages" class="message">
-<!--            <p><span class="time">21:07:05</span><span class="text">[Top 26%] Tu as obtenu 3660 alopièces, et x10 "Coquille dégarnie"</span><span class="type">Boss</span></p>-->
-<!--            <p><span class="time">21:21:13</span><span class="text">NahusOmega: Perdu - Vie&nbsp;:&nbsp;590</span><span class="type">PvP</span></p>-->
+            <!--            <p><span class="time">21:07:05</span><span class="text">[Top 26%] Tu as obtenu 3660 alopièces, et x10 "Coquille dégarnie"</span><span class="type">Boss</span></p>-->
+            <!--            <p><span class="time">21:21:13</span><span class="text">NahusOmega: Perdu - Vie&nbsp;:&nbsp;590</span><span class="type">PvP</span></p>-->
+        </div>
+    </div>
+    <div class="footer">
+        <div class="settings-right">
+            <button id="btn_dl_csv">
+                <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M7 13H5c-1 0-2 .5-2 1.5v3c0 1 1 1.5 2 1.5h2m6.25-6h-2.5c-1.5 0-2 .5-2 1.5s.5 1.5 2 1.5 2 .5 2 1.5-.5 1.5-2 1.5h-2.5m12.25-7v.5C20.5 13 18 19 18 19h-.5S15 13 15 12.5V12"/></svg>
+            </button>
         </div>
     </div>
 `
@@ -133,13 +140,31 @@ const battleLogsCss = `
     .console {
         position: absolute;
         top: 0;
+        bottom: 0;
         width: 500px;
-        height: 100%;
+        height: 100vh;
         background: #232327;
         opacity: 1;
         color: #fff;
         overflow: hidden;
-        z-index: 9999
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        text-align: left;
+    }
+    
+    .footer {
+        background-color: #0c0c0d;
+        margin-top: auto;
+        padding: 0.3rem 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    
+    #btn_dl_csv {
+        font-family: Calibri;
     }
     
     .console.side-right {
@@ -184,7 +209,9 @@ const battleLogsCss = `
     }
     
     .wrapper {
-        height: calc(100% - 36px);
+        align-self: flex-start;
+        overflow-x: auto;
+        width: 100%;
     }
 
     .settings {
@@ -233,8 +260,7 @@ const battleLogsCss = `
     }
 
     .message {
-        height: calc(98% - 36px);
-        overflow: auto;
+        height: 100%;
         background-color: #0c0c0d;
     }
 
@@ -280,7 +306,7 @@ const elConsole = document.createElement("div")
 elConsole.style.width = _bl.bl_settings.width
 elConsole.classList.add("console")
 elConsole.classList.add("side-" + _bl.bl_settings.side)
-elConsole.style.height = _bl.bl_settings.expanded ? "100%" : "36px"
+elConsole.style.height = _bl.bl_settings.expanded ? "100vh" : "36px"
 elConsole.innerHTML = battleLogsHtml
 
 gameOut.appendChild(elConsole)
@@ -308,7 +334,6 @@ function resizeRight(e) {
 }
 
 function resizeLeft(e) {
-    console.log("resizeLeft")
     let parent = elResize.parentNode;
     let dx = m_pos - e.x;
     m_pos = e.x;
@@ -332,8 +357,8 @@ elResize.addEventListener("mousedown", function (e) {
 
 
 const btnSide = document.getElementById("btn_side")
-const right = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z\" fill=\"#fff\"></path></svg>";
-const left = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z\" fill=\"#fff\"/></svg>";
+const right = '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z" fill="#fff"></path></svg>';
+const left = '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z" fill="#fff"/></svg>';
 if (_bl.bl_settings.side === "right") {
     btnSide.innerHTML = left;
     btnSide.classList.add("side-right")
@@ -381,12 +406,12 @@ if (_bl.bl_settings.expanded) {
     btnExpand.innerHTML = down;
 }
 btnExpand.addEventListener('click', () => {
-    if (elConsole.style.height === '100%') {
+    if (elConsole.style.height === '100vh') {
         elConsole.style.height = '36px';
         btnExpand.innerHTML = down;
         setSettingsStorage("expanded", false);
     } else {
-        elConsole.style.height = '100%';
+        elConsole.style.height = '100vh';
         btnExpand.innerHTML = up;
         setSettingsStorage("expanded", true);
     }
@@ -430,8 +455,78 @@ const btnFilterNotif = document.getElementById("btn_filter_notif")
 if (_bl.bl_filters["notif"] !== false) btnFilterNotif.classList.add("selected")
 btnFilterNotif.addEventListener("click", () => toggleSelectedClass(btnFilterNotif));
 
-const elMessages = document.getElementById("el_messages")
+const btnSaveToCsv = document.getElementById("btn_dl_csv")
+btnSaveToCsv.addEventListener("click", () => {
+    // Build the CSV string
+    jsonToCsv(JSON.stringify(getBattleLogsInOrderAsc()))
+});
 
+function jsonToCsv(jsonData) {
+    jsonData = JSON.parse(jsonData)
+    // Create an empty array to store the rows of the CSV
+    let rows = [];
+    // Create an array of column headers
+    let headers = new Set();
+    // Iterate through the JSON data
+    jsonData.forEach(event => {
+        // use a recursive function to get all keys
+        getKeys(event, headers)
+    });
+    headers = [...headers];
+    jsonData.forEach(event => {
+        // Create an empty array to store the data for this event
+        let row = [];
+        // Iterate through all headers
+        headers.forEach(header => {
+            // use a recursive function to get all values
+            let value = getValue(header, event);
+            if (value) {
+                row.push(value);
+            } else {
+                row.push(null);
+            }
+        });
+        // Add the row of data to the rows array
+        rows.push(row);
+    });
+    // Create a string with the CSV data
+    let csvContent = headers.join(';') + '\n' + rows.map(row => row.join(';')).join('\n');
+    // Download the CSV file
+    let encodedUri = "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    let date = new Date()
+    date = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0') + '-' + date.getHours().toString().padStart(2, '0') + '-' + date.getMinutes().toString().padStart(2, '0')
+    link.setAttribute("download", "lacalvbattlelogs-" + date + ".csv");
+    link.click();
+}
+
+function getKeys(obj, headers) {
+    for (let key in obj) {
+
+        if (typeof obj[key] === 'object') {
+            getKeys(obj[key], headers);
+        } else {
+            headers.add(key);
+        }
+    }
+}
+
+function getValue(key, obj) {
+    for (let objKey in obj) {
+        if (objKey === key) {
+            return obj[objKey];
+        } else if (typeof obj[objKey] === 'object') {
+            let value = getValue(key, obj[objKey]);
+            if (value) {
+                return value;
+            }
+        }
+    }
+    return null;
+}
+
+const elMessages = document.getElementById("el_messages")
 
 function toggleSelectedClass(element) {
     if (element.classList.contains("selected")) {
@@ -576,7 +671,7 @@ function appendSummaryBossLogs(count, log = null) {
             "time": new Date(),
             "averageDamages": averageDamages,
             "infos": {
-                "esquive": _bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count,
+                "esquive": truncateNumber(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -602,19 +697,19 @@ function appendSummaryPvpLogs(count, log = null) {
             "type": "x" + count,
             "bl_type": "pvp",
             "time": new Date(),
-            "win": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
-            "loose": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
+            "win": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100),
+            "loose": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100),
             "rewards": {
-                "elo": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.elo, 0) / count,
-                "alo": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count,
-                "event": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count,
-                "exp": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count,
+                "elo": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.elo, 0) / count),
+                "alo": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count),
+                "event": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
+                "exp": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
             },
             "infos": {
-                "vie": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count,
-                "bouclier": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count,
-                "soin": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count,
-                "esquive": _bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count,
+                "vie": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
+                "bouclier": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
+                "soin": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
+                "esquive": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -638,18 +733,18 @@ function appendSummaryTobLogs(count, log = null) {
             "type": "x" + count,
             "bl_type": "tob",
             "time": new Date(),
-            "win": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100,
-            "loose": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100,
+            "win": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100),
+            "loose": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100),
             "rewards": {
-                "alo": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count,
-                "event": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count,
-                "exp": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count,
+                "alo": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count),
+                "event": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
+                "exp": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
             },
             "infos": {
-                "vie": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count,
-                "bouclier": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count,
-                "soin": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count,
-                "esquive": _bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count,
+                "vie": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
+                "bouclier": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
+                "soin": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
+                "esquive": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -684,11 +779,9 @@ function appendMessageToBattleLogs(time, message, type) {
 
 function concatRewardsAndInfos(message, log) {
     let rewardAndInfos = []
-    if (log.result === "winner") {
-        rewardAndInfos.push(formatRewardsLogs(log.rewards))
-    }
+    rewardAndInfos.push(formatRewardsLogs(log.rewards))
     rewardAndInfos.push(formatInfosLogs(log.infos))
-    message = message.concat(' ', rewardAndInfos.join(" - "))
+    message = message.concat(' ', rewardAndInfos.filter(Boolean).join(" - "))
     return message
 }
 
@@ -716,7 +809,7 @@ function formatRewardsLogs(rewards) {
     if (rewards.exp > 0) {
         messages.push("Expérience{}&nbsp;:&nbsp;{}".format(rewards.exp > 1 ? 's' : '', rewards.exp))
     }
-    return messages.join(', ')
+    return messages.filter(Boolean).join(', ')
 }
 
 function formatInfosLogs(infos) {
@@ -733,7 +826,15 @@ function formatInfosLogs(infos) {
     if (infos.esquive > 0) {
         messages.push("Esquive{}&nbsp;:&nbsp;{}".format(infos.esquive > 1 ? 's' : '', infos.esquive))
     }
-    return messages.join(', ')
+    return messages.filter(Boolean).join(', ')
+}
+
+function truncateNumber(number) {
+    let trunc = number.toFixed(2);
+    if (trunc.endsWith('.00')) {
+        return parseInt(trunc);
+    }
+    return parseFloat(trunc);
 }
 
 function getBattleLogsInOrderAsc() {
@@ -821,7 +922,9 @@ function parseUpdateResponse(xhr) {
 function parseBattleWbResponse(xhr) {
     const data = JSON.parse(xhr.response)
     const {player, opponent} = getStatsFromBattle(data);
-    const infos_wb = {'esquive': player.oblocked}
+    const infos_wb = {
+        'esquive': player.oblocked
+    }
 
     appendBossBattle(player.dmg, infos_wb)
 }
@@ -840,6 +943,7 @@ function parseBattleOpponentResponse(xhr) {
         'bouclier': opponent.bouclier,
         'soin': opponent.soinTotal,
         'esquive': player.oblocked,
+        '_pv': player._pv,
         '_bouclier': opponent._bouclier
     }
     appendPvpBattle(player.result, opponent.name, rewards, infos_opponent)
@@ -863,6 +967,7 @@ function parseBattleTobResponse(xhr) {
         'bouclier': opponent.bouclier,
         'soin': opponent.soinTotal,
         'esquive': player.oblocked,
+        '_pv': player._pv,
         '_bouclier': opponent._bouclier
     }
 
