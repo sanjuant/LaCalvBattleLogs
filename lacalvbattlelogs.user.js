@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.5
+// @version     1.6
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -348,7 +348,7 @@ if (_bl.bl_settings.side === "right") {
 }
 btnSide.addEventListener("click", () => {
     if (elConsole.classList.contains("side-right")) {
-        btnSide.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z\" fill=\"#fff\"></path></svg>"
+        btnSide.innerHTML = right;
         elConsole.classList.remove("side-right")
         elConsole.classList.add("side-left")
         elResize.classList.remove("side-right")
@@ -359,7 +359,7 @@ btnSide.addEventListener("click", () => {
         game.style.marginRight = "50px"
         setSettingsStorage("side", "left");
     } else {
-        btnSide.innerHTML = "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z\" fill=\"#fff\"/></svg>"
+        btnSide.innerHTML = left;
         elConsole.classList.remove("side-left")
         elConsole.classList.add("side-right")
         elResize.classList.remove("side-left")
@@ -683,10 +683,12 @@ function appendMessageToBattleLogs(time, message, type) {
 }
 
 function concatRewardsAndInfos(message, log) {
-    if (log.result === "winner" && formatRewardsLogs(log.rewards) !== '') {
-        message = message.concat(' ', formatRewardsLogs(log.rewards))
+    let rewardAndInfos = []
+    if (log.result === "winner") {
+        rewardAndInfos.push(formatRewardsLogs(log.rewards))
     }
-    message = message.concat(' ', formatInfosLogs(log.infos))
+    rewardAndInfos.push(formatInfosLogs(log.infos))
+    message = message.concat(' ', rewardAndInfos.join(" - "))
     return message
 }
 
