@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.7
+// @version     1.8
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -943,7 +943,7 @@ function parseBattleOpponentResponse(xhr) {
         'bouclier': opponent.bouclier,
         'soin': opponent.soinTotal,
         'esquive': player.oblocked,
-        '_pv': player._pv,
+        '_pv': opponent._pv,
         '_bouclier': opponent._bouclier
     }
     appendPvpBattle(player.result, opponent.name, rewards, infos_opponent)
@@ -967,7 +967,7 @@ function parseBattleTobResponse(xhr) {
         'bouclier': opponent.bouclier,
         'soin': opponent.soinTotal,
         'esquive': player.oblocked,
-        '_pv': player._pv,
+        '_pv': opponent._pv,
         '_bouclier': opponent._bouclier
     }
 
