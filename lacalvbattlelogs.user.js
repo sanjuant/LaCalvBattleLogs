@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.0.1
+// @version     1.1.0
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -15,7 +15,7 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.6
+const BL_LOCALSTORAGE_VERSION = 0.7
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -619,12 +619,13 @@ function appendBossBattle(damages, infos) {
     if (_bl.bl_boss.length % 10 === 0) appendSummaryBossLogs(10)
 }
 
-function appendPvpBattle(result, opponent, reward, infos) {
+function appendPvpBattle(result, opponent, damages, reward, infos) {
     let battle = {
         "type": "PvP",
         "time": new Date(),
         "result": result,
         "opponent": opponent,
+        "damages": damages,
         "rewards": reward,
         "infos": infos,
     }
@@ -635,13 +636,14 @@ function appendPvpBattle(result, opponent, reward, infos) {
     if (_bl.bl_pvp.length % 10 === 0) appendSummaryPvpLogs(10)
 }
 
-function appendTobBattle(result, opponent, reward, infos, stage) {
+function appendTobBattle(result, opponent, damages, reward, infos, stage) {
     let battle = {
         "type": "ToB",
         "time": new Date(),
         "stage": stage,
         "result": result,
         "opponent": opponent,
+        "damages": damages,
         "rewards": reward,
         "infos": infos,
     }
@@ -679,6 +681,7 @@ function appendSummaryBossLogs(count, log = null) {
             "averageDamages": averageDamages,
             "infos": {
                 "esquive": truncateNumber(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+                "stun": truncateNumber(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.stun, 0) / count),
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -717,6 +720,7 @@ function appendSummaryPvpLogs(count, log = null) {
                 "bouclier": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
                 "soin": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
                 "esquive": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+                "stun": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.stun, 0) / count),
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -752,6 +756,7 @@ function appendSummaryTobLogs(count, log = null) {
                 "bouclier": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
                 "soin": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
                 "esquive": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
+                "stun": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.stun, 0) / count),
             },
         }
         setItemStorage("bl_" + log.type, log)
@@ -837,6 +842,9 @@ function formatInfosLogs(infos) {
     }
     if (infos.esquive > 0) {
         messages.push("Esquive{}&nbsp;:&nbsp;{}".format(infos.esquive > 1 ? 's' : '', infos.esquive))
+    }
+    if (infos.stun > 0) {
+        messages.push("Stun{}&nbsp;:&nbsp;{}".format(infos.stun > 1 ? 's' : '', infos.stun))
     }
     return messages.filter(Boolean).join(', ')
 }
@@ -935,7 +943,8 @@ function parseBattleWbResponse(xhr) {
     const data = JSON.parse(xhr.response)
     const {player, opponent} = getStatsFromBattle(data);
     const infos_wb = {
-        'esquive': player.oblocked
+        'esquive': player.oblocked,
+        'stun': player.ublocked,
     }
 
     appendBossBattle(player.dmg, infos_wb)
@@ -956,10 +965,11 @@ function parseBattleOpponentResponse(xhr) {
         'bouclier': opponent.bouclier,
         'soin': opponent.soinTotal,
         'esquive': player.oblocked,
+        'stun': player.ublocked,
         '_pv': opponent._pv,
         '_bouclier': opponent._bouclier
     }
-    appendPvpBattle(player.result, opponent.name, rewards, infos_opponent)
+    appendPvpBattle(player.result, opponent.name, player.dmgTotal, rewards, infos_opponent)
 }
 
 function parseBattleTobResponse(xhr) {
@@ -983,11 +993,12 @@ function parseBattleTobResponse(xhr) {
         'bouclier': opponent.bouclier,
         'soin': opponent.soinTotal === -1 ? null : opponent.soinTotal,
         'esquive': player.oblocked,
+        'stun': player.ublocked,
         '_pv': opponent._pv,
         '_bouclier': opponent._bouclier
     }
 
-    appendTobBattle(player.result, opponent.name, rewards, infos_opponent, stage)
+    appendTobBattle(player.result, opponent.name, player.dmgTotal, rewards, infos_opponent, stage)
 }
 
 
