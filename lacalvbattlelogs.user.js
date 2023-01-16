@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.8
+// @version     1.9
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -15,7 +15,7 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.5
+const BL_LOCALSTORAGE_VERSION = 0.6
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -97,7 +97,7 @@ const battleLogsHtml = `
     </div>
     <div class="settings">
         <div class="clear">
-            <button id="btn_clear">
+            <button id="btn_clear" title="Supprimer les messages">
                 <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor" color="#fff">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -129,7 +129,7 @@ const battleLogsHtml = `
     </div>
     <div class="footer">
         <div class="settings-right">
-            <button id="btn_dl_csv">
+            <button id="btn_dl_csv" title="Exporter les messages au format CSV">
                 <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M7 13H5c-1 0-2 .5-2 1.5v3c0 1 1 1.5 2 1.5h2m6.25-6h-2.5c-1.5 0-2 .5-2 1.5s.5 1.5 2 1.5 2 .5 2 1.5-.5 1.5-2 1.5h-2.5m12.25-7v.5C20.5 13 18 19 18 19h-.5S15 13 15 12.5V12"/></svg>
             </button>
         </div>
@@ -480,14 +480,16 @@ function jsonToCsv(jsonData) {
         headers.forEach(header => {
             // use a recursive function to get all values
             let value = getValue(header, event);
-            if (value) {
+            if (value >= 0 || value) {
                 row.push(value);
-            } else {
+            }
+            else {
                 row.push(null);
             }
         });
         // Add the row of data to the rows array
         rows.push(row);
+        console.log(row)
     });
     // Create a string with the CSV data
     let csvContent = headers.join(';') + '\n' + rows.map(row => row.join(';')).join('\n');
@@ -503,10 +505,11 @@ function jsonToCsv(jsonData) {
 
 function getKeys(obj, headers) {
     for (let key in obj) {
-
-        if (typeof obj[key] === 'object') {
+        if (Array.isArray(obj[key])) {
+            headers.add(key);
+        } else if (typeof obj[key] === 'object') {
             getKeys(obj[key], headers);
-        } else {
+        }  else {
             headers.add(key);
         }
     }
@@ -516,9 +519,13 @@ function getValue(key, obj) {
     for (let objKey in obj) {
         if (objKey === key) {
             return obj[objKey];
-        } else if (typeof obj[objKey] === 'object') {
+        }  else  if (typeof obj[objKey] === 'object') {
             let value = getValue(key, obj[objKey]);
-            if (value) {
+            if (null !== value && !Array.isArray(value)) {
+            value = value.toString() }
+            if (Array.isArray(value) && value.length > 0) {
+                return value;
+            }else if (value && value.length > 0 && !Array.isArray(value) ) {
                 return value;
             }
         }
@@ -809,6 +816,11 @@ function formatRewardsLogs(rewards) {
     if (rewards.exp > 0) {
         messages.push("Expérience{}&nbsp;:&nbsp;{}".format(rewards.exp > 1 ? 's' : '', rewards.exp))
     }
+    if (rewards.items && rewards.items.length > 1) {
+        messages.push("Items&nbsp;:&nbsp;[{}]".format(rewards.items.join(', ')))
+    } else if (rewards.items && rewards.items.length > 0) {
+        messages.push("Item&nbsp;:&nbsp;{}".format(rewards.items.join(', ')))
+    }
     return messages.filter(Boolean).join(', ')
 }
 
@@ -956,9 +968,12 @@ function parseBattleTobResponse(xhr) {
     const {player, opponent} = getStatsFromBattle(data);
     let itemsWin = [];
     if ('item' in data.rewards) {
-        for (const item of data.rewards) {
-            const itemWin = `${item.value} (x${item.count})`;
-            itemsWin.push(itemWin);
+        for (const item of data.rewards.item) {
+            if (item.count > 1) {
+                itemsWin[item.value] = `${item.value} (x${item.count})`;
+            } else {
+                itemsWin[item.value] = `${item.value}`;
+            }
         }
     }
     const rewards = {'alo': data.rewards.alopieces, 'exp': data.expUser, 'event': data.rewards.event, 'items': itemsWin}
