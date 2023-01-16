@@ -121,7 +121,7 @@ const battleLogsHtml = `
             </div>
         </div>
     </div>
-    <div class="wrapper">
+    <div id="el_wrapper" class="wrapper">
         <div id="el_messages" class="message">
             <!--            <p><span class="time">21:07:05</span><span class="text">[Top 26%] Tu as obtenu 3660 alopièces, et x10 "Coquille dégarnie"</span><span class="type">Boss</span></p>-->
             <!--            <p><span class="time">21:21:13</span><span class="text">NahusOmega: Perdu - Vie&nbsp;:&nbsp;590</span><span class="type">PvP</span></p>-->
@@ -461,6 +461,9 @@ btnSaveToCsv.addEventListener("click", () => {
     jsonToCsv(JSON.stringify(getBattleLogsInOrderAsc()))
 });
 
+const elMessages = document.getElementById("el_messages")
+const elWrapper = document.getElementById("el_wrapper")
+
 function jsonToCsv(jsonData) {
     jsonData = JSON.parse(jsonData)
     // Create an empty array to store the rows of the CSV
@@ -781,7 +784,7 @@ function appendMessageToBattleLogs(time, message, type) {
     pEl.appendChild(spanMsdEl);
     pEl.appendChild(spanTypeEl);
     elMessages.appendChild(pEl);
-    elMessages.scrollTop = elMessages.scrollHeight;
+    elWrapper.scrollTop = elWrapper.scrollHeight;
 }
 
 function concatRewardsAndInfos(message, log) {
