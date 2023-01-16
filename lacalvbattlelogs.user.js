@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.0.0
+// @version     1.0.1
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -911,7 +911,7 @@ class Execution {
     static worldboss_reward_printed = null;
     static admin_reward = null;
     static admin_reward_printed = null;
-    static wbclassement = {top: [], user: {classement: 0, dommages: 0}};
+    static wbclassement = {top: [], user: {classement: 0, damages: 0}};
 }
 
 class Update {
@@ -927,8 +927,8 @@ function parseUpdateResponse(xhr) {
         Update.streaming = data['streaming'];
         // appendToConsole(`Stream: ${Update.streaming ? "En Ligne" : "Hors Ligne"}`);
     }
-    Update.notifs = data['player']['notifs']
-    Update.wb = data['wb']
+    if ('player' in data) Update.notifs = data['player']['notifs']
+    if ('wb' in data) Update.wb = data['wb']
 }
 
 function parseBattleWbResponse(xhr) {
@@ -943,7 +943,8 @@ function parseBattleWbResponse(xhr) {
 
 function parseWbClassementResponse(xhr) {
     const data = JSON.parse(xhr.response)
-    Execution.wbclassement['top'] = data['top']
+    if ('top' in data && data['top'].length > 0) Execution.wbclassement['top'] = data['top']
+    if ('user' in data && data['user']['classement'] !== -1) Execution.wbclassement['user'] = data['user']
 }
 
 function parseBattleOpponentResponse(xhr) {
@@ -1016,7 +1017,7 @@ function printWbclassement() {
         const user = Execution.wbclassement['user']
         msg += "\n";
         let spacing = 25 - "Vous".length;
-        msg += `${user['classement'] + 1} ${i < 9 ? " " : ""} - Vous ${user['damage'].toString().padStart(spacing)} dommages`;
+        msg += `${user.classement} ${user.classement.length < 9 ? " " : ""} - Vous ${user.damages.toString().padStart(spacing)} dommages`;
 
         appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
