@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.9
+// @version     1.0.0
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -492,7 +492,6 @@ function jsonToCsv(jsonData) {
         });
         // Add the row of data to the rows array
         rows.push(row);
-        console.log(row)
     });
     // Create a string with the CSV data
     let csvContent = headers.join(';') + '\n' + rows.map(row => row.join(';')).join('\n');
