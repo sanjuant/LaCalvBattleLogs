@@ -536,8 +536,6 @@ function getValue(key, obj) {
     return null;
 }
 
-const elMessages = document.getElementById("el_messages")
-
 function toggleSelectedClass(element) {
     if (element.classList.contains("selected")) {
         element.classList.remove("selected")
@@ -973,9 +971,9 @@ function parseBattleTobResponse(xhr) {
     if ('item' in data.rewards) {
         for (const item of data.rewards.item) {
             if (item.count > 1) {
-                itemsWin[item.value] = `${item.value} (x${item.count})`;
+                itemsWin.push(`${item.value} (x${item.count})`);
             } else {
-                itemsWin[item.value] = `${item.value}`;
+                itemsWin.push(`${item.value}`);
             }
         }
     }
@@ -983,7 +981,7 @@ function parseBattleTobResponse(xhr) {
     const infos_opponent = {
         'vie': opponent.pvFinal,
         'bouclier': opponent.bouclier,
-        'soin': opponent.soinTotal,
+        'soin': opponent.soinTotal === -1 ? null : opponent.soinTotal,
         'esquive': player.oblocked,
         '_pv': opponent._pv,
         '_bouclier': opponent._bouclier
@@ -1071,7 +1069,7 @@ function getStatsFromBattle(data) {
         dmgRenvoi: 0,
         dmgPoison: 0,
         soinTotal: 0,
-        pvRecover: -1,
+        pvRecover: 0,
         vdv: 0,
         ublocked: 0,
         oblocked: 0,
@@ -1100,8 +1098,8 @@ function getStatsFromBattle(data) {
         player.result = 'looser';
         opponent.result = 'winner';
     }
-    if ('armeEffect' in o && (o.armeEffect.id === 'chance' || o.armeEffect.id === 'soin')) {
-        opponent.pvRecover = 0;
+    if ('armeEffect' in o && !(o.armeEffect.id === 'chance' || o.armeEffect.id === 'soin')) {
+        opponent.pvRecover = -1;
     }
     for (let [i, action] of actions.entries()) {
         if (action.u1 && action.u2 && action.m1 && action.m2) {
