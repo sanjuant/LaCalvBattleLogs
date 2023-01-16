@@ -1013,6 +1013,10 @@ function printWbclassement() {
             let spacing = 25 - user['pseudoTwitch'].length;
             msg += `${i + 1} ${i < 9 ? " " : ""} - ${user['pseudoTwitch']} ${user['damage'].toString().padStart(spacing)} dommages`;
         }
+        const user = Execution.wbclassement['user']
+        msg += "\n";
+        let spacing = 25 - "Vous".length;
+        msg += `${user['classement'] + 1} ${i < 9 ? " " : ""} - Vous ${user['damage'].toString().padStart(spacing)} dommages`;
 
         appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
