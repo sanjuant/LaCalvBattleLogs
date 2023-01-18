@@ -2,8 +2,9 @@
 // @name        LaCalv Battle Logs
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
-// @include     https://lacalv.fr/
-// @version     1.2.1
+// @include     https://lacalv.fr/*
+// @exclude     https://lacalv.fr/m/
+// @version     1.2.2
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -191,12 +192,8 @@ const battleLogsHtml = `
     <div class="header">
         <div class="title">LaCalv Battle Logs</div>
         <div class="btn_headers">
-            <button id="btn_side">
-
-            </button>
-            <button id="btn_expand">
-
-            </button>
+            <button id="btn_side"></button>
+            <button id="btn_expand"></button>
         </div>
     </div>
     <div class="settings">
@@ -226,10 +223,7 @@ const battleLogsHtml = `
         </div>
     </div>
     <div id="el_wrapper" class="wrapper">
-        <div id="el_messages" class="message">
-            <!--            <p><span class="time">21:07:05</span><span class="text">[Top 26%] Tu as obtenu 3660 alopièces, et x10 "Coquille dégarnie"</span><span class="type">Boss</span></p>-->
-            <!--            <p><span class="time">21:21:13</span><span class="text">NahusOmega: Perdu - Vie&nbsp;:&nbsp;590</span><span class="type">PvP</span></p>-->
-        </div>
+        <div id="el_messages" class="message"></div>
     </div>
     <div class="footer">
         <div class="settings-left">
@@ -267,21 +261,9 @@ const battleLogsCss = `
         flex-direction: column;
         justify-content: flex-start;
         text-align: left;
+        font: initial;
+        font-size: 16px;
     }
-
-    .footer {
-        background-color: #0c0c0d;
-        margin-top: auto;
-        padding: 0.3rem 0.6rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    #btn_dl_csv {
-        font-family: Calibri;
-    }
-
     .console.side-right {
         right: 0;
         left: auto;
@@ -291,7 +273,6 @@ const battleLogsCss = `
         left: 0;
     }
 
-
     #el_resize {
         background-color: #35393b;
         position: absolute;
@@ -299,7 +280,6 @@ const battleLogsCss = `
         height: 100%;
         cursor: w-resize;
     }
-
     #el_resize.side-right {
         left: 0;
         right: auto;
@@ -309,18 +289,18 @@ const battleLogsCss = `
         right: 0;
     }
 
-    .vl {
-        border-left: 1px solid #919191;
-        height: 16px;
-    }
-
     .header {
         background: #0c0c0d;
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.3rem 0.6rem;
+        padding: 0.3em 0.6em;
+    }
+
+    .title {
+        font-weight: 700;
+        font-family: 'Roboto Condensed', sans-serif;
     }
 
     .wrapper {
@@ -335,49 +315,25 @@ const battleLogsCss = `
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.3rem 0.6rem;
+        padding: 0.3em 0.6em;
         gap: 4px;
         cursor: default;
         border-bottom: 1px solid #919191;
         font-size: 13px;
     }
-
     .settings-left {
         display: flex;
         align-items: center;
         gap: 8px;
     }
-
-    .footer .settings-left {
-        gap: 2px;
-    }
-
     .settings-right {
         display: flex;
         align-items: center;
         gap: 8px;
     }
-
-    button {
-        border: none;
-        background-color: transparent;
-        cursor: pointer;
-        color: #ccc;
-    }
-
     .settings-right button {
-        padding: 0 0.5rem;
+        padding: 0 0.5em;
     }
-
-    button:hover {
-        background-color: #434346;
-    }
-
-    button.selected {
-        background-color: #58585c;
-        color: #fff;
-    }
-
     .filters, .averages {
         display: flex;
         justify-content: center;
@@ -385,52 +341,75 @@ const battleLogsCss = `
         gap: 2px;
     }
 
-    .title {
-        font-weight: 700;
-        font-family: 'Roboto Condensed', sans-serif;
+    button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        color: #ccc;
+        font-family: 'Roboto Condensed',sans-serif;
+    }
+    button:hover {
+        background-color: #434346;
+    }
+    button.selected {
+        background-color: #58585c;
+        color: #fff;
     }
 
     .message {
         height: 100%;
         background-color: #0c0c0d;
     }
-
     .message > p {
         margin: 0;
         font-family: monospace;
         font-size: 13px;
         line-height: 18px;
-        padding: 0.2rem 0.5rem;
+        padding: 0.2em 0.5em;
         white-space: pre-wrap;
         word-break: break-word;
         border-bottom: 1px solid #919191;
         background-color: #232327;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1em;
         color: #F6F6F6;
     }
-
     .message > p:nth-last-child(1) {
         border-bottom: 0;
-        padding-bottom:0.25rem;
+        padding-bottom:0.25em;
     }
-
     .time {
         flex: none;
         color: #9d9d9f;
         font-family: Calibri,sans-serif;
     }
-
     .type {
         flex: none;
         margin-left: auto;
         color: #00A7FF;
         font-family: Calibri,sans-serif;
     }
+
+    .footer {
+        background-color: #0c0c0d;
+        margin-top: auto;
+        padding: 0.3em 0.6em;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .footer .settings-left {
+        gap: 2px;
+    }
+
+    .vl {
+        border-left: 1px solid #919191;
+        height: 16px;
+    }
 `
 
-const gameOut = document.querySelector(".game-out")
+const gameOut = document.querySelector("body")
 const game = gameOut.querySelector(".game")
 
 const elConsole = document.createElement("div")
@@ -506,9 +485,7 @@ if (_bl.bl_settings.side === "right") {
     btnSide.innerHTML = right;
     btnSide.classList.add("side-left")
     btnSide.title = "Ancrer à droite"
-    game.style.margin = null
-    game.style.marginLeft = "auto"
-    game.style.marginRight = "50px"
+    changeGameSide(game, "right")
 }
 btnSide.addEventListener("click", () => {
     if (elConsole.classList.contains("side-right")) {
@@ -518,9 +495,7 @@ btnSide.addEventListener("click", () => {
         elResize.classList.remove("side-right")
         elResize.classList.add("side-left")
         btnSide.title = "Ancrer à droite"
-        game.style.margin = null
-        game.style.marginLeft = "auto"
-        game.style.marginRight = "50px"
+        changeGameSide(game, "right")
         setSettingsStorage("side", "left");
     } else {
         btnSide.innerHTML = left;
@@ -529,12 +504,23 @@ btnSide.addEventListener("click", () => {
         elResize.classList.remove("side-left")
         elResize.classList.add("side-right")
         btnSide.title = "Ancrer à gauche"
-        game.style.margin = null
-        game.style.marginLeft = "auto"
-        game.style.marginRight = "auto"
+        changeGameSide(game, "left")
         setSettingsStorage("side", "right");
     }
 });
+
+function changeGameSide(game, side)  {
+    if (!game) return
+    if (side === "right") {
+        game.style.margin = null
+        game.style.marginLeft = "auto"
+        game.style.marginRight = "50px"
+    } else {
+        game.style.margin = null
+        game.style.marginLeft = "auto"
+        game.style.marginRight = "auto"
+    }
+}
 
 const btnExpand = document.getElementById("btn_expand")
 const down = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
