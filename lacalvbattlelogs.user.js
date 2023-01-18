@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.1.0
+// @version     1.2.0
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -11,11 +11,115 @@
 // @updateURL     https://github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js
 // ==/UserScript==
 
+const MESSAGES = {
+    "boss": {
+        "normal": "Vous avez causé {0} dommage{1}.",
+        "short": "{0} dommage{1}.",
+        "list": "Vous avez causé {0} dommage{1}.",
+    },
+    "pvp": {
+        "normal": "Vous avez {0}, contre {1}.",
+        "short": "{0} contre {1}.",
+        "list": "Vous avez {0}, contre {1}.",
+    },
+    "tob": {
+        "normal": "Vous avez {0} à l'étage {1}.",
+        "short": "Étage {1} {0}.",
+        "list": "Vous avez {0} à l'étage {1}.",
+    },
+    "rewards": {
+        "elo": {
+            "normal": "Elo&nbsp;:&nbsp;{0}",
+            "short": "Elo:{0}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Elo&nbsp;:&nbsp;{0}",
+        },
+        "alo": {
+            "normal": "Alopièce{0}&nbsp;:&nbsp;{1}",
+            "short": "Alo:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Alopièce{0}&nbsp;:&nbsp;{1}",
+        },
+        "event": {
+            "normal": "Event{0}&nbsp;:&nbsp;{1}",
+            "short": "Event:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Event{0}&nbsp;:&nbsp;{1}",
+        },
+        "exp": {
+            "normal": "Expérience{0}&nbsp;:&nbsp;{1}",
+            "short": "Exp:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Expérience{0}&nbsp;:&nbsp;{1}",
+        },
+        "items": {
+            "normal": "Item{0}&nbsp;:&nbsp;{1}",
+            "short": "Item:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Item{0}&nbsp;:&nbsp;{1}",
+        }
+    },
+    "infos": {
+        "bouclier": {
+            "normal": "Bouclier&nbsp;:&nbsp;{0}",
+            "short": "Bouc:{0}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Bouclier&nbsp;:&nbsp;{0}",
+        },
+        "vie": {
+            "normal": "Vie&nbsp;:&nbsp;{0}",
+            "short": "Vie:{0}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Vie&nbsp;:&nbsp;{0}",
+        },
+        "soin": {
+            "normal": "Soin{0}&nbsp;:&nbsp;{1}",
+            "short": "Soin:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Soin{0}&nbsp;:&nbsp;{1}",
+        },
+        "esquive": {
+            "normal": "Esquive{0}&nbsp;:&nbsp;{1}",
+            "short": "Esq:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Esquive{0}&nbsp;:&nbsp;{1}",
+        },
+        "stun": {
+            "normal": "Stun{0}&nbsp;:&nbsp;{1}",
+            "short": "Stun:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Stun{0}&nbsp;:&nbsp;{1}",
+        },
+    },
+    "summary": {
+        "boss": {
+            "normal": "Le Boss a subi en moyenne {0} points de dommages lors des {1} derniers combats.",
+            "short": "Boss - Dommages:{0} ",
+            "list": "Moyennes des {1} derniers combats Boss :\n&nbsp;&nbsp;&nbsp;&nbsp;- Dommages&nbsp;:&nbsp;{0} ",
+        },
+        "pvp": {
+            "normal": "Résultat des {0} derniers combats PvP : Victoire {1}% - Défaite {2}%",
+            "short": "PvP - Vic:{1}% Déf:{2}% ",
+            "list": "Moyennes des {0} derniers combats PvP :\n&nbsp;&nbsp;&nbsp;&nbsp;- Victoire&nbsp;:&nbsp;{1}%\n&nbsp;&nbsp;&nbsp;&nbsp;- Défaite&nbsp;:&nbsp;{2}%",
+        },
+        "tob": {
+            "normal": "Résultat des {0} derniers combats ToB : Victoire {1}% - Défaite {2}%",
+            "short": "ToB - Vic:{1}% Déf:{2}% ",
+            "list": "Moyennes des {0} derniers combats ToB :\n&nbsp;&nbsp;&nbsp;&nbsp;- Victoire&nbsp;:&nbsp;{1}%\n&nbsp;&nbsp;&nbsp;&nbsp;- Défaite&nbsp;:&nbsp;{2}%",
+        },
+        "rewards": {
+            "normal": "\nRécompenses moyennes - ",
+            "short": "",
+            "list": "\nRécompenses moyennes :\n",
+        },
+        "infos": {
+            "normal": "\nStatistiques moyennes - ",
+            "short": "",
+            "list": "\nStatistiques moyennes :\n",
+        },
+    },
+    "join": {
+        "normal": ", ",
+        "short": " ",
+        "list": "\n",
+    }
+}
+
 const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.7
+const BL_LOCALSTORAGE_VERSION = 0.8
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -23,7 +127,7 @@ const BL_X100 = "bl_x100"
 const BL_NOTIF = "bl_notif"
 const FILTERS = {'x10': true, 'x50': true, 'x100': true, 'boss': true, 'pvp': true, 'tob': true, 'notif': true}
 const BL_SETTINGS = "bl_settings"
-const SETTINGS = {'width':'500px', 'side':'right', 'expanded': false}
+const SETTINGS = {'width':'500px', 'side':'right', 'expanded': false, 'format': 'normal'}
 
 const _bl = {
     bl_localstorage_version: -1,
@@ -128,6 +232,17 @@ const battleLogsHtml = `
         </div>
     </div>
     <div class="footer">
+        <div class="settings-left">
+            <button id="btn_format_normal" title="Affichage normal" value="normal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" stroke="#fff"><path d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"/></svg>
+            </button>
+            <button id="btn_format_short" title="Affichage court" value="short">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5"/></svg>
+            </button>
+            <button id="btn_format_list" title="Affichage en liste" value="list">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="18" height="18" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0z"/></svg>
+            </button>
+        </div>
         <div class="settings-right">
             <button id="btn_dl_csv" title="Exporter les messages au format CSV">
                 <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#fff" stroke-width="2" d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M7 13H5c-1 0-2 .5-2 1.5v3c0 1 1 1.5 2 1.5h2m6.25-6h-2.5c-1.5 0-2 .5-2 1.5s.5 1.5 2 1.5 2 .5 2 1.5-.5 1.5-2 1.5h-2.5m12.25-7v.5C20.5 13 18 19 18 19h-.5S15 13 15 12.5V12"/></svg>
@@ -153,20 +268,20 @@ const battleLogsCss = `
         justify-content: flex-start;
         text-align: left;
     }
-    
+
     .footer {
         background-color: #0c0c0d;
         margin-top: auto;
         padding: 0.3rem 0.6rem;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
     }
-    
+
     #btn_dl_csv {
         font-family: Calibri;
     }
-    
+
     .console.side-right {
         right: 0;
         left: auto;
@@ -175,7 +290,7 @@ const battleLogsCss = `
         right: auto;
         left: 0;
     }
-    
+
 
     #el_resize {
         background-color: #35393b;
@@ -184,7 +299,7 @@ const battleLogsCss = `
         height: 100%;
         cursor: w-resize;
     }
-    
+
     #el_resize.side-right {
         left: 0;
         right: auto;
@@ -207,7 +322,7 @@ const battleLogsCss = `
         justify-content: space-between;
         padding: 0.3rem 0.6rem;
     }
-    
+
     .wrapper {
         align-self: flex-start;
         overflow-x: auto;
@@ -225,6 +340,16 @@ const battleLogsCss = `
         cursor: default;
         border-bottom: 1px solid #919191;
         font-size: 13px;
+    }
+
+    .settings-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .footer .settings-left {
+        gap: 2px;
     }
 
     .settings-right {
@@ -253,6 +378,12 @@ const battleLogsCss = `
         color: #fff;
     }
 
+    .filters, .averages {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2px;
+    }
 
     .title {
         font-weight: 700;
@@ -279,7 +410,7 @@ const battleLogsCss = `
         gap: 1rem;
         color: #F6F6F6;
     }
-    
+
     .message > p:nth-last-child(1) {
         border-bottom: 0;
         padding-bottom:0.25rem;
@@ -313,12 +444,20 @@ gameOut.appendChild(elConsole)
 
 addGlobalStyle(battleLogsCss);
 
-String.prototype.format = function () {
-    let i = 0, args = arguments;
-    return this.replace(/{}/g, function () {
-        return typeof args[i] != 'undefined' ? args[i++] : '';
-    });
-};
+String.prototype.format = function() {
+    var num = arguments.length;
+    var oStr = this;
+    for (var i = 0; i < num; i++) {
+        var pattern = "\\{" + (i) + "\\}";
+        var re = new RegExp(pattern, "g");
+        oStr = oStr.replace(re, arguments[i]);
+    }
+    return oStr.capitalize();
+}
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
 
 let m_pos;
 
@@ -455,6 +594,18 @@ const btnFilterNotif = document.getElementById("btn_filter_notif")
 if (_bl.bl_filters["notif"] !== false) btnFilterNotif.classList.add("selected")
 btnFilterNotif.addEventListener("click", () => toggleSelectedClass(btnFilterNotif));
 
+const btnFormatNormal = document.getElementById("btn_format_normal")
+if (_bl.bl_settings.format === "normal") btnFormatNormal.classList.add("selected")
+btnFormatNormal.addEventListener("click", () => changeFormatDisplay(btnFormatNormal))
+
+const btnFormatShort = document.getElementById("btn_format_short")
+if (_bl.bl_settings.format === "short") btnFormatShort.classList.add("selected")
+btnFormatShort.addEventListener("click", () => changeFormatDisplay(btnFormatShort))
+
+const btnFormatList = document.getElementById("btn_format_list")
+if (_bl.bl_settings.format === "list") btnFormatList.classList.add("selected")
+btnFormatList.addEventListener("click", () => changeFormatDisplay(btnFormatList))
+
 const btnSaveToCsv = document.getElementById("btn_dl_csv")
 btnSaveToCsv.addEventListener("click", () => {
     // Build the CSV string
@@ -548,6 +699,18 @@ function toggleSelectedClass(element) {
         filters[element.id.split(/_/).pop()] = true
         setItemStorage(BL_FILTERS, filters)
     }
+    updateMessages()
+}
+
+function changeFormatDisplay(element) {
+    const buttons = element.parentNode.querySelectorAll("button")
+    buttons.forEach(button => {
+        button.classList.remove("selected")
+    })
+    element.classList.add("selected")
+    const settings = getItemStorage(BL_SETTINGS)
+    settings["format"] = element.value
+    setItemStorage(BL_SETTINGS, settings)
     updateMessages()
 }
 
@@ -665,9 +828,8 @@ function appendNotifBattle(message) {
 }
 
 function appendBossBattleLogs(log) {
-    const msg = "Vous avez causé {} dommage{}."
-    let message = msg.format(log.damages, log.damages > 1 ? 's' : '');
-    message = message.concat(' ', formatInfosLogs(log.infos))
+    let message = MESSAGES.boss[_bl.bl_settings.format].format(log.damages, log.damages > 1 ? 's' : '');
+    message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
@@ -686,17 +848,13 @@ function appendSummaryBossLogs(count, log = null) {
         }
         setItemStorage("bl_" + log.type, log)
     }
-    const msg = "Le Boss a subi en moyenne {} points de dommages lors des {} derniers combats."
-    let message = msg.format(log.averageDamages, count);
-    if (log.infos.esquive > 0) {
-        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
-    }
+    let message = MESSAGES.summary.boss[_bl.bl_settings.format].format(log.averageDamages, count);
+    message = concatRewardsAndInfosSummaries(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
 function appendPvpBattleLogs(log) {
-    const msg = "Vous avez {}, contre {}."
-    let message = msg.format(log.result === "winner" ? "gagné" : "perdu", log.opponent);
+    let message = MESSAGES.pvp[_bl.bl_settings.format].format(log.result === "winner" ? "gagné" : "perdu", log.opponent);
     message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
@@ -725,15 +883,13 @@ function appendSummaryPvpLogs(count, log = null) {
         }
         setItemStorage("bl_" + log.type, log)
     }
-    const msg = "Résultat des {} derniers combats PvP : Victoire {}% - Défaite {}%"
-    let message = msg.format(count, log.win, log.loose);
+    let message = MESSAGES.summary.pvp[_bl.bl_settings.format].format(count, log.win, log.loose);
     message = concatRewardsAndInfosSummaries(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
 function appendTobBattleLogs(log) {
-    const msg = "Vous avez {} à l'étage {}."
-    let message = msg.format(log.result === "winner" ? "vaincu" : "échoué", log.stage);
+    let message = MESSAGES.tob[_bl.bl_settings.format].format(log.result === "winner" ? "vaincu" : "échoué", log.stage);
     message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
@@ -761,8 +917,7 @@ function appendSummaryTobLogs(count, log = null) {
         }
         setItemStorage("bl_" + log.type, log)
     }
-    const msg = "Résultat des {} derniers combats ToB : Victoire {}% - Défaite {}%"
-    let message = msg.format(count, log.win, log.loose);
+    let message = MESSAGES.summary.tob[_bl.bl_settings.format].format(count, log.win, log.loose);
     message = concatRewardsAndInfosSummaries(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
@@ -791,62 +946,73 @@ function appendMessageToBattleLogs(time, message, type) {
 
 function concatRewardsAndInfos(message, log) {
     let rewardAndInfos = []
-    rewardAndInfos.push(formatRewardsLogs(log.rewards))
-    rewardAndInfos.push(formatInfosLogs(log.infos))
-    message = message.concat(' ', rewardAndInfos.filter(Boolean).join(" - "))
+    if (log.infos) rewardAndInfos.push(formatInfosLogs(log.infos))
+    if (log.rewards) rewardAndInfos.push(formatRewardsLogs(log.rewards))
+    if (rewardAndInfos.length > 0) {
+        const join = _bl.bl_settings.format === "normal" ? ' ' : MESSAGES.join[_bl.bl_settings.format]
+        message = message.concat(join, rewardAndInfos.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format]))
+    }
     return message
 }
 
 function concatRewardsAndInfosSummaries(message, log) {
-    if (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0) {
-        message = message.concat("\nRécompenses moyennes - ", formatRewardsLogs(log.rewards))
+    if (log.rewards && (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0)) {
+        message = message.concat(MESSAGES.summary.rewards[_bl.bl_settings.format], formatRewardsLogs(log.rewards))
     }
-    if (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0) {
-        message = message.concat("\nStatistiques moyennes - ", formatInfosLogs(log.infos))
+    if (log.infos && (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0)) {
+        message = message.concat(MESSAGES.summary.infos[_bl.bl_settings.format], formatInfosLogs(log.infos))
     }
     return message
 }
 
 function formatRewardsLogs(rewards) {
     let messages = []
-    if (rewards.elo > 0) {
-        messages.push("Elo&nbsp;:&nbsp;{}".format(rewards.elo))
+    if (rewards.elo > 0 || rewards.elo < 0) {
+        const msgElo = MESSAGES.rewards.elo[_bl.bl_settings.format].format(rewards.elo)
+        messages.push(msgElo)
     }
     if (rewards.alo > 0) {
-        messages.push("Alopièce{}&nbsp;:&nbsp;{}".format(rewards.alo > 1 ? 's' : '', rewards.alo))
+        const msgAlo = MESSAGES.rewards.alo[_bl.bl_settings.format].format(rewards.alo > 1 ? 's' : '', rewards.alo)
+        messages.push(msgAlo)
     }
     if (rewards.event > 0) {
-        messages.push("Event{}&nbsp;:&nbsp;{}".format(rewards.event > 1 ? 's' : '', rewards.event))
+        const msgEvent = MESSAGES.rewards.event[_bl.bl_settings.format].format(rewards.event > 1 ? 's' : '', rewards.event)
+        messages.push(msgEvent)
     }
     if (rewards.exp > 0) {
-        messages.push("Expérience{}&nbsp;:&nbsp;{}".format(rewards.exp > 1 ? 's' : '', rewards.exp))
+        const msgExp = MESSAGES.rewards.exp[_bl.bl_settings.format].format(rewards.exp > 1 ? 's' : '', rewards.exp)
+        messages.push(msgExp)
     }
-    if (rewards.items && rewards.items.length > 1) {
-        messages.push("Items&nbsp;:&nbsp;[{}]".format(rewards.items.join(', ')))
-    } else if (rewards.items && rewards.items.length > 0) {
-        messages.push("Item&nbsp;:&nbsp;{}".format(rewards.items.join(', ')))
+    if (rewards.items && rewards.items.length > 0) {
+        const msgItems = MESSAGES.rewards.items[_bl.bl_settings.format].format(rewards.items.length > 1 ? 's' : '', rewards.items.length > 1 ? '[' + rewards.items.join(', ') + ']' : rewards.items.join(', '))
+        messages.push(msgItems)
     }
-    return messages.filter(Boolean).join(', ')
+    return messages.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format])
 }
 
 function formatInfosLogs(infos) {
     let messages = []
     if (infos.bouclier > 0 || infos._bouclier > 0) {
-        messages.push("Bouclier&nbsp;:&nbsp;{}".format(infos.bouclier))
+        const msgBouclier = MESSAGES.infos.bouclier[_bl.bl_settings.format].format(infos.bouclier)
+        messages.push(msgBouclier)
     }
     if (infos.vie > 0) {
-        messages.push("Vie&nbsp;:&nbsp;{}".format(infos.vie))
+        const msgVie = MESSAGES.infos.vie[_bl.bl_settings.format].format(infos.vie)
+        messages.push(msgVie)
     }
     if (infos.soin > 0) {
-        messages.push("Soin{}&nbsp;:&nbsp;{}".format(infos.soin > 1 ? 's' : '', infos.soin))
+        const msgSoin = MESSAGES.infos.soin[_bl.bl_settings.format].format(infos.soin > 1 ? 's' : '', infos.soin)
+        messages.push(msgSoin)
     }
     if (infos.esquive > 0) {
-        messages.push("Esquive{}&nbsp;:&nbsp;{}".format(infos.esquive > 1 ? 's' : '', infos.esquive))
+        const msgEsquive = MESSAGES.infos.esquive[_bl.bl_settings.format].format(infos.esquive > 1 ? 's' : '', infos.esquive)
+        messages.push(msgEsquive)
     }
     if (infos.stun > 0) {
-        messages.push("Stun{}&nbsp;:&nbsp;{}".format(infos.stun > 1 ? 's' : '', infos.stun))
+        const msgStun = MESSAGES.infos.stun[_bl.bl_settings.format].format(infos.stun > 1 ? 's' : '', infos.stun)
+        messages.push(msgStun)
     }
-    return messages.filter(Boolean).join(', ')
+    return messages.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format])
 }
 
 function truncateNumber(number) {
@@ -919,7 +1085,7 @@ class Execution {
     static worldboss_reward_printed = null;
     static admin_reward = null;
     static admin_reward_printed = null;
-    static wbclassement = {top: [], user: {classement: 0, damages: 0}};
+    static wbclassement = {top: [], user: {classement: 0, damages: 0}, date:null};
 }
 
 class Update {
@@ -954,12 +1120,13 @@ function parseWbClassementResponse(xhr) {
     const data = JSON.parse(xhr.response)
     if ('top' in data && data['top'].length > 0) Execution.wbclassement['top'] = data['top']
     if ('user' in data && data['user']['classement'] !== -1) Execution.wbclassement['user'] = data['user']
+    Execution.wbclassement['date'] = new Date()
 }
 
 function parseBattleOpponentResponse(xhr) {
     const data = JSON.parse(xhr.response)
     const {player, opponent} = getStatsFromBattle(data);
-    const rewards = {'elo': data.eloUser, 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
+    const rewards = {'elo': player.result === "winner" ? data.eloUser : -Math.abs(data.eloUser), 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
     const infos_opponent = {
         'vie': opponent.pvFinal,
         'bouclier': opponent.bouclier,
@@ -1018,7 +1185,7 @@ function printNotifs() {
 
 function printWbclassement() {
     if (Update.wb < 0 && Execution.wbclassement.top.length > 0) {
-        let msg = "Classement Worldboss&nbsp;:"
+        let msg = "Classement Worldboss ({0})&nbsp;:".format(Execution.wbclassement.date.toLocaleString("fr-FR"))
         for (let i = 0; i < Execution.wbclassement['top'].length; i++) {
             let user = Execution.wbclassement['top'][i];
             msg += "\n";
@@ -1032,6 +1199,7 @@ function printWbclassement() {
 
         appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
+        Execution.wbclassement['user'] = {classement: 0, damages: 0};
     }
 }
 
