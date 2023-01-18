@@ -4,7 +4,7 @@
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
 // @exclude     https://lacalv.fr/m/
-// @version     1.2.2
+// @version     1.2.3
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -85,27 +85,27 @@ const MESSAGES = {
     "summary": {
         "boss": {
             "normal": "Le Boss a subi en moyenne {0} points de dommages lors des {1} derniers combats.",
-            "short": "Boss - Dmg:{0} ",
+            "short": "Boss - Dmg:{0}",
             "list": "Moyennes des {1} derniers combats Boss :\n&nbsp;&nbsp;&nbsp;&nbsp;- Dommages&nbsp;:&nbsp;{0} ",
         },
         "pvp": {
             "normal": "Résultat des {0} derniers combats PvP : Victoire {1}% - Défaite {2}%",
-            "short": "PvP - Vic:{1}% Déf:{2}% ",
+            "short": "PvP - Vic:{1}% Déf:{2}%",
             "list": "Moyennes des {0} derniers combats PvP :\n&nbsp;&nbsp;&nbsp;&nbsp;- Victoire&nbsp;:&nbsp;{1}%\n&nbsp;&nbsp;&nbsp;&nbsp;- Défaite&nbsp;:&nbsp;{2}%",
         },
         "tob": {
             "normal": "Résultat des {0} derniers combats ToB : Victoire {1}% - Défaite {2}%",
-            "short": "ToB - Vic:{1}% Déf:{2}% ",
+            "short": "ToB - Vic:{1}% Déf:{2}%",
             "list": "Moyennes des {0} derniers combats ToB :\n&nbsp;&nbsp;&nbsp;&nbsp;- Victoire&nbsp;:&nbsp;{1}%\n&nbsp;&nbsp;&nbsp;&nbsp;- Défaite&nbsp;:&nbsp;{2}%",
         },
         "rewards": {
             "normal": "\nRécompenses moyennes - ",
-            "short": "",
+            "short": " ",
             "list": "\nRécompenses moyennes :\n",
         },
         "infos": {
             "normal": "\nStatistiques moyennes - ",
-            "short": "",
+            "short": " ",
             "list": "\nStatistiques moyennes :\n",
         },
     },
