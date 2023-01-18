@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/
-// @version     1.2.0
+// @version     1.2.1
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -14,7 +14,7 @@
 const MESSAGES = {
     "boss": {
         "normal": "Vous avez causé {0} dommage{1}.",
-        "short": "{0} dommage{1}.",
+        "short": "Dmg:{0}",
         "list": "Vous avez causé {0} dommage{1}.",
     },
     "pvp": {
@@ -84,7 +84,7 @@ const MESSAGES = {
     "summary": {
         "boss": {
             "normal": "Le Boss a subi en moyenne {0} points de dommages lors des {1} derniers combats.",
-            "short": "Boss - Dommages:{0} ",
+            "short": "Boss - Dmg:{0} ",
             "list": "Moyennes des {1} derniers combats Boss :\n&nbsp;&nbsp;&nbsp;&nbsp;- Dommages&nbsp;:&nbsp;{0} ",
         },
         "pvp": {
