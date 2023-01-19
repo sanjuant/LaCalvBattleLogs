@@ -31,14 +31,14 @@ Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce 
 
 
 ## Fonctionnalités
-1. [**Enregistrement des combats contre le Boss, des combats en PvP et des combats en ToB** ](//github.com/sanjuant/LaCalvBattleLogs#)
-2. [**Résumé des combats enregistrés tous les 10, 50 et 100 combats** ](//github.com/sanjuant/LaCalvBattleLogs#)
-3. [**Filtres pour afficher uniquement les logs de combat de certains types (boss, PvP, ToB, etc.)** ](//github.com/sanjuant/LaCalvBattleLogs#)
-4. [**Bouton pour supprimer les messages indésirables** ](//github.com/sanjuant/LaCalvBattleLogs#)
-5. [**Notification pour les points d'intérêts** ](//github.com/sanjuant/LaCalvBattleLogs#)
-6. [**Changement du format des messages affichés** ](//github.com/sanjuant/LaCalvBattleLogs#)
-7. [**Export au format CSV** ](//github.com/sanjuant/LaCalvBattleLogs#)
-8. [**Disponible sur téléphone avec Kiwi Browser** ](//github.com/sanjuant/LaCalvBattleLogs#)
+1. [**Enregistrement des combats contre le Boss, des combats en PvP et des combats en ToB** ](//github.com/sanjuant/LaCalvBattleLogs#enregistrement-des-combats-contre-le-boss-des-combats-en-pvp-et-des-combats-en-tob)
+2. [**Résumé des combats enregistrés tous les 10, 50 et 100 combats** ](//github.com/sanjuant/LaCalvBattleLogs#r%C3%A9sum%C3%A9-des-combats-enregistr%C3%A9s-tous-les-10-50-et-100-combats)
+3. [**Filtres pour afficher uniquement les logs de combat de certains types (boss, PvP, ToB, etc.)** ](//github.com/sanjuant/LaCalvBattleLogs#filtres-pour-afficher-uniquement-les-logs-de-combat-de-certains-types-boss-pvp-tob-etc)
+4. [**Bouton pour supprimer les messages indésirables** ](//github.com/sanjuant/LaCalvBattleLogs#bouton-pour-supprimer-les-messages-ind%C3%A9sirables)
+5. [**Notification pour les points d'intérêts** ](//github.com/sanjuant/LaCalvBattleLogs#notification-pour-les-points-dint%C3%A9r%C3%AAts)
+6. [**Changement du format des messages affichés** ](//github.com/sanjuant/LaCalvBattleLogs#changement-du-format-des-messages-affich%C3%A9s)
+7. [**Export au format CSV** ](//github.com/sanjuant/LaCalvBattleLogs#export-au-format-csv)
+8. [**Disponible sur téléphone avec Kiwi Browser** ](//github.com/sanjuant/LaCalvBattleLogs#disponible-sur-t%C3%A9l%C3%A9phone-avec-kiwi-browser)
 
 
 ### Enregistrement des combats contre le Boss, des combats en PvP et des combats en ToB
