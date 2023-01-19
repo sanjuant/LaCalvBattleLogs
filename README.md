@@ -26,7 +26,7 @@ Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce 
 ## Installation sur téléphone
 
 Pour utiliser ce script sur votre téléphone, vous avez besoin d'installer le navigateur [Kiwi Browser](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser).
-Après avoir installé le navigateur, suivez la procédure précédente pour installer [Violentmonkey](https://violentmonkey.github.io/) sur [Kiwi Browser](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser).
+Après avoir installé le navigateur, suivez la procédure précédente pour installer [Violentmonkey](https://violentmonkey.github.io/) comme si vous souhaitiez l'installer pour [Google Chrome](https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag).
 Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce script" ci-dessus pour installer le script sur votre navigateur.
 
 
@@ -94,7 +94,7 @@ Seuls les messages avec les filtres actifs seront exportés.
 
 ### Disponible sur téléphone avec Kiwi Browser
 
-Pour une meilleure comptabilité, veillez à créer des applications du jeu LaCalv. Cliquer sur les trois points alignés puis sur "Ajouter à l'écran d'accueil".
+Pour une meilleure comptabilité, veillez à créer une application du jeu LaCalv. Cliquer sur les trois points alignés puis sur "Ajouter à l'écran d'accueil".
 
 ![Screenshot to adding app](previews/kiwi_add_app.png)
 
