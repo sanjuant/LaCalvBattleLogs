@@ -4,7 +4,7 @@
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
 // @exclude     https://lacalv.fr/m/
-// @version     1.2.3
+// @version     1.2.4
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -1071,7 +1071,7 @@ class Execution {
     static worldboss_reward_printed = null;
     static admin_reward = null;
     static admin_reward_printed = null;
-    static wbclassement = {top: [], user: {classement: 0, damages: 0}, date:null};
+    static wbclassement = {top: [], user: {classement: 0, damages: 0, max: 0}, date:null};
 }
 
 class Update {
@@ -1171,21 +1171,21 @@ function printNotifs() {
 
 function printWbclassement() {
     if (Update.wb < 0 && Execution.wbclassement.top.length > 0) {
-        let msg = "Classement Worldboss ({0})&nbsp;:".format(Execution.wbclassement.date.toLocaleString("fr-FR"))
+        const user = Execution.wbclassement['user']
+        let msg = "Classement Worldboss {0}/{1} ({2})&nbsp;:".format(user.classement + 1, user.max + 1, Execution.wbclassement.date.toLocaleString("fr-FR"))
         for (let i = 0; i < Execution.wbclassement['top'].length; i++) {
             let user = Execution.wbclassement['top'][i];
             msg += "\n";
             let spacing = 25 - user['pseudoTwitch'].length;
             msg += `${i + 1} ${i < 9 ? " " : ""} - ${user['pseudoTwitch']} ${user['damage'].toString().padStart(spacing)} dommages`;
         }
-        const user = Execution.wbclassement['user']
         msg += "\n";
         let spacing = 25 - "Vous".length;
-        msg += `${user.classement} ${user.classement.length < 9 ? " " : ""} - Vous ${user.damages.toString().padStart(spacing)} dommages`;
+        msg += `${user.classement + 1} ${user.classement.length < 9 ? " " : ""} - Vous ${user.damages.toString().padStart(spacing)} dommages`;
 
         appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
-        Execution.wbclassement['user'] = {classement: 0, damages: 0};
+        Execution.wbclassement['user'] = {classement: 0, damages: 0, max: 0};
     }
 }
 
