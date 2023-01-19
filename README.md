@@ -27,7 +27,8 @@ Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce 
 
 Pour utiliser ce script sur votre téléphone, vous avez besoin d'installer le navigateur [Kiwi Browser](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser).
 Après avoir installé le navigateur, suivez la procédure précédente pour installer [Violentmonkey](https://violentmonkey.github.io/) comme si vous souhaitiez l'installer pour [Google Chrome](https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag).
-Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce script" ci-dessus pour installer le script sur votre navigateur.
+Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce script" ci-dessus pour installer le script sur votre navigateur. 
+Pour plus d'informations, référez-vous à la page [**Disponible sur téléphone avec Kiwi Browser** ](//github.com/sanjuant/LaCalvBattleLogs#disponible-sur-t%C3%A9l%C3%A9phone-avec-kiwi-browser).
 
 
 ## Fonctionnalités
