@@ -1,19 +1,18 @@
 # LaCalv Battle Logs
 
-Ce script est un script utilisateur pour le site LaCalv (https://lacalv.fr/). Il intercepte les réponses du site web et
-les affiche dans la console, analysées et formatées de manière à être facilement lisible. Le script prend en charge les
-résultats de bataille, les mises à jour et les classements du boss, ainsi que des notifications lorsque la
-diffusion en direct est en cours et le suivi des récompenses et du classement. Le script est conçu pour être exécuté sur
-le site web en utilisant une extension de navigateur prenant en charge les scripts utilisateurs tels que Violentmonkey.
+![Screenshot of LaCalv Battle Logs script in action](previews/battlelogs.png)
+
+Ce script est conçu pour être utilisé sur le site LaCalv (https://lacalv.fr/) et permet d'intercepter les réponses du
+site web, de les formater et de les afficher dans une console dédiée. Il prend en charge l'export des données au format CSV. Pour utiliser ce script, il est recommandé
+d'utiliser l'extension de navigateur Violentmonkey.
 
 Violentmonkey est un add-on compatible avec un grand nombre de navigateurs tels que Firefox, Chrome, et Opera, qui
-permet d'utiliser des scripts utilisateur (user script) pour personnaliser les sites web. Il est une alternative
-populaire à Tampermonkey, qui est également bien supporté. Il est donc conseillé d'utiliser Violentmonkey pour l'
-utilisation de ce script.
+permet d'utiliser des scripts utilisateur (user script) pour personnaliser les sites web.
 
 ## Installation
 
-Pour utiliser ce script, vous avez besoin d'un extension de navigateur compatible avec les scripts utilisateur, tels que [Violentmonkey](https://violentmonkey.github.io/) ou [Tampermonkey](https://www.tampermonkey.net/). Voici les liens pour installer Violentmonkey sur les navigateurs populaires :
+Pour utiliser ce script, vous avez besoin d'une extension de navigateur compatible avec les scripts utilisateur, tels
+que [Violentmonkey](https://violentmonkey.github.io/). Voici les liens pour installer Violentmonkey sur les navigateurs populaires :
 
 - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/)
 - [Google Chrome](https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
@@ -24,4 +23,80 @@ Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce 
 
 ## **LaCalv Battle Logs** ([lacalvbattlelogs.user.js](//github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js)) ([Ajouter ce script](//github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js))
 
-![Screenshot of LaCalv Battle Logs script in action](https://cdn.discordapp.com/attachments/304686654202052618/1063614301333639319/image.png)
+## Installation sur téléphone
+
+Pour utiliser ce script sur votre téléphone, vous avez besoin d'installer le navigateur [Kiwi Browser](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser).
+Après avoir installé le navigateur, suivez la procédure précédente pour installer [Violentmonkey](https://violentmonkey.github.io/) sur [Kiwi Browser](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser).
+Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce script" ci-dessus pour installer le script sur votre navigateur.
+
+
+## Fonctionnalités
+1. [**Enregistrement des combats contre le Boss, des combats en PvP et des combats en ToB** ](//github.com/sanjuant/LaCalvBattleLogs#)
+2. [**Résumé des combats enregistrés tous les 10, 50 et 100 combats** ](//github.com/sanjuant/LaCalvBattleLogs#)
+3. [**Filtres pour afficher uniquement les logs de combat de certains types (boss, PvP, ToB, etc.)** ](//github.com/sanjuant/LaCalvBattleLogs#)
+4. [**Bouton pour supprimer les messages indésirables** ](//github.com/sanjuant/LaCalvBattleLogs#)
+5. [**Notification pour les points d'intérêts** ](//github.com/sanjuant/LaCalvBattleLogs#)
+6. [**Changement du format des messages affichés** ](//github.com/sanjuant/LaCalvBattleLogs#)
+7. [**Export au format CSV** ](//github.com/sanjuant/LaCalvBattleLogs#)
+8. [**Disponible sur téléphone avec Kiwi Browser** ](//github.com/sanjuant/LaCalvBattleLogs#)
+
+
+### Enregistrement des combats contre le Boss, des combats en PvP et des combats en ToB
+
+![Screenshot of log Boss](previews/battle_boss.png)
+
+![Screenshot of log PvP](previews/battle_pvp.png)
+
+![Screenshot of log ToB](previews/battle_tob.png)
+
+
+### Résumé des combats enregistrés tous les 10, 50 et 100 combats
+
+![Screenshot of summary PvP](previews/summary_pvp.png)
+
+
+### Filtres pour afficher uniquement les logs de combat de certains types (boss, PvP, ToB, etc.)
+
+![Screenshot of filters](previews/filters.png)
+
+
+### Bouton pour supprimer les messages indésirables
+
+Seuls les messages avec les filtres actifs seront supprimés.
+
+![Screenshot of trash button](previews/trash.png)
+
+
+### Notification pour les points d'intérêts
+
+![Screenshot of worldboss notif](previews/notif_worldboss.png)
+
+![Screenshot of top notif](previews/notif_top.png)
+
+
+### Changement du format des messages affichés
+
+Plusieurs formats d'affichages sont disponibles, normal, court et en liste.
+
+![Screenshot of format button](previews/buttons_format.png)
+
+![Screenshot of format display](previews/formatage.png)
+
+
+### Export au format CSV
+
+Seuls les messages avec les filtres actifs seront exportés.
+
+![Screenshot of csv button](previews/csv.png)
+
+![Screenshot of csv button](previews/csv_preview.png)
+
+
+### Disponible sur téléphone avec Kiwi Browser
+
+Pour une meilleure comptabilité, veillez à créer des applications du jeu LaCalv. Cliquer sur les trois points alignés puis sur "Ajouter à l'écran d'accueil".
+
+![Screenshot to adding app](previews/kiwi_add_app.png)
+
+![Screenshot of phone preview](previews/phone_preview.png)
+
