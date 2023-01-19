@@ -3,8 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @exclude     https://lacalv.fr/m/
-// @version     1.2.4
+// @version     1.3.0
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -140,7 +139,8 @@ const _bl = {
     bl_x100: [],
     bl_filters: FILTERS,
     bl_notif: [],
-    bl_settings:SETTINGS
+    bl_settings:SETTINGS,
+    is_phone: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 }
 
 if (getItemStorage(BL_VERSION) == null) {
@@ -407,20 +407,78 @@ const battleLogsCss = `
         border-left: 1px solid #919191;
         height: 16px;
     }
+    
+    #phone_expand {
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        writing-mode: vertical-rl;
+        transform:rotate(180deg);
+        text-orientation: sideways;
+        cursor: pointer;
+        background-color: #232327;
+        font-size: 16px;
+    }
+    #phone_expand .title {
+        margin-top: auto;
+        text-align: left;
+        padding-bottom: 1em;
+    }
+    
+    @media only screen and (orientation: landscape) and (max-device-width: 854px) {
+        #el_resize {
+            display: none;
+        }
+        .console {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        #btn_side {
+            display: none;
+        }
+
+        .title {
+            /* gauche */
+            /*margin-top: auto;*/
+            /* droite */
+        }
+    }
 `
 
-const gameOut = document.querySelector("body")
-const game = gameOut.querySelector(".game")
+const phoneHtml = `
+    <div class="title">LaCalv Battle Logs</div>
+    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#fff" ><path fill="evenodd" d="M12.79 5.23a.75.75 0 0 1-.02 1.06L8.832 10l3.938 3.71a.75.75 0 1 1-1.04 1.08l-4.5-4.25a.75.75 0 0 1 0-1.08l4.5-4.25a.75.75 0 0 1 1.06.02z" clip-rule="evenodd"/></svg>
+`
 
 const elConsole = document.createElement("div")
-elConsole.style.width = _bl.bl_settings.width
 elConsole.classList.add("console")
 elConsole.classList.add("side-" + _bl.bl_settings.side)
-elConsole.style.height = _bl.bl_settings.expanded ? "100vh" : "36px"
 elConsole.innerHTML = battleLogsHtml
 
-gameOut.appendChild(elConsole)
+const elPhoneExpand = document.createElement("div")
+elPhoneExpand.id = "phone_expand"
+elPhoneExpand.classList.add("header")
+elPhoneExpand.innerHTML = phoneHtml
+elPhoneExpand.addEventListener("click", () => {
+    elConsole.style.display = "flex"
+    elWrapper.scrollTop = elWrapper.scrollHeight;
+})
 
+let gameOut;
+
+const locationHref = (window.location.href.substr(-1) === '/') ? window.location.href.slice(0, -1) : window.location.href;
+if (!_bl.is_phone && (locationHref === "https://lacalv.fr" || locationHref === "https://lacalv.fr/soon")) {
+    elConsole.style.width = _bl.bl_settings.width
+    elConsole.style.height = _bl.bl_settings.expanded ? "100vh" : "36px"
+    gameOut = document.querySelector("body")
+} else if (_bl.is_phone && (locationHref === "https://lacalv.fr/m" || locationHref === "https://lacalv.fr/soon")) {
+    gameOut = document.querySelector("body")
+    gameOut.appendChild(elPhoneExpand)
+}
+
+gameOut.appendChild(elConsole)
 addGlobalStyle(battleLogsCss);
 
 String.prototype.format = function() {
@@ -475,21 +533,22 @@ elResize.addEventListener("mousedown", function (e) {
 
 
 const btnSide = document.getElementById("btn_side")
-const right = '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z" fill="#fff"></path></svg>';
-const left = '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z" fill="#fff"/></svg>';
+const dockRight = '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4C20.8 4 22 5.2 22 6.8v10.5c0 1.5-1.2 2.8-2.8 2.8H4.8C3.2 20 2 18.8 2 17.2V6.8C2 5.2 3.2 4 4.8 4h14.4zM16 18.5h3.3c.7 0 1.2-.6 1.2-1.2V6.8c0-.7-.6-1.2-1.2-1.2H16v12.9zM3.5 6.8v10.5c0 .7.6 1.2 1.2 1.2h9.7v-13H4.8c-.7 0-1.3.6-1.3 1.3z" fill="#fff"></path></svg>';
+const dockLeft = '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.25 4A2.75 2.75 0 0 1 22 6.75v10.5A2.75 2.75 0 0 1 19.25 20H4.75A2.75 2.75 0 0 1 2 17.25V6.75A2.75 2.75 0 0 1 4.75 4ZM8.004 5.5H4.75c-.69 0-1.25.56-1.25 1.25v10.5c0 .69.56 1.25 1.25 1.25h3.254v-13Zm11.246 0H9.504v13h9.746c.69 0 1.25-.56 1.25-1.25V6.75c0-.69-.56-1.25-1.25-1.25Z" fill="#fff"/></svg>';
+const game = gameOut.querySelector(".game")
 if (_bl.bl_settings.side === "right") {
-    btnSide.innerHTML = left;
+    btnSide.innerHTML = dockLeft;
     btnSide.classList.add("side-right")
     btnSide.title = "Ancrer à gauche"
 } else {
-    btnSide.innerHTML = right;
+    btnSide.innerHTML = dockRight;
     btnSide.classList.add("side-left")
     btnSide.title = "Ancrer à droite"
     changeGameSide(game, "right")
 }
 btnSide.addEventListener("click", () => {
     if (elConsole.classList.contains("side-right")) {
-        btnSide.innerHTML = right;
+        btnSide.innerHTML = dockRight;
         elConsole.classList.remove("side-right")
         elConsole.classList.add("side-left")
         elResize.classList.remove("side-right")
@@ -498,7 +557,7 @@ btnSide.addEventListener("click", () => {
         changeGameSide(game, "right")
         setSettingsStorage("side", "left");
     } else {
-        btnSide.innerHTML = left;
+        btnSide.innerHTML = dockLeft;
         elConsole.classList.remove("side-left")
         elConsole.classList.add("side-right")
         elResize.classList.remove("side-left")
@@ -523,21 +582,26 @@ function changeGameSide(game, side)  {
 }
 
 const btnExpand = document.getElementById("btn_expand")
-const down = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
-const up = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
-if (_bl.bl_settings.expanded) {
-    btnExpand.innerHTML = up;
+const chevronDown = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>';
+const chevronUp = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fff" color="#000"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path></svg>';
+const chevronLeft = '<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#fff" ><path fill="evenodd" d="M12.79 5.23a.75.75 0 0 1-.02 1.06L8.832 10l3.938 3.71a.75.75 0 1 1-1.04 1.08l-4.5-4.25a.75.75 0 0 1 0-1.08l4.5-4.25a.75.75 0 0 1 1.06.02z" clip-rule="evenodd"/></svg>';
+if (_bl.is_phone){
+    btnExpand.innerHTML = chevronLeft;
+} else if (_bl.bl_settings.expanded) {
+    btnExpand.innerHTML = chevronUp;
 } else {
-    btnExpand.innerHTML = down;
+    btnExpand.innerHTML = chevronDown;
 }
 btnExpand.addEventListener('click', () => {
-    if (elConsole.style.height === '100vh') {
+    if (_bl.is_phone) {
+        elConsole.style.display = "none"
+    } else if (elConsole.style.height === '100vh') {
         elConsole.style.height = '36px';
-        btnExpand.innerHTML = down;
+        btnExpand.innerHTML = chevronDown;
         setSettingsStorage("expanded", false);
     } else {
         elConsole.style.height = '100vh';
-        btnExpand.innerHTML = up;
+        btnExpand.innerHTML = chevronUp;
         setSettingsStorage("expanded", true);
     }
 });
