@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @version     1.4.0
+// @version     1.4.1
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -1074,8 +1074,8 @@ function formatInfosLogs(infos, key = '') {
         const msgVie = MESSAGES.infos.vie[_bl.bl_settings.format].format(infos.vie)
         messages.push(msgVie)
     }
-    if (infos.soin > 0) {
-        const msgSoin = MESSAGES.infos.soin[_bl.bl_settings.format].format(infos.soin > 1 ? 's' : '', infos.soin)
+    if (infos.soinTotal > 0) {
+        const msgSoin = MESSAGES.infos.soin[_bl.bl_settings.format].format(infos.soinTotal > 1 ? 's' : '', infos.soinTotal)
         messages.push(msgSoin)
     }
     if (infos.esquive > 0) {
@@ -1333,12 +1333,7 @@ function getStatsFromBattle(data) {
         erosion: 0,
         stun: 0,
         esquive: 0,
-        // _force: 0,
-        // _esquive: 0,
         _pv: 0,
-        // _speed: 0,
-        // _defaultDamage: 0,
-        // _speedCalculated: 0,
         _bouclier: 0
     };
     let user = Object.assign({}, statsObject);
@@ -1365,18 +1360,8 @@ function getStatsFromBattle(data) {
     for (let [i, action] of actions.entries()) {
         if (action.u1 && action.u2 && action.m1 && action.m2) {
             if (i === 0) {
-                // user._force = action.u1.force;
-                // opponent._force = action.u2.force;
-                // user._esquive = action.u1.esquive;
-                // opponent._esquive = action.u2.esquive;
                 user._pv = action.u1.pv;
                 opponent._pv = action.u2.pv;
-                // user._speed = action.u1.speed;
-                // opponent._speed = action.u2.speed;
-                // user._defaultDamage = action.u1.defaultDamage;
-                // opponent._defaultDamage = action.u2.defaultDamage;
-                // user._speedCalculated = action.u1.speedCalculated;
-                // opponent._speedCalculated = action.u2.speedCalculated;
                 user._bouclier = action.m1[24];
                 opponent._bouclier = action.m2[24];
             }
@@ -1393,38 +1378,45 @@ function getStatsFromBattle(data) {
             user.vie = action.u1.pv;
             opponent.vie = action.u2.pv;
         }
-        let playerOrOpponent;
+        let currentUser;
         if (action.from === user.name) {
-            playerOrOpponent = user;
+            currentUser = user;
         } else if (action.from === opponent.name) {
-            playerOrOpponent = opponent;
+            currentUser = opponent;
         }
         if (action.data && action.action === 'atk') {
             if (action.from === user.name) user.turn += 1;
-            if (action.data.ublocked) {
-                playerOrOpponent.stun += 1;
-            }
-            if (action.data.oblocked) {
-                playerOrOpponent.esquive += 1;
-            }
+
             if (action.data.dc) {
-                playerOrOpponent.dc += 1;
+                currentUser.dc += 1;
             }
-            playerOrOpponent.vdv += action.data.vdv;
-            playerOrOpponent.dmg += action.data.dmg;
-            playerOrOpponent.erosion += action.data.erosion > 0 ? action.data.erosion : 0; // avoid return null
-            if (playerOrOpponent === user) {
-                opponent.dmgRenvoi += action.data.renvoi;
+            currentUser.vdv += action.data.vdv > 0 ? action.data.vdv : 0;
+            currentUser.dmg += action.data.dmg > 0 ? action.data.dmg : 0;
+            currentUser.erosion += action.data.erosion > 0 ? action.data.erosion : 0;
+            if (currentUser === user) {
+                opponent.dmgRenvoi += action.data.renvoi > 0 ? action.data.renvoi : 0;
+                if (action.data.ublocked) {
+                    opponent.stun += 1;
+                }
+                if (action.data.oblocked) {
+                    opponent.esquive += 1;
+                }
             } else {
-                user.dmgRenvoi += action.data.renvoi;
+                user.dmgRenvoi += action.data.renvoi > 0 ? action.data.renvoi : 0;
+                if (action.data.ublocked) {
+                    user.stun += 1;
+                }
+                if (action.data.oblocked) {
+                    user.esquive += 1;
+                }
             }
         } else if (action.data && action.action === 'poison') {
             if ('pv' in action.data) {
-                playerOrOpponent.dmgPoison += action.data.pv;
+                currentUser.dmgPoison += action.data.pv;
             }
         } else if (action.data && action.action === 'chance') {
             if ('pv' in action.data) {
-                playerOrOpponent.pvRecover += action.data.pv;
+                currentUser.pvRecover += action.data.pv;
             }
         }
     }
