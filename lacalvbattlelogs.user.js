@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @version     1.3.0
+// @version     1.4.0
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -13,9 +13,9 @@
 
 const MESSAGES = {
     "boss": {
-        "normal": "Vous avez causé {0} dommage{1}.",
-        "short": "Dmg:{0}",
-        "list": "Vous avez causé {0} dommage{1}.",
+        "normal": "Vous avez attaqué {0} tour{1}.",
+        "short": "Atq:{0}",
+        "list": "Vous avez attaqué {0} tour{1}.",
     },
     "pvp": {
         "normal": "Vous avez {0}, contre {1}.",
@@ -28,6 +28,11 @@ const MESSAGES = {
         "list": "Vous avez {0} à l'étage {1}.",
     },
     "rewards": {
+        "label": {
+            "normal": "[Récompenses]",
+            "short": "[Récomp.]",
+            "list": "Récompenses :",
+        },
         "elo": {
             "normal": "Elo&nbsp;:&nbsp;{0}",
             "short": "Elo:{0}",
@@ -55,6 +60,21 @@ const MESSAGES = {
         }
     },
     "infos": {
+        "label": {
+            "normal": "[{0}]",
+            "short": "[{0}]",
+            "list": "{0} :",
+        },
+        "label_user": {
+            "normal": "Vous",
+            "short": "Vous",
+            "list": "Joueur",
+        },
+        "label_opponent": {
+            "normal": "Adversaire",
+            "short": "Lui",
+            "list": "Adversaire",
+        },
         "bouclier": {
             "normal": "Bouclier&nbsp;:&nbsp;{0}",
             "short": "Bouc:{0}",
@@ -80,12 +100,22 @@ const MESSAGES = {
             "short": "Stun:{1}",
             "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Stun{0}&nbsp;:&nbsp;{1}",
         },
+        "dc": {
+            "normal": "Double Coup{0}&nbsp;:&nbsp;{1}",
+            "short": "Dc:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Double Coup{0}&nbsp;:&nbsp;{1}",
+        },
+        "dmg": {
+            "normal": "Dommage{0}&nbsp;:&nbsp;{1}",
+            "short": "Dmg:{1}",
+            "list": "&nbsp;&nbsp;&nbsp;&nbsp;- Dommage{0}&nbsp;:&nbsp;{1}",
+        }
     },
     "summary": {
         "boss": {
-            "normal": "Le Boss a subi en moyenne {0} points de dommages lors des {1} derniers combats.",
-            "short": "Boss - Dmg:{0}",
-            "list": "Moyennes des {1} derniers combats Boss :\n&nbsp;&nbsp;&nbsp;&nbsp;- Dommages&nbsp;:&nbsp;{0} ",
+            "normal": "Vous avez attaqué {0} fois le Boss en moyennes lors des {1} derniers combats.",
+            "short": "Boss - Atq:{0}",
+            "list": "Moyennes des {1} derniers combats Boss :\n&nbsp;&nbsp;&nbsp;&nbsp;- Attaques&nbsp;:&nbsp;{0} ",
         },
         "pvp": {
             "normal": "Résultat des {0} derniers combats PvP : Victoire {1}% - Défaite {2}%",
@@ -98,14 +128,14 @@ const MESSAGES = {
             "list": "Moyennes des {0} derniers combats ToB :\n&nbsp;&nbsp;&nbsp;&nbsp;- Victoire&nbsp;:&nbsp;{1}%\n&nbsp;&nbsp;&nbsp;&nbsp;- Défaite&nbsp;:&nbsp;{2}%",
         },
         "rewards": {
-            "normal": "\nRécompenses moyennes - ",
+            "normal": "\n",
             "short": " ",
-            "list": "\nRécompenses moyennes :\n",
+            "list": "\n",
         },
         "infos": {
-            "normal": "\nStatistiques moyennes - ",
+            "normal": "\n",
             "short": " ",
-            "list": "\nStatistiques moyennes :\n",
+            "list": "\n",
         },
     },
     "join": {
@@ -119,7 +149,7 @@ const BL_VERSION = "bl_localstorage_version"
 const BL_BOSS = "bl_boss"
 const BL_PVP = "bl_pvp"
 const BL_TOB = "bl_tob"
-const BL_LOCALSTORAGE_VERSION = 0.8
+const BL_LOCALSTORAGE_VERSION = 0.9
 const BL_FILTERS = "bl_filters"
 const BL_X10 = "bl_x10"
 const BL_X50 = "bl_x50"
@@ -665,25 +695,24 @@ btnSaveToCsv.addEventListener("click", () => {
 const elMessages = document.getElementById("el_messages")
 const elWrapper = document.getElementById("el_wrapper")
 
-function jsonToCsv(jsonData) {
-    jsonData = JSON.parse(jsonData)
-    // Create an empty array to store the rows of the CSV
-    let rows = [];
-    // Create an array of column headers
+function jsonToCsv(data) {
+    data = JSON.parse(data)
+    const rows = [];
+
     let headers = new Set();
-    // Iterate through the JSON data
-    jsonData.forEach(event => {
+    data.forEach(log => {
         // use a recursive function to get all keys
-        getKeys(event, headers)
+        getKeys(log, headers)
     });
     headers = [...headers];
-    jsonData.forEach(event => {
+
+    data.forEach(log => {
         // Create an empty array to store the data for this event
         let row = [];
         // Iterate through all headers
         headers.forEach(header => {
             // use a recursive function to get all values
-            let value = getValue(header, event);
+            let value = getValue(header, log);
             if (value >= 0 || value) {
                 row.push(value);
             }
@@ -696,36 +725,41 @@ function jsonToCsv(jsonData) {
     });
     // Create a string with the CSV data
     let csvContent = headers.join(';') + '\n' + rows.map(row => row.join(';')).join('\n');
-    // Download the CSV file
-    let encodedUri = "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent);
     let link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent));
     let date = new Date()
     date = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0') + '-' + date.getHours().toString().padStart(2, '0') + '-' + date.getMinutes().toString().padStart(2, '0')
     link.setAttribute("download", "lacalvbattlelogs-" + date + ".csv");
     link.click();
 }
 
-function getKeys(obj, headers) {
-    for (let key in obj) {
-        if (Array.isArray(obj[key])) {
-            headers.add(key);
-        } else if (typeof obj[key] === 'object') {
-            getKeys(obj[key], headers);
+function getKeys(log, headers, parentKey = '') {
+    const unwantedKey = ["u.name", "u.result", "o.result"]
+    for (let key in log) {
+        const newKey = parentKey ? `${parentKey.charAt(0)}.${key}` : key;
+        if (unwantedKey.includes(newKey)) continue
+        if (Array.isArray(log[key])) {
+            getKeys(log[key], headers, key);
+        } else if (typeof log[key] === 'object') {
+            getKeys(log[key], headers, key);
         }  else {
-            headers.add(key);
+            headers.add(newKey);
         }
     }
 }
 
-function getValue(key, obj) {
-    for (let objKey in obj) {
-        if (objKey === key) {
-            return obj[objKey];
-        }  else  if (typeof obj[objKey] === 'object') {
-            let value = getValue(key, obj[objKey]);
-            if (null !== value && !Array.isArray(value)) {
-            value = value.toString() }
+function getValue(key, log, parentKey = '') {
+    for (let objKey in log) {
+        const newKey = parentKey ? `${parentKey.charAt(0)}.${objKey}` : objKey;
+        if (newKey === key && parentKey === '') {
+            return log[key].toString();
+        } else if (newKey === key && parentKey !== '') {
+            return log[objKey].toString();
+        }
+
+        if (typeof log[objKey] === 'object') {
+            let value = getValue(key, log[objKey], objKey);
+            if (null !== value && !Array.isArray(value)) { value = value.toString() }
             if (Array.isArray(value) && value.length > 0) {
                 return value;
             }else if (value && value.length > 0 && !Array.isArray(value) ) {
@@ -818,12 +852,13 @@ function appendSummaryLogs(log) {
     }
 }
 
-function appendBossBattle(damages, infos) {
+function appendBossBattle(turn, user, opponent) {
     let battle = {
         "type": "Boss",
         "time": new Date(),
-        "damages": damages,
-        "infos": infos,
+        "turn": turn,
+        "opponent": opponent,
+        "user": user,
     }
     setItemStorage(BL_BOSS, battle)
     appendBossBattleLogs(battle)
@@ -832,15 +867,14 @@ function appendBossBattle(damages, infos) {
     if (_bl.bl_boss.length % 10 === 0) appendSummaryBossLogs(10)
 }
 
-function appendPvpBattle(result, opponent, damages, reward, infos) {
+function appendPvpBattle(result, user, opponent, reward) {
     let battle = {
         "type": "PvP",
         "time": new Date(),
         "result": result,
         "opponent": opponent,
-        "damages": damages,
-        "rewards": reward,
-        "infos": infos,
+        "user": user,
+        "rewards": reward
     }
     setItemStorage(BL_PVP, battle)
     appendPvpBattleLogs(battle)
@@ -849,16 +883,15 @@ function appendPvpBattle(result, opponent, damages, reward, infos) {
     if (_bl.bl_pvp.length % 10 === 0) appendSummaryPvpLogs(10)
 }
 
-function appendTobBattle(result, opponent, damages, reward, infos, stage) {
+function appendTobBattle(result, user, opponent, reward, stage) {
     let battle = {
         "type": "ToB",
         "time": new Date(),
         "stage": stage,
         "result": result,
         "opponent": opponent,
-        "damages": damages,
+        "user": user,
         "rewards": reward,
-        "infos": infos,
     }
     setItemStorage(BL_TOB, battle)
     appendTobBattleLogs(battle)
@@ -871,40 +904,38 @@ function appendNotifBattle(message) {
     let notif = {
         "type": "Notif",
         "time": new Date(),
-        "message": message
+        "message": JSON.stringify(message)
     }
     setItemStorage(BL_NOTIF, notif)
     appendNotifBattleLogs(notif)
 }
 
 function appendBossBattleLogs(log) {
-    let message = MESSAGES.boss[_bl.bl_settings.format].format(log.damages, log.damages > 1 ? 's' : '');
+    let message = MESSAGES.boss[_bl.bl_settings.format].format(log.turn, log.turn > 1 ? 's' : '');
     message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
 function appendSummaryBossLogs(count, log = null) {
     if (null === log) {
-        const averageDamages = Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.damages, 0) / count);
+        const turns = Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.turn, 0) / count);
         log = {
             "type": "x" + count,
             "bl_type": "boss",
             "time": new Date(),
-            "averageDamages": averageDamages,
-            "infos": {
-                "esquive": truncateNumber(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
-                "stun": truncateNumber(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.infos.stun, 0) / count),
-            },
+            "turn": turns,
+            "user": calculateStatistics(_bl.bl_boss, count, "user"),
+            "opponent": calculateStatistics(_bl.bl_boss, count, "opponent")
         }
         setItemStorage("bl_" + log.type, log)
     }
-    let message = MESSAGES.summary.boss[_bl.bl_settings.format].format(log.averageDamages, count);
+    let message = MESSAGES.summary.boss[_bl.bl_settings.format].format(log.turn, count);
     message = concatRewardsAndInfosSummaries(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
 
 function appendPvpBattleLogs(log) {
-    let message = MESSAGES.pvp[_bl.bl_settings.format].format(log.result === "winner" ? "gagné" : "perdu", log.opponent);
+    let message = MESSAGES.pvp[_bl.bl_settings.format].format(log.result === "winner" ? "gagné" : "perdu", log.opponent.name);
     message = concatRewardsAndInfos(message, log)
     appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), message, log.type)
 }
@@ -917,19 +948,9 @@ function appendSummaryPvpLogs(count, log = null) {
             "time": new Date(),
             "win": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100),
             "loose": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100),
-            "rewards": {
-                "elo": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.elo, 0) / count),
-                "alo": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count),
-                "event": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
-                "exp": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
-            },
-            "infos": {
-                "vie": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
-                "bouclier": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
-                "soin": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
-                "esquive": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
-                "stun": truncateNumber(_bl.bl_pvp.slice(-count).reduce((acc, log) => acc + log.infos.stun, 0) / count),
-            },
+            "rewards": calculateStatistics(_bl.bl_pvp, count, "rewards"),
+            "user": calculateStatistics(_bl.bl_pvp, count, "user"),
+            "opponent": calculateStatistics(_bl.bl_pvp, count, "opponent")
         }
         setItemStorage("bl_" + log.type, log)
     }
@@ -952,18 +973,9 @@ function appendSummaryTobLogs(count, log = null) {
             "time": new Date(),
             "win": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "winner" ? 1 : 0), 0) / count * 100),
             "loose": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + (log.result === "looser" ? 1 : 0), 0) / count * 100),
-            "rewards": {
-                "alo": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.alo, 0) / count),
-                "event": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.event, 0) / count),
-                "exp": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.rewards.exp, 0) / count),
-            },
-            "infos": {
-                "vie": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.vie, 0) / count),
-                "bouclier": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.bouclier, 0) / count),
-                "soin": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.soin, 0) / count),
-                "esquive": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.esquive, 0) / count),
-                "stun": truncateNumber(_bl.bl_tob.slice(-count).reduce((acc, log) => acc + log.infos.stun, 0) / count),
-            },
+            "rewards": calculateStatistics(_bl.bl_tob, count, "rewards"),
+            "user": calculateStatistics(_bl.bl_tob, count, "user"),
+            "opponent": calculateStatistics(_bl.bl_tob, count, "opponent")
         }
         setItemStorage("bl_" + log.type, log)
     }
@@ -973,7 +985,7 @@ function appendSummaryTobLogs(count, log = null) {
 }
 
 function appendNotifBattleLogs(log) {
-    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), log.message, log.type)
+    appendMessageToBattleLogs(new Date(log.time).toLocaleTimeString(), JSON.parse(log.message), log.type)
 }
 
 function appendMessageToBattleLogs(time, message, type) {
@@ -996,11 +1008,12 @@ function appendMessageToBattleLogs(time, message, type) {
 
 function concatRewardsAndInfos(message, log) {
     let rewardAndInfos = []
-    if (log.infos) rewardAndInfos.push(formatInfosLogs(log.infos))
     if (log.rewards) rewardAndInfos.push(formatRewardsLogs(log.rewards))
+    if (log.user) rewardAndInfos.push(formatInfosLogs(log.user, "user"))
+    if (log.opponent) rewardAndInfos.push(formatInfosLogs(log.opponent, "opponent"))
     if (rewardAndInfos.length > 0) {
         const join = _bl.bl_settings.format === "normal" ? ' ' : MESSAGES.join[_bl.bl_settings.format]
-        message = message.concat(join, rewardAndInfos.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format]))
+        message = message.concat(join, rewardAndInfos.filter(Boolean).join(join))
     }
     return message
 }
@@ -1009,14 +1022,14 @@ function concatRewardsAndInfosSummaries(message, log) {
     if (log.rewards && (log.rewards.elo > 0 || log.rewards.alo > 0 || log.rewards.event > 0 || log.rewards.exp > 0)) {
         message = message.concat(MESSAGES.summary.rewards[_bl.bl_settings.format], formatRewardsLogs(log.rewards))
     }
-    if (log.infos && (log.infos.vie > 0 || log.infos.bouclier > 0 || log.infos.soin > 0 || log.infos.esquive > 0)) {
-        message = message.concat(MESSAGES.summary.infos[_bl.bl_settings.format], formatInfosLogs(log.infos))
-    }
+    const join = _bl.bl_settings.format === "normal" ? ' ' : MESSAGES.join[_bl.bl_settings.format]
+    message = message.concat(MESSAGES.summary.infos[_bl.bl_settings.format], [formatInfosLogs(log.user, "user"), formatInfosLogs(log.opponent, "opponent")].filter(Boolean).join(join))
     return message
 }
 
 function formatRewardsLogs(rewards) {
     let messages = []
+    let msg =''
     if (rewards.elo > 0 || rewards.elo < 0) {
         const msgElo = MESSAGES.rewards.elo[_bl.bl_settings.format].format(rewards.elo)
         messages.push(msgElo)
@@ -1037,11 +1050,22 @@ function formatRewardsLogs(rewards) {
         const msgItems = MESSAGES.rewards.items[_bl.bl_settings.format].format(rewards.items.length > 1 ? 's' : '', rewards.items.length > 1 ? '[' + rewards.items.join(', ') + ']' : rewards.items.join(', '))
         messages.push(msgItems)
     }
-    return messages.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format])
+    if (messages.length > 0) {
+        messages = messages.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format])
+        const join = _bl.bl_settings.format === "normal" ? '&nbsp;' : MESSAGES.join[_bl.bl_settings.format]
+        msg = MESSAGES.rewards.label[_bl.bl_settings.format]
+        msg = msg.concat(join, messages)
+    }
+    return msg
 }
 
-function formatInfosLogs(infos) {
+function formatInfosLogs(infos, key = '') {
     let messages = []
+    let msg = ''
+    if (infos.dmgTotal > 0) {
+        const msgDamage = MESSAGES.infos.dmg[_bl.bl_settings.format].format(infos.dmgTotal > 1 ? 's' : '', infos.dmgTotal)
+        messages.push(msgDamage)
+    }
     if (infos.bouclier > 0 || infos._bouclier > 0) {
         const msgBouclier = MESSAGES.infos.bouclier[_bl.bl_settings.format].format(infos.bouclier)
         messages.push(msgBouclier)
@@ -1062,7 +1086,28 @@ function formatInfosLogs(infos) {
         const msgStun = MESSAGES.infos.stun[_bl.bl_settings.format].format(infos.stun > 1 ? 's' : '', infos.stun)
         messages.push(msgStun)
     }
-    return messages.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format])
+    if (infos.dc > 0) {
+        const msgStun = MESSAGES.infos.dc[_bl.bl_settings.format].format(infos.dc > 1 ? 's' : '', infos.dc)
+        messages.push(msgStun)
+    }
+    if (messages.length > 0) {
+        messages = messages.filter(Boolean).join(MESSAGES.join[_bl.bl_settings.format])
+        const join = _bl.bl_settings.format === "normal" ? '&nbsp;' : MESSAGES.join[_bl.bl_settings.format]
+        const user = key === "user" ? MESSAGES.infos.label_user[_bl.bl_settings.format] : MESSAGES.infos.label_opponent[_bl.bl_settings.format]
+        msg = MESSAGES.infos.label[_bl.bl_settings.format].format(user)
+        msg = msg.concat(join, messages)
+    }
+    return msg
+}
+
+function calculateStatistics(logs, count, player) {
+    const calculatedStatistics = {};
+    Object.keys(logs[0][player]).forEach(statistic => {
+        if(typeof logs[0][player][statistic] === "number"){
+            calculatedStatistics[statistic] = truncateNumber(logs.slice(-count).reduce((acc, log) => acc + log[player][statistic], 0) / count);
+        }
+    });
+    return calculatedStatistics;
 }
 
 function truncateNumber(number) {
@@ -1157,13 +1202,14 @@ function parseUpdateResponse(xhr) {
 
 function parseBattleWbResponse(xhr) {
     const data = JSON.parse(xhr.response)
-    const {player, opponent} = getStatsFromBattle(data);
-    const infos_wb = {
-        'esquive': player.oblocked,
-        'stun': player.ublocked,
-    }
-
-    appendBossBattle(player.dmg, infos_wb)
+    const {user, opponent} = getStatsFromBattle(data);
+    if (delete opponent.soinTotal < 0) delete opponent.soinTotal
+    if (delete opponent.pvRecover < 0) delete opponent.pvRecover
+    const userTurn = user.turn
+    delete opponent.vie
+    delete opponent._pv
+    delete user.turn
+    appendBossBattle(userTurn, user, opponent)
 }
 
 function parseWbClassementResponse(xhr) {
@@ -1175,25 +1221,18 @@ function parseWbClassementResponse(xhr) {
 
 function parseBattleOpponentResponse(xhr) {
     const data = JSON.parse(xhr.response)
-    const {player, opponent} = getStatsFromBattle(data);
-    const rewards = {'elo': player.result === "winner" ? data.eloUser : -Math.abs(data.eloUser), 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
-    const infos_opponent = {
-        'vie': opponent.pvFinal,
-        'bouclier': opponent.bouclier,
-        'soin': opponent.soinTotal,
-        'esquive': player.oblocked,
-        'stun': player.ublocked,
-        '_pv': opponent._pv,
-        '_bouclier': opponent._bouclier
-    }
-    appendPvpBattle(player.result, opponent.name, player.dmgTotal, rewards, infos_opponent)
+    const {user, opponent} = getStatsFromBattle(data);
+    delete user.turn
+    const rewards = {'elo': user.result === "winner" ? data.eloUser : -Math.abs(data.eloUser), 'alo': data.aloUser, 'exp': data.expUser, 'event': data.event}
+    appendPvpBattle(user.result, user, opponent, rewards)
 }
 
 function parseBattleTobResponse(xhr) {
     const data = JSON.parse(xhr.response)
     const url = new URL(xhr.responseURL)
     const stage = new URLSearchParams(url.search).get('step')
-    const {player, opponent} = getStatsFromBattle(data);
+    const {user, opponent} = getStatsFromBattle(data);
+    delete user.turn
     let itemsWin = [];
     if ('item' in data.rewards) {
         for (const item of data.rewards.item) {
@@ -1205,19 +1244,8 @@ function parseBattleTobResponse(xhr) {
         }
     }
     const rewards = {'alo': data.rewards.alopieces, 'exp': data.expUser, 'event': data.rewards.event, 'items': itemsWin}
-    const infos_opponent = {
-        'vie': opponent.pvFinal,
-        'bouclier': opponent.bouclier,
-        'soin': opponent.soinTotal === -1 ? null : opponent.soinTotal,
-        'esquive': player.oblocked,
-        'stun': player.ublocked,
-        '_pv': opponent._pv,
-        '_bouclier': opponent._bouclier
-    }
-
-    appendTobBattle(player.result, opponent.name, player.dmgTotal, rewards, infos_opponent, stage)
+    appendTobBattle(user.result, user, opponent, rewards, stage)
 }
-
 
 function printNotifs() {
     const reward = getRewardsInNotifs(Update.notifs)
@@ -1240,19 +1268,21 @@ function printWbclassement() {
         for (let i = 0; i < Execution.wbclassement['top'].length; i++) {
             let user = Execution.wbclassement['top'][i];
             msg += "\n";
-            let spacing = 25 - user['pseudoTwitch'].length;
-            msg += `${i + 1} ${i < 9 ? " " : ""} - ${user['pseudoTwitch']} ${user['damage'].toString().padStart(spacing)} dommages`;
+            msg += formatRankingLine(user, i+1);
         }
         msg += "\n";
-        let spacing = 25 - "Vous".length;
-        msg += `${user.classement + 1} ${user.classement.length < 9 ? " " : ""} - Vous ${user.damages.toString().padStart(spacing)} dommages`;
-
+        msg += formatRankingLine(user, user.classement + 1);
         appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
         Execution.wbclassement['user'] = {classement: 0, damages: 0, max: 0};
     }
 }
 
+function formatRankingLine(user, rank) {
+    const pad = (rank).toString().length > 2 ? (rank).toString().length : 2
+    let spacing = 25 - user['pseudoTwitch'].length;
+    return `${(rank).toString().padEnd(pad)} - ${user['pseudoTwitch']} ${user['damage'].toString().padStart(spacing)} dommages`;
+}
 
 setInterval(function () {
     printNotifs()
@@ -1286,12 +1316,11 @@ function minElapsedSinceExecution(dateString) {
     return diffInSeconds / 60;
 }
 
-
 function getStatsFromBattle(data) {
     let statsObject = {
         name: 'Name',
         result: 'null',
-        pvFinal: 0,
+        vie: 0,
         bouclier: 0,
         dmgTotal: 0,
         dmg: 0,
@@ -1300,31 +1329,34 @@ function getStatsFromBattle(data) {
         soinTotal: 0,
         pvRecover: 0,
         vdv: 0,
-        ublocked: 0,
-        oblocked: 0,
-        _force: 0,
-        _esquive: 0,
+        dc: 0,
+        erosion: 0,
+        stun: 0,
+        esquive: 0,
+        // _force: 0,
+        // _esquive: 0,
         _pv: 0,
-        _speed: 0,
-        _defaultDamage: 0,
-        _speedCalculated: 0,
+        // _speed: 0,
+        // _defaultDamage: 0,
+        // _speedCalculated: 0,
         _bouclier: 0
     };
-    let player = Object.assign({}, statsObject);
+    let user = Object.assign({}, statsObject);
+    user.turn = 0
     let opponent = Object.assign({}, statsObject);
     let u = data.user;
     let o = data.opponent;
     let battle = data.battle;
     let actions = battle[0];
-    player.name = u.pseudoTwitch;
+    user.name = u.pseudoTwitch;
     opponent.name = "pseudoTwitch" in o ? o.pseudoTwitch : o.name;
 
     let result = actions[actions.length - 1];
-    if ('winner' in result && 'looser' in result && player.name === result.winner) {
-        player.result = 'winner';
+    if ('winner' in result && 'looser' in result && user.name === result.winner) {
+        user.result = 'winner';
         opponent.result = 'looser';
     } else if ('winner' in result && 'looser' in result) {
-        player.result = 'looser';
+        user.result = 'looser';
         opponent.result = 'winner';
     }
     if ('armeEffect' in o && !(o.armeEffect.id === 'chance' || o.armeEffect.id === 'soin')) {
@@ -1333,53 +1365,58 @@ function getStatsFromBattle(data) {
     for (let [i, action] of actions.entries()) {
         if (action.u1 && action.u2 && action.m1 && action.m2) {
             if (i === 0) {
-                player._force = action.u1.force;
-                opponent._force = action.u2.force;
-                player._esquive = action.u1.esquive;
-                opponent._esquive = action.u2.esquive;
-                player._pv = action.u1.pv;
+                // user._force = action.u1.force;
+                // opponent._force = action.u2.force;
+                // user._esquive = action.u1.esquive;
+                // opponent._esquive = action.u2.esquive;
+                user._pv = action.u1.pv;
                 opponent._pv = action.u2.pv;
-                player._speed = action.u1.speed;
-                opponent._speed = action.u2.speed;
-                player._defaultDamage = action.u1.defaultDamage;
-                opponent._defaultDamage = action.u2.defaultDamage;
-                player._speedCalculated = action.u1.speedCalculated;
-                opponent._speedCalculated = action.u2.speedCalculated;
-                player._bouclier = action.m1[24];
+                // user._speed = action.u1.speed;
+                // opponent._speed = action.u2.speed;
+                // user._defaultDamage = action.u1.defaultDamage;
+                // opponent._defaultDamage = action.u2.defaultDamage;
+                // user._speedCalculated = action.u1.speedCalculated;
+                // opponent._speedCalculated = action.u2.speedCalculated;
+                user._bouclier = action.m1[24];
                 opponent._bouclier = action.m2[24];
             }
         }
         if (action.u1 && action.u2) {
             if (action.u1.modifiers) {
-                player.bouclier = action.u1.modifiers[24];
+                user.bouclier = action.u1.modifiers[24];
             }
             if (action.u2.modifiers) {
                 opponent.bouclier = action.u2.modifiers[24];
             }
-            player.pvFinal = action.u1.pv;
-            opponent.pvFinal = action.u2.pv;
-            player.pvFinal = action.u1.pv;
-            opponent.pvFinal = action.u2.pv;
+            user.vie = action.u1.pv;
+            opponent.vie = action.u2.pv;
+            user.vie = action.u1.pv;
+            opponent.vie = action.u2.pv;
         }
         let playerOrOpponent;
-        if (action.from === player.name) {
-            playerOrOpponent = player;
+        if (action.from === user.name) {
+            playerOrOpponent = user;
         } else if (action.from === opponent.name) {
             playerOrOpponent = opponent;
         }
         if (action.data && action.action === 'atk') {
+            if (action.from === user.name) user.turn += 1;
             if (action.data.ublocked) {
-                playerOrOpponent.ublocked += 1;
+                playerOrOpponent.stun += 1;
             }
             if (action.data.oblocked) {
-                playerOrOpponent.oblocked += 1;
+                playerOrOpponent.esquive += 1;
+            }
+            if (action.data.dc) {
+                playerOrOpponent.dc += 1;
             }
             playerOrOpponent.vdv += action.data.vdv;
             playerOrOpponent.dmg += action.data.dmg;
-            if (playerOrOpponent === player) {
+            playerOrOpponent.erosion += action.data.erosion > 0 ? action.data.erosion : 0; // avoid return null
+            if (playerOrOpponent === user) {
                 opponent.dmgRenvoi += action.data.renvoi;
             } else {
-                player.dmgRenvoi += action.data.renvoi;
+                user.dmgRenvoi += action.data.renvoi;
             }
         } else if (action.data && action.action === 'poison') {
             if ('pv' in action.data) {
@@ -1392,10 +1429,9 @@ function getStatsFromBattle(data) {
         }
     }
 
-    player.dmgTotal = player.dmg + player.dmgRenvoi + player.dmgPoison;
-    player.soinTotal = player.pvRecover + player.vdv;
+    user.dmgTotal = user.dmg + user.dmgRenvoi + user.dmgPoison;
+    user.soinTotal = user.pvRecover + user.vdv
     opponent.dmgTotal = opponent.dmg + opponent.dmgRenvoi + opponent.dmgPoison;
     opponent.soinTotal = opponent.pvRecover + opponent.vdv;
-
-    return {player: player, opponent: opponent};
+    return {user, opponent};
 }
