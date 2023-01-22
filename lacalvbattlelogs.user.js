@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @version     1.4.2
+// @version     1.4.3
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -919,7 +919,7 @@ function appendBossBattleLogs(log) {
 
 function appendSummaryBossLogs(count, log = null) {
     if (null === log) {
-        const turns = Math.floor(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.turn, 0) / count);
+        const turns = truncateNumber(_bl.bl_boss.slice(-count).reduce((acc, log) => acc + log.turn, 0) / count);
         log = {
             "type": "x" + count,
             "bl_type": "boss",
