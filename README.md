@@ -23,7 +23,7 @@ Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce 
 
 ## **LaCalv Battle Logs** ([lacalvbattlelogs.user.js](//github.com/sanjuant/LaCalvBattleLogs/blob/master/lacalvbattlelogs.user.js)) ([Ajouter ce script](//github.com/sanjuant/LaCalvBattleLogs/raw/master/lacalvbattlelogs.user.js))
 
-## Installation sur téléphone
+## Installation sur téléphone ([Tuto PDF](https://raw.githubusercontent.com/sanjuant/LaCalvBattleLogs/master/Android_Installation_LaCalv_Battle_Logs.pdf))
 
 Pour utiliser ce script sur votre téléphone, vous avez besoin d'installer le navigateur [Kiwi Browser](https://play.google.com/store/apps/details?id=com.kiwibrowser.browser).
 Après avoir installé le navigateur, suivez la procédure précédente pour installer [Violentmonkey](https://violentmonkey.github.io/) comme si vous souhaitiez l'installer pour [Google Chrome](https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag).
