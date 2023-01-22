@@ -860,6 +860,7 @@ function appendBossBattle(turn, user, opponent) {
         "opponent": opponent,
         "user": user,
     }
+    battle.user.dmgTotal = battle.user.dmg
     setItemStorage(BL_BOSS, battle)
     appendBossBattleLogs(battle)
     if (_bl.bl_boss.length % 100 === 0) appendSummaryBossLogs(100)
