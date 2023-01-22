@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @version     1.4.1
+// @version     1.4.2
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
