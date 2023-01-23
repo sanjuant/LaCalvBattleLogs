@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @version     1.4.4
+// @version     1.4.5
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -1237,6 +1237,33 @@ function parseBattleTobResponse(xhr) {
     let itemsWin = [];
     if ('item' in data.rewards) {
         for (const item of data.rewards.item) {
+            if (item.count > 1) {
+                itemsWin.push(`${item.value} (x${item.count})`);
+            } else {
+                itemsWin.push(`${item.value}`);
+            }
+        }
+    }
+    if ('object' in data.rewards) {
+        for (const item of data.rewards.object) {
+            if (item.count > 1) {
+                itemsWin.push(`${item.value} (x${item.count})`);
+            } else {
+                itemsWin.push(`${item.value}`);
+            }
+        }
+    }
+    if ('arme' in data.rewards) {
+        for (const item of data.rewards.arme) {
+            if (item.count > 1) {
+                itemsWin.push(`${item.value} (x${item.count})`);
+            } else {
+                itemsWin.push(`${item.value}`);
+            }
+        }
+    }
+    if ('calv' in data.rewards) {
+        for (const item of data.rewards.calv) {
             if (item.count > 1) {
                 itemsWin.push(`${item.value} (x${item.count})`);
             } else {
