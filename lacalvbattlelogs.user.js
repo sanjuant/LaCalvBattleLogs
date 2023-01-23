@@ -3,7 +3,7 @@
 // @author      Sorrow
 // @description Ce script intercepte les réponses et les affiches dans la console LaCalv Battle Log, parsée et formatée de manière à être facilement lisible.
 // @include     https://lacalv.fr/*
-// @version     1.4.5
+// @version     1.4.6
 
 // @homepageURL   https://github.com/sanjuant/LaCalvBattleLogs/
 // @supportURL    https://github.com/sanjuant/LaCalvBattleLogs/issues
@@ -1292,7 +1292,6 @@ function printNotifs() {
 function printWbclassement() {
     if (Update.wb < 0 && Execution.wbclassement.top.length > 0) {
         const user = Execution.wbclassement['user']
-        user.pseudoTwitch = "Vous"
         let msg = "Classement Worldboss {0}/{1} ({2})&nbsp;:".format(user.classement + 1, user.max + 1, Execution.wbclassement.date.toLocaleString("fr-FR"))
         for (let i = 0; i < Execution.wbclassement['top'].length; i++) {
             let user = Execution.wbclassement['top'][i];
@@ -1300,15 +1299,18 @@ function printWbclassement() {
             msg += formatRankingLine(user, i+1);
         }
         msg += "\n";
-        msg += formatRankingLine(user, user.classement + 1);
+        msg += formatRankingLine(user, user.classement + 1, true);
         appendNotifBattle(msg)
         Execution.wbclassement['top'] = [];
         Execution.wbclassement['user'] = {classement: 0, damages: 0, max: 0};
     }
 }
 
-function formatRankingLine(user, rank) {
-
+function formatRankingLine(user, rank, isPlayer=false) {
+    if (isPlayer) {
+        user['pseudoTwitch'] = "Vous"
+        user['damage'] = user['damages']
+    }
     const pad = (rank).toString().length > 2 ? (rank).toString().length : 2
     let spacing = 25 - user['pseudoTwitch'].length;
     return `${(rank).toString().padEnd(pad)} - ${user['pseudoTwitch']} ${user['damage'].toString().padStart(spacing)} dommages`;
