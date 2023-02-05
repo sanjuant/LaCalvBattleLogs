@@ -85,8 +85,7 @@ class BattleLogsUpdate {
     static __internal__addImportantNotifToLog(notifs) {
         notifs.forEach(notif => {
             if (this.__internal__importantNotifs.includes(notif["type"]) && !BattleLogs.Notif.LogsArray.some(log => log.date === notif["date"])) {
-                const notifLog = BattleLogs.Notif.createNotif(notif["text"], notif["date"])
-                BattleLogs.Notif.addLog(notifLog)
+                BattleLogs.Notif.createNotif(notif["text"], notif["date"])
             }
         })
     }

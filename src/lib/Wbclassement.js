@@ -53,8 +53,7 @@ class BattleLogsWbclassement {
      */
     static __internal__addWbClassementToLog() {
         const message = this.__internal__buildWbClassementMessage()
-        const notifLog = BattleLogs.Notif.createNotif(message, this.UpdateDate)
-        BattleLogs.Notif.addLog(notifLog)
+        BattleLogs.Notif.createNotif(message, this.UpdateDate)
     }
 
     /**
