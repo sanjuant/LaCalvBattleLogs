@@ -26,16 +26,6 @@ class BattleLogsNotif {
     }
 
     /**
-     * @desc Add summarize log to battle logs
-     *
-     * @param {object} notif: Notif to append in log
-     */
-    static addLog(notif) {
-        const log = this.__internal__addLog(notif);
-        this.appendMessage(log);
-    }
-
-    /**
      * @desc Append message to battle logs menu
      *
      * @param {Object} log: log to convert in message
@@ -57,7 +47,11 @@ class BattleLogsNotif {
      * @returns player object
      */
     static createNotif(text, date) {
-        return this.__internal__createNotif(text, date)
+        if (this.__internal__minElapsedSinceExecution(date) < 2) {
+            const notif = this.__internal__createNotif(text, date);
+            const log = this.__internal__addLog(notif);
+            this.appendMessage(log);
+        }
     }
 
     /*********************************************************************\
@@ -90,6 +84,22 @@ class BattleLogsNotif {
             text,
             date
         );
+    }
+
+    /**
+     *
+     * @param dateString
+     * @return {number}
+     * @private
+     */
+    static __internal__minElapsedSinceExecution(dateString) {
+        let [datePart, timePart] = dateString.split(" ");
+        let [day, month, year] = datePart.split("/");
+        let [hour, minute] = timePart.split(":");
+        let date = new Date(year, month - 1, day, hour, minute);
+
+        let diffInSeconds = (new Date().getTime() - date.getTime()) / 1000;
+        return diffInSeconds / 60;
     }
 
     /**
