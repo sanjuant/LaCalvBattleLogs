@@ -1,4 +1,5 @@
 # LaCalv Battle Logs
+![visitors](https://visitor-badge.glitch.me/badge?page_id=sanjuant.LaCalvBattleLogs&left_color=grey&right_color=blue)
 
 ![Screenshot of LaCalv Battle Logs script in action](previews/battlelogs.png)
 
