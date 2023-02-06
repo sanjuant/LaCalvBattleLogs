@@ -52,18 +52,21 @@ class BattleLogsWbclassement {
      * @desc Add worldboss classement to log
      */
     static __internal__addWbClassementToLog() {
-        const message = this.__internal__buildWbClassementMessage()
-        BattleLogs.Notif.createNotif(message, this.UpdateDate)
+        const dateString = BattleLogs.Notif.convertDateToStringForLog(this.UpdateDate);
+        const message = this.__internal__buildWbClassementMessage(dateString);
+        BattleLogs.Notif.createNotif(message, dateString);
     }
 
     /**
      * @desc Build message for worldboss classement
      *
+     * @param {string} dateString: time of classement
+     *
      * @return string message
      */
-    static __internal__buildWbClassementMessage() {
+    static __internal__buildWbClassementMessage(dateString) {
         const user = this.__internal__user
-        let message = "Classement Worldboss {0}/{1} ({2})&nbsp;:".format(user.classement + 1, user.max + 1, this.UpdateDate.toLocaleString("fr-FR"))
+        let message = "Classement Worldboss {0}/{1} ({2})&nbsp;:".format(user.classement + 1, user.max + 1, dateString);
         for (let i = 0; i < this.__internal__top.length; i++) {
             let user = this.__internal__top[i];
             message += "\n";

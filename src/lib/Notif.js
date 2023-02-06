@@ -43,7 +43,7 @@ class BattleLogsNotif {
      * @desc Create notif object
      *
      * @param {string} text: Text of notif
-     * @param {Date} date: Date of notif
+     * @param {string} date: Date of notif
      * @returns player object
      */
     static createNotif(text, date) {
@@ -52,6 +52,16 @@ class BattleLogsNotif {
             const log = this.__internal__addLog(notif);
             this.appendMessage(log);
         }
+    }
+
+    /**
+     * @desc Convert date to string format for notif log
+     *
+     * @param {string | date } date: Date to convert in string format
+     * @return String of date
+     */
+    static convertDateToStringForLog(date) {
+        return BattleLogs.Utils.getDate(date).toLocaleString("fr", {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})
     }
 
     /*********************************************************************\
@@ -75,7 +85,7 @@ class BattleLogsNotif {
      * @desc Create notif object
      *
      * @param {string} text: Text of notif
-     * @param {Date} date: Date of notif
+     * @param {string} date: Date of notif
      * @returns player object
      */
     static __internal__createNotif(text, date) {
