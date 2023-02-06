@@ -7,7 +7,7 @@ class BattleLogsUpdate {
     }
 
     static Streaming = false;
-    static Wb = -1;
+    static Wb = -999;
 
     /**
      * @desc Initialize Class
@@ -33,7 +33,7 @@ class BattleLogsUpdate {
             this.Streaming = data["streaming"];
         }
         if (data["wb"]) {
-            this.Wb = data["wb"];
+            this.Wb = BattleLogs.Utils.tryParseInt(data["wb"], -1);
         }
         if (data["player"] && data["player"]["notifs"]) {
             this.__internal__playerNotifs = data["player"]["notifs"];
@@ -50,20 +50,17 @@ class BattleLogsUpdate {
         }
 
         // Play sound when boss is available
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb > 0) {
+        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb >= 0) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
-        } else if (this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
+        } else if (this.Streaming && this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
         } else if (this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.SoundEmitted.bossAvailable = false; // Reset value
         }
 
         // Play sound when boss fight is available
-        if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossAvailable && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
-            && this.Wb > 0
-            && ((BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 290
-                && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300)
-                || BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 300 && BattleLogs.Battlewbtry.Available)
+        if (this.Streaming && this.Wb < 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
+            && (BattleLogs.Battlewbtry.SecRemaining <= 15 || BattleLogs.Battlewbtry.Available)
         ) {
             BattleLogs.Sound.notifWhenBossFightAvailable()
         }
