@@ -52,7 +52,7 @@ class BattleLogsWbclassement {
      * @desc Add worldboss classement to log
      */
     static __internal__addWbClassementToLog() {
-        const dateString = BattleLogs.Notif.convertDateToStringForLog(this.UpdateDate);
+        const dateString = BattleLogs.Utils.getDate(this.UpdateDate).toLocaleString("fr");
         const message = this.__internal__buildWbClassementMessage(dateString);
         BattleLogs.Notif.createNotif(message, dateString);
     }
