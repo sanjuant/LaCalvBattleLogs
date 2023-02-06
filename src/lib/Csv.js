@@ -110,6 +110,8 @@ class BattleLogsCsv {
                 if (header === "time") {
                     value = BattleLogs.Utils.getDate(value).toLocaleString();
                 }
+                // Remove breakline and semicolon
+                value = value.replace(/&nbsp;|;/g, ' ').replace(/\n/g, '|')
                 row.push(value);
             });
             // Add the row of data to the rows array
