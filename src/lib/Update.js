@@ -52,9 +52,9 @@ class BattleLogsUpdate {
         // Play sound when boss is available
         if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb >= 0) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
-        } else if (this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
+        } else if (this.Streaming && this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
-        } else if (this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
+        } else if (this.Streaming && this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.SoundEmitted.bossAvailable = false; // Reset value
         }
 
