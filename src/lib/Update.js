@@ -51,20 +51,28 @@ class BattleLogsUpdate {
 
         // Play sound when boss is available
         if (!BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) && this.Streaming && this.Wb > 0) {
+            // console.log(0)
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
         } else if (this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
+            // console.log(1)
             BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
         } else if (this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
+            // console.log(2)
             BattleLogs.Sound.SoundEmitted.bossAvailable = false; // Reset value
         }
 
+        // console.log("BattleLogs.Sound.SoundEmitted.bossFightAvailable " + BattleLogs.Sound.SoundEmitted.bossFightAvailable)
+        // console.log("BattleLogs.Battlewbtry.Available " + BattleLogs.Battlewbtry.Available)
+        // console.log("BattleLogs.Boss.LastBattle " + BattleLogs.Boss.LastBattle)
+        // console.log("secElapsedBetweenDate " + BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()))
         // Play sound when boss fight is available
-        if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
+        if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossAvailable && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
             && this.Wb > 0
-            && (BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 285
-                && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300
+            && ((BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 285
+                && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300)
                 || BattleLogs.Battlewbtry.Available)
         ) {
+            // console.log(3)
             BattleLogs.Sound.notifWhenBossFightAvailable()
         }
 
