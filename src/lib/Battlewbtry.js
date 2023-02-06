@@ -10,8 +10,8 @@ class BattleLogsBattlewbtry {
      * @param {XMLHttpRequest} xhr: The xhr request
      */
     static parseResponse(xhr) {
-        const data = xhr.response.text();
-        if (!isNaN(parseInt(data))) {
+        const data = xhr.response.toString();
+        if (data === "300") {
             this.Available = false;
         } else if (data === "OK") {
             this.Available = true;
