@@ -31,7 +31,7 @@ class BattleLogsSound {
      * @desc Play sound when boss available
      */
     static notifWhenBossAvailable() {
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) && !this.SoundEmitted.bossAvailable) {
+        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) === "true" && !this.SoundEmitted.bossAvailable) {
             this.SoundEmitted.bossAvailable = true;
             this.__internal__playSound(this.__internal__sounds.gong);
         }
@@ -41,7 +41,7 @@ class BattleLogsSound {
      * @desc Play sound when boss fight available
      */
     static notifWhenBossFightAvailable() {
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) && !this.SoundEmitted.bossFightAvailable) {
+        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) === "true" && !this.SoundEmitted.bossFightAvailable) {
             this.SoundEmitted.bossFightAvailable = true;
             this.__internal__playSound(this.__internal__sounds.bell);
         }
@@ -119,6 +119,6 @@ class BattleLogsSound {
      * @desc Sets the Menu settings default values in the local storage
      */
     static __internal__setDefaultSettingValues() {
-        BattleLogs.Utils.LocalStorage.setDefaultValue(this.Settings.SoundEnable, "false");
+        BattleLogs.Utils.LocalStorage.setDefaultValue(this.Settings.SoundEnable, false);
     }
 }
