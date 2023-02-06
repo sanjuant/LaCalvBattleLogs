@@ -59,7 +59,7 @@ class BattleLogsUpdate {
         }
 
         // Play sound when boss fight is available
-        if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossAvailable
+        if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
             && this.Wb > 0
             && (BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 285
                 && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300
