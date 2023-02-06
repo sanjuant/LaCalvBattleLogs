@@ -2,7 +2,7 @@
  * @class The BattleLogsUpdate regroups the Battlewbtry functionalities
  */
 class BattleLogsBattlewbtry {
-    static Available;
+    static Available = false;
 
     /**
      * @desc Parse XMLHttpRequest response
