@@ -42,7 +42,7 @@ class BattleLogsSound {
      */
     static notifWhenBossFightAvailable() {
         if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) && !this.SoundEmitted.bossFightAvailable) {
-           this.SoundEmitted.bossFightAvailable = true;
+            this.SoundEmitted.bossFightAvailable = true;
             this.__internal__playSound(this.__internal__sounds.bell);
         }
     }
@@ -53,11 +53,11 @@ class BattleLogsSound {
 
     static __internal__sounds = {
         bell: {
-            name:"bell.mp3",
+            name: "bell.mp3",
             volume: 1
         },
         gong: {
-            name:"gong.mp3",
+            name: "gong.mp3",
             volume: 0.6
         },
     }
@@ -67,7 +67,7 @@ class BattleLogsSound {
      * @param {Object} sound:sound to play
      */
     static __internal__playSound(sound) {
-        let audio = new Audio(BattleLogsComponentLoader.__baseUrl + "sounds/"+ sound.name);
+        let audio = new Audio(BattleLogsComponentLoader.__baseUrl + "sounds/" + sound.name);
         audio.volume = sound.volume
         audio.play();
     }
