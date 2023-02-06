@@ -45,7 +45,7 @@ class BattleLogsUpdate {
         this.__internal__addImportantNotifToLog(this.__internal__playerNotifs);
 
         // Run a query to Wbclassement to get the most accurate ranking
-        if (this.Streaming && (BattleLogs.Utils.minElapsedBetweenDate(BattleLogs.Wbclassement.UpdateDate, new Date()) > 3 || BattleLogs.Wbclassement.Remaining < 50000)) {
+        if (this.Streaming && (BattleLogs.Utils.minElapsedBetweenDate(BattleLogs.Wbclassement.UpdateDate, new Date()) > 3 || BattleLogs.Wbclassement.Remaining < 100000)) {
             this.__internal__queryUrl("wbclassement");
         }
 
