@@ -50,18 +50,20 @@ class BattleLogsUpdate {
         }
 
         // Play sound when boss is available
-        if (!BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) && this.Streaming && this.Wb > 0){
-            BattleLogs.Sound.notifWhenBossAvailable()
+        if (!BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) && this.Streaming && this.Wb > 0) {
+            BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
         } else if (this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
-            BattleLogs.Sound.notifWhenBossAvailable()
+            BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
         } else if (this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
-            BattleLogs.Sound.SoundEmitted.bossAvailable = false;
+            BattleLogs.Sound.SoundEmitted.bossAvailable = false; // Reset value
         }
 
         // Play sound when boss fight is available
-        if (this.Streaming
-            && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 285
-            && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300
+        if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossAvailable
+            && this.Wb > 0
+            && (BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 285
+                && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300
+                || BattleLogs.Battlewbtry.Available)
         ) {
             BattleLogs.Sound.notifWhenBossFightAvailable()
         }
@@ -71,8 +73,8 @@ class BattleLogsUpdate {
     }
 
     /*********************************************************************\
-    /***    Internal members, should never be used by other classes    ***\
-    /*********************************************************************/
+     /***    Internal members, should never be used by other classes    ***\
+     /*********************************************************************/
     static __internal__playerNotifs = null;
     static __internal__importantNotifs = ["Boss des Mondes", "Admin"];
     static __internal__nounce = null;
