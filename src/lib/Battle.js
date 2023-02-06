@@ -735,7 +735,7 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementVdv(current, action) {
-        if (action["data"]["vdv"] === 0)
+        if (action["data"]["vdv"])
         if (action["data"]["vdv"]) current.vdv += action["data"]["vdv"];
     }
 
