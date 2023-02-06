@@ -71,6 +71,9 @@ class BattleLogsInterceptor {
         } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
             // console.log("CLASSEMENT")
             BattleLogs.Wbclassement.parseResponse(xhr)
+        } else if (xhr.responseURL === "https://lacalv.fr/play/battlewbtry") {
+            // console.log("BATTLEWBTRY")
+            BattleLogs.Battlewbtry.parseResponse(xhr);
         }
     }
 }

@@ -18,6 +18,7 @@ class BattleLogs
     static Utils = BattleLogsUtils;
     static Csv = BattleLogsCsv;
     static Sound = BattleLogsSound;
+    static Battlewbtry = BattleLogsBattlewbtry;
 
     static InitSteps = class BattleLogsInitSteps
     {
