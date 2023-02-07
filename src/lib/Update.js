@@ -60,7 +60,7 @@ class BattleLogsUpdate {
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
         } else if (this.Streaming && this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
-        } else if (this.Streaming && this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
+        } else if (this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.SoundEmitted.bossAvailable = false; // Reset value
         }
 
@@ -68,7 +68,7 @@ class BattleLogsUpdate {
         if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossAvailable && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
             && this.Wb > 0
             && ((BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 290 && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300)
-                || BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 300 && BattleLogs.Battlewbtry.SecRemaining < 10)
+                || BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 300 && BattleLogs.Battlewbtry.SecRemaining <= 10)
         ) {
             BattleLogs.Sound.notifWhenBossFightAvailable()
         }
