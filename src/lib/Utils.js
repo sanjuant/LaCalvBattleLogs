@@ -40,6 +40,9 @@ class BattleLogsUtils {
     static tryParseInt(str, defaultValue = 0)
     {
         let result = parseInt(str);
+        if (result === 0) {
+            return 0;
+        }
         return isNaN(result) ? defaultValue : result;
     }
 
