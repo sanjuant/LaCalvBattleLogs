@@ -30,10 +30,10 @@ class BattleLogsWbclassement {
         if (this.__internal__top.length > 0 && data["top"]?.length === 0 && BattleLogs.Update.Wb < 0) {
             this.__internal__addWbClassementToLog();
         }
-        if (data["top"]) {
+        if (data["top"]?.length === 0 || data["top"]?.length > 1) {
             this.__internal__top = data["top"];
         }
-        if (data["user"]) {
+        if (data["user"] && data["top"]?.length === 0 || data["top"]?.length > 1) {
             this.__internal__user = data["user"];
         }
         if (data["remaining"]) {
