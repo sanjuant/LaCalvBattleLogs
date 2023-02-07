@@ -2,8 +2,7 @@
  * @class The BattleLogsUpdate regroups the Battlewbtry functionalities
  */
 class BattleLogsBattlewbtry {
-    static Available = false;
-    static SecRemaining = 999;
+    static SecRemaining = Number.MAX_VALUE;
 
     /**
      * @desc Parse XMLHttpRequest response
@@ -12,11 +11,11 @@ class BattleLogsBattlewbtry {
      */
     static parseResponse(xhr) {
         const data = xhr.response.toString();
-        this.SecRemaining = BattleLogs.Utils.tryParseInt(data, 999);
-        if (this.SecRemaining === 999 || BattleLogs.Update.Wb < 0) {
-            this.Available = false;
-        } else if (data === "OK") {
-            this.Available = true;
+        const value = BattleLogs.Utils.tryParseInt(data, -1);
+        if (BattleLogs.Update.Wb < 0) {
+            this.SecRemaining = Number.MAX_VALUE;
+        } else  {
+            this.SecRemaining = value;
         }
     }
 }
