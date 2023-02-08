@@ -25,7 +25,14 @@ class BattleLogsWbclassement {
      * @param {XMLHttpRequest} xhr: The xhr request
      */
     static parseResponse(xhr) {
-        const data = JSON.parse(xhr.response);
+        let data;
+        try {
+            data = JSON.parse(xhr.response);
+            if (typeof data !== "object") return;
+        } catch (e) {
+            return
+        }
+
         if (typeof data !== "object") return;
         if (this.__internal__top.length > 0 && data["top"]?.length === 0 && BattleLogs.Update.Wb < 0) {
             this.__internal__addWbClassementToLog();

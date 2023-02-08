@@ -59,8 +59,14 @@ class BattleLogsPvp {
      * @param {XMLHttpRequest} xhr: The xhr request
      */
     static parseResponse(xhr) {
-        const data = JSON.parse(xhr.response);
-        if (typeof data !== "object") return;
+        let data;
+        try {
+            data = JSON.parse(xhr.response);
+            if (typeof data !== "object") return;
+        } catch (e) {
+            return
+        }
+
         const {
             user,
             opponent,
