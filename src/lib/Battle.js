@@ -549,7 +549,23 @@ class BattleLogsBattle {
 
             // Append section to menu settings
             BattleLogs.Menu.BattleLogsSettings.appendChild(divElem)
+
+            // Set inputs settings
+            this.__internal__setInputsSettings();
         })
+    }
+
+    static __internal__setInputsSettings() {
+        this.__internal__inputsSettings.forEach((input) => {
+            const settings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.BattleSettings);
+            if (input.type === "checkbox") {
+                settings[input.name] = input.checked;
+            } else if (input.type === "color") {
+                settings[input.name] = input.value;
+            }
+            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.BattleSettings, settings);
+            this.__internal__battleSettings = settings;
+        });
     }
 
     /**
@@ -559,16 +575,7 @@ class BattleLogsBattle {
      */
     static __internal__toggleCheckedInput(inputElem) {
         inputElem.onchange = () => {
-            this.__internal__inputsSettings.forEach((input) => {
-                const settings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.BattleSettings);
-                if (input.type === "checkbox") {
-                    settings[input.name] = input.checked;
-                } else if (input.type === "color") {
-                    settings[input.name] = input.value;
-                }
-                BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.BattleSettings, settings);
-                this.__internal__battleSettings = settings;
-            });
+            this.__internal__setInputsSettings();
             this.__internal__updateMessages();
         }
     }
@@ -837,7 +844,7 @@ class BattleLogsBattle {
      * @desc Sets the Menu settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.BattleSettings, {})
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.BattleSettings, {});
     }
 
     /**
