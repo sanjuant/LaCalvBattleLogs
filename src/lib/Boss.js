@@ -61,8 +61,14 @@ class BattleLogsBoss {
      * @param {XMLHttpRequest} xhr: The xhr request
      */
     static parseResponse(xhr) {
-        const data = JSON.parse(xhr.response);
-        if (typeof data !== "object") return;
+        let data;
+        try {
+            data = JSON.parse(xhr.response);
+            if (typeof data !== "object") return;
+        } catch (e) {
+            return
+        }
+
         this.LastBattle = new Date();
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.LastBattle, this.LastBattle)
         BattleLogs.Sound.SoundEmitted.bossFightAvailable = false;

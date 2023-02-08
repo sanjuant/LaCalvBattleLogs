@@ -56,7 +56,7 @@ class BattleLogsUpdate {
         }
 
         // Play sound when boss is available
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb >= 0) {
+        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb > 0) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
         } else if (this.Streaming && this.Wb === 0 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
@@ -74,7 +74,7 @@ class BattleLogsUpdate {
         }
 
         // Set new value streaming to local storage
-        BattleLogs.Utils.LocalStorage.setValue(this.Settings.Streaming, data["streaming"]);
+        BattleLogs.Utils.LocalStorage.setValue(this.Settings.Streaming, this.Streaming);
     }
 
     /*********************************************************************\
