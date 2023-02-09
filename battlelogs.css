@@ -212,7 +212,7 @@
 }
 .messages > p {
     margin: 0;
-    font-family: monospace;
+    font-family: monospace, monaco, Consolas;
     font-size: 13px;
     line-height: 18px;
     padding: 0.2em 0.5em;
