@@ -4,6 +4,7 @@
 class BattleLogsUpdate {
     static Settings = {
         Streaming: "Update-Streaming",
+        DateSoundBossAvailable: "Update-DateSoundBossAvailable"
     }
 
     static Streaming = false;
@@ -18,6 +19,8 @@ class BattleLogsUpdate {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             this.__internal__setDefaultSettingValues();
             this.__internal__playerNotifs = [];
+            // Restore previous session state
+            this.__internal__loadSettingValues();
         }
     }
 
@@ -32,13 +35,13 @@ class BattleLogsUpdate {
             data = JSON.parse(xhr.response);
             if (typeof data !== "object") return;
         } catch (e) {
-            return
+            return;
         }
 
         if (data["streaming"]) {
             this.Streaming = data["streaming"];
         }
-        if (data["wb"]) {
+        if ("wb" in data) {
             this.Wb = BattleLogs.Utils.tryParseInt(data["wb"], -1);
         }
         if (data["player"] && data["player"]["notifs"]) {
@@ -52,15 +55,21 @@ class BattleLogsUpdate {
 
         // Run a query to Wbclassement to get the most accurate ranking
         if (this.Streaming && (BattleLogs.Utils.minElapsedBetweenDate(BattleLogs.Wbclassement.UpdateDate, new Date()) > 3 || BattleLogs.Wbclassement.Remaining < 100000)) {
-            this.__internal__queryUrl("wbclassement");
+            this.__internal__queryUrl("wbclassement", "GET");
         }
 
         // Play sound when boss is available
         if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb > 0) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
         } else if (this.Streaming && this.Wb === -1 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
-            BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
+            if (this.__internal__dateForSoundBossAvailable === null) {
+                this.__internal__dateForSoundBossAvailable = new Date();
+            }
+            if (BattleLogs.Utils.secElapsedBetweenDate(this.__internal__dateForSoundBossAvailable, new Date()) >= 50) {
+                BattleLogs.Sound.notifWhenBossAvailable(); // Boss repop
+            }
         } else if (this.Wb > 0 && BattleLogs.Sound.SoundEmitted.bossAvailable) {
+            this.__internal__dateForSoundBossAvailable = null;
             BattleLogs.Sound.SoundEmitted.bossAvailable = false; // Reset value
         }
 
@@ -70,11 +79,12 @@ class BattleLogsUpdate {
             && ((BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 290 && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300)
                 || BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 300 && BattleLogs.Battlewbtry.SecRemaining <= 10)
         ) {
-            BattleLogs.Sound.notifWhenBossFightAvailable()
+            BattleLogs.Sound.notifWhenBossFightAvailable();
         }
 
         // Set new value streaming to local storage
         BattleLogs.Utils.LocalStorage.setValue(this.Settings.Streaming, this.Streaming);
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.DateSoundBossAvailable, this.__internal__dateForSoundBossAvailable);
     }
 
     /*********************************************************************\
@@ -83,6 +93,7 @@ class BattleLogsUpdate {
     static __internal__playerNotifs = null;
     static __internal__importantNotifs = ["Boss des Mondes", "Admin"];
     static __internal__nounce = null;
+    static __internal__dateForSoundBossAvailable = null;
 
     /**
      * @desc Check notif to find important notif to append to log
@@ -101,16 +112,29 @@ class BattleLogsUpdate {
      * @desc Query url from LaCalv
      *
      * @param {string} url: Url to query
+     * @param {string} method: Http method
      */
-    static __internal__queryUrl(url) {
+    static __internal__queryUrl(url, method = "GET") {
         let request = new XMLHttpRequest();
         request.open(
-            "GET",
+            method,
             "https://lacalv.fr/play/" + url,
             true
         );
         request.setRequestHeader("nounce", this.__internal__nounce);
         request.send();
+    }
+
+    /**
+     * @desc Load the Message settings values stored in the local storage
+     */
+    static __internal__loadSettingValues() {
+        const dateSoundBossAvailable = BattleLogs.Utils.LocalStorage.getComplexValue(
+            this.Settings.DateSoundBossAvailable
+        );
+        if (dateSoundBossAvailable !== null) {
+            this.__internal__dateForSoundBossAvailable = new Date(dateSoundBossAvailable);
+        }
     }
 
     /**
