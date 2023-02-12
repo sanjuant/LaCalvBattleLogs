@@ -20,6 +20,10 @@ class BattleLogsComponentLoader
      */
     static loadFromUrl(baseUrl)
     {
+        // Don't load script on subpage
+        const locationHref = window.location.href.endsWith("/") ? window.location.href.slice(0,-1) : window.location.href;
+        if (locationHref !== "https://lacalv.fr" && locationHref !== "https://lacalv.fr/m" && locationHref !== "https://lacalv.fr/soon") return;
+
         this.__baseUrl = baseUrl;
 
         // From the least dependant, to the most dependent
