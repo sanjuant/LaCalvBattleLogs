@@ -28,11 +28,8 @@ class BattleLogsMenu {
         this.__internal__battleLogsContainer = document.createElement("div");
         this.__internal__battleLogsContainer.id = "battleLogsContainer";
 
-        // Append menu only on main url
-        const locationHref = window.location.href.endsWith("/") ? window.location.href.slice(0,-1) : window.location.href;
-        if (locationHref === "https://lacalv.fr" || locationHref === "https://lacalv.fr/m" || locationHref === "https://lacalv.fr/soon") {
-            document.body.appendChild(this.__internal__battleLogsContainer);
-        }
+        // Append menu
+        document.body.appendChild(this.__internal__battleLogsContainer);
 
         // Set default settings
         this.__internal__setDefaultSettingValues();
