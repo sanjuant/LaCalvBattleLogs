@@ -9,7 +9,7 @@ class BattleLogsTob {
 
     static Messages = {
         normal: "Tu as {0} à l'étage {1}.",
-        short: "Lvl:{1} Rslt:{0}",
+        short: "Etg:{1} Rslt:{0}",
         list: "Tu as {0} à l'étage {1}.",
         summarize: {
             normal: "Victoire {0}%, Défaite {1}%",
