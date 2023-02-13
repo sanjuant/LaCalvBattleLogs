@@ -87,7 +87,7 @@ class BattleLogsRoues {
                 return foundObject;
             }
         }
-        return null;
+        return shortName;
     }
 
     /**
