@@ -120,7 +120,7 @@ class BattleLogsPvp {
      */
     static buildMessage(log, summarize = false) {
         let fragments = [];
-        if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.BattleSettings)["misc-summary"]) {
+        if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"]) {
             if (summarize) {
                 fragments.push(BattleLogs.Summarize.formatResult(this.Messages.summarize[BattleLogs.Message.Settings.Format], log.user.result))
             } else {

@@ -133,6 +133,98 @@ class BattleLogsMenu {
         containingDiv.appendChild(separatorDiv);
     }
 
+    /**
+     * @desc Add settings in battle logs menu
+     *
+     * @param {Object} settings: menu settings to add
+     * @param {Object} ref: object to reference settings
+     * @param {string} type: type of settings
+     */
+    static addSettings(settings, ref, type) {
+        Object.entries(settings).forEach(entry => {
+            const [topKey, values] = entry;
+
+            // Create section for every stats settings
+            const divElem = document.createElement("div");
+            divElem.classList.add("settings-section")
+
+            // Create title
+            const title = document.createElement("h3");
+            title.textContent = values.title
+
+            // Create list
+            const list = document.createElement("ul")
+            Object.entries(values.stats).forEach(value => {
+                const [key, objValue] = value
+                // If stat can be set in settings
+                if (objValue.setting) {
+                    // Create item
+                    const bullet = document.createElement("li")
+                    bullet.classList.add("disable-select")
+
+                    // Create input checkbox
+                    const checkbox = document.createElement("input")
+                    checkbox.id = topKey + '-' + key
+                    checkbox.name = topKey + '-' + key
+                    checkbox.type = objValue.type
+
+                    if (ref !== null && checkbox.name in ref) {
+                        if (checkbox.type === "checkbox") {
+                            checkbox.checked = ref[checkbox.name] ? ref[checkbox.name] : checkbox.checked
+                        } else if (checkbox.type === "color") {
+                            checkbox.value = ref[checkbox.name] ? ref[checkbox.name] : checkbox.value
+                        }
+                    } else {
+                        if (objValue.type === "checkbox") {
+                            checkbox.checked = objValue.display
+                        } else if (objValue.type === "color") {
+                            checkbox.value = objValue.display
+                        }
+                        checkbox.checked = objValue.display
+                        ref[checkbox.name] = objValue.display
+                    }
+                    this.toggleCheckedInput(checkbox, ref)
+                    this.__internal__inputsSettings.push({element:checkbox, type:type})
+
+                    // Create label
+                    const label = document.createElement("label")
+                    label.htmlFor = topKey + '-' + key
+                    label.textContent = objValue.text
+
+                    // Append input and label to item
+                    bullet.appendChild(checkbox)
+                    bullet.appendChild(label)
+
+                    // Append item to list
+                    list.appendChild(bullet)
+                }
+            })
+            // Append title and list to section
+            divElem.appendChild(title)
+            divElem.appendChild(list)
+
+            // Append section to menu settings
+            this.BattleLogsSettings.appendChild(divElem)
+
+            // Set inputs settings
+            this.__internal__setInputsSettings(ref);
+        })
+    }
+
+
+    /**
+     * @desc Add event on settings inputs
+     *
+     * @param {Element} inputElem: The input element to add toggle checked
+     * @param {Object} ref: object to reference settings
+     */
+    static toggleCheckedInput(inputElem, ref) {
+        inputElem.onchange = () => {
+            this.__internal__setInputsSettings(ref);
+            this.__internal__updateMessages();
+        }
+    }
+
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
     /*********************************************************************/
@@ -143,6 +235,34 @@ class BattleLogsMenu {
     static __internal__battleLogsResizeElement = null;
     static __internal__battleLogsDockSideElement = null;
     static __internal__isPhone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    static __internal__inputsSettings = [];
+    static __internal__delayUpdate = null;
+
+    /**
+     * @desc Set input settings value in local storage on update
+     */
+    static __internal__setInputsSettings() {
+        this.__internal__inputsSettings.forEach((input) => {
+            const settings = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs[input.type].Settings.MenuSettings);
+            if (input.element.type === "checkbox") {
+                settings[input.element.name] = input.element.checked;
+            } else if (input.element.type === "color") {
+                settings[input.element.name] = input.element.value;
+            }
+            BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs[input.type].Settings.MenuSettings, settings);
+            BattleLogs[input.type].updateSettings();
+        });
+    }
+
+    /**
+     * @desc Update message and add delay to prevent excessive reload when user toggle filters in settings
+     */
+    static __internal__updateMessages() {
+        clearTimeout(this.__internal__delayUpdate);
+        this.__internal__delayUpdate = setTimeout(function () {
+            BattleLogs.Message.updateMessages()
+        }, 1500);
+    }
 
     /**
      * @desc Add phone element

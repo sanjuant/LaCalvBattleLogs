@@ -123,7 +123,7 @@ class BattleLogsBoss {
      */
     static buildMessage(log, summarize = false) {
         let fragments = [];
-        if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.BattleSettings)["misc-summary"]) {
+        if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"]) {
             if (summarize) {
                 fragments.push(this.Messages.summarize[BattleLogs.Message.Settings.Format].format(log.user.tour, log.user.dmg, log.user.tour > 1 ? "s" : "", log.user.dmg > 1 ? "s" : ""))
             } else {

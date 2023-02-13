@@ -114,9 +114,85 @@ class BattleLogsUtils {
         );
     }
 
+    /**
+     * @desc Decompress zlib data with pako
+     *
+     * @param {string} compressedData: compressed data in b64
+     *
+     * @return object uncompressed
+     */
+    static pakoUncompress(compressedData) {
+        let pako;
+        if (window.pako) {
+            pako = window.pako;
+        } else {
+            return
+        }
+        const binData = this.__internal__base64ToArrayBuffer(compressedData);
+        const data = pako.inflate(binData);
+        const decoded = String.fromCharCode.apply(null, new Uint16Array(data));
+        const decodedUri = decodeURIComponent(decoded)
+        return JSON.parse(decodedUri);
+    }
+
+    /**
+     * @desc Compress data with pako zlib
+     *
+     * @param {Object} dataObj: object to compress
+     *
+     * @return compressed object in b64
+     */
+    static pakoCompress(dataObj) {
+        let pako;
+        if (window.pako) {
+            pako = window.pako;
+        } else {
+            return;
+        }
+        const jsonStringify = JSON.stringify(dataObj)
+        const encodedURIComponent = encodeURIComponent(jsonStringify);
+        const data =  pako.deflate(encodedURIComponent);
+        return this.__internal__arrayBufferToBase64(data);
+    }
+
+
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
     /*********************************************************************/
+
+    /**
+     * @desc Return base64 to array buffer
+     *
+     * @param {string} base64: base64 string
+     *
+     * @return bytes array
+     */
+    static __internal__base64ToArrayBuffer(base64) {
+        let binary_string = window.atob(base64);
+        let len = binary_string.length;
+        let bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        return bytes;
+    }
+
+    /**
+     * @desc Return array buffer to base64
+     *
+     * @param {Array} arrayBuffer: array buffer
+     *
+     * @return base64 binary
+     */
+    static __internal__arrayBufferToBase64(arrayBuffer) {
+        let binary = '';
+        let bytes = new Uint8Array(arrayBuffer);
+        let len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
 
     /**
      * @desc Inject string prototype functions

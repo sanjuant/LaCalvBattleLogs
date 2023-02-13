@@ -56,7 +56,10 @@ class BattleLogsInterceptor {
      * @param {XMLHttpRequest} xhr: The XMLHttpRequest object.
      */
     static __internal__realProcess(xhr) {
-        if (xhr.responseURL === "https://lacalv.fr/play/update") {
+        if (xhr.responseURL === "https://lacalv.fr/play/load") {
+            // console.log("UPDATE")
+            BattleLogs.Load.parseResponse(xhr)
+        } else if (xhr.responseURL === "https://lacalv.fr/play/update") {
             // console.log("UPDATE")
             BattleLogs.Update.parseResponse(xhr)
         } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
@@ -74,6 +77,14 @@ class BattleLogsInterceptor {
         } else if (xhr.responseURL === "https://lacalv.fr/play/battlewb") {
             // console.log("WB")
             BattleLogs.Boss.parseResponse(xhr);
+        } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/roues")) {
+            BattleLogs.Roues.parseResponse(xhr)
+        } else if (xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(c|d|r|re)\?count/)) {
+            BattleLogs.Roues.parseResponse(xhr)
+        } else if (xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(coquille_c|coquille_d|coquille_r|coquille_re)\?count/)) {
+            BattleLogs.Roues.parseResponse(xhr)
+        } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/exclusive")) {
+            BattleLogs.Roues.parseResponse(xhr)
         }
     }
 }

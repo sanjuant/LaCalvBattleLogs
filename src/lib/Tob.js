@@ -120,7 +120,7 @@ class BattleLogsTob {
      */
     static buildMessage(log, summarize = false) {
         let fragments = [];
-        if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.BattleSettings)["misc-summary"]) {
+        if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"]) {
             if (summarize) {
                 fragments.push(BattleLogs.Summarize.formatResult(this.Messages.summarize[BattleLogs.Message.Settings.Format], log.user.result))
             } else {
@@ -152,7 +152,7 @@ class BattleLogsTob {
      * @return Log added
      */
     static __internal__addLog(user, opponent, rewards, stage) {
-        const log = new this.Logs(this.Settings.Type, user, opponent, rewards, stage);
+        const log = new this.Log(this.Settings.Type, user, opponent, rewards, stage);
         this.LogsArray.push(log);
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
 
@@ -169,7 +169,7 @@ class BattleLogsTob {
         );
     }
 
-    static Logs = class {
+    static Log = class {
         constructor(type, user, opponent, rewards, stage) {
             this.type = type;
             this.time = new Date();

@@ -5,6 +5,8 @@ class BattleLogs
 {
     // Aliases on the other classes so every calls in the code can use the `BattleLogs.<Alias>` form
     static Interceptor = BattleLogsInterceptor;
+    static Load = BattleLogsLoad;
+    static Roues = BattleLogsRoues;
     static Update = BattleLogsUpdate;
     static Wbclassement = BattleLogsWbclassement;
     static Boss = BattleLogsBoss;
@@ -55,10 +57,6 @@ class BattleLogs
             // 'BattleLogs' message panel
             this.Message.initialize(initStep);
 
-            // Game components
-            this.Update.initialize(initStep);
-            this.Wbclassement.initialize(initStep);
-
             // Battle components
             this.Battle.initialize(initStep);
             this.Boss.initialize(initStep);
@@ -66,6 +64,11 @@ class BattleLogs
             this.Tob.initialize(initStep);
             this.Summarize.initialize(initStep);
             this.Notif.initialize(initStep);
+
+            // Game components
+            this.Update.initialize(initStep);
+            this.Wbclassement.initialize(initStep);
+            this.Roues.initialize(initStep);
 
             // Additionnal components
             this.Csv.initialize(initStep);

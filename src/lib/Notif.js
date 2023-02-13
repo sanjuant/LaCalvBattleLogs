@@ -35,7 +35,11 @@ class BattleLogsNotif {
         const message = log.message;
         const type = log.type;
         if (BattleLogs.Message.Filters[log.type].enable) {
-            BattleLogs.Message.appendMessage(time, message, type);
+            if (log.logType) {
+                BattleLogs[log.logType].appendMessage(log)
+            } else {
+                BattleLogs.Message.appendMessage(time, message, type);
+            }
         }
     }
 
@@ -44,7 +48,6 @@ class BattleLogsNotif {
      *
      * @param {string} text: Text of notif
      * @param {string} date: Date of notif
-     * @returns player object
      */
     static createNotif(text, date) {
         if (this.__internal__minElapsedSinceExecution(date) < 2) {
@@ -52,6 +55,16 @@ class BattleLogsNotif {
             const log = this.__internal__addLog(notif);
             this.appendMessage(log);
         }
+    }
+
+    /**
+     * @desc Append notif object
+     *
+     * @param {Object} notif: Notif to append
+     */
+    static appendNotif(notif) {
+        const log = this.__internal__addLog(notif);
+        this.appendMessage(log);
     }
 
     /*********************************************************************\
