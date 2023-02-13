@@ -4,7 +4,7 @@
 class BattleLogsBattle {
 
     static Settings = {
-        BattleSettings: "Battle-Settings",
+        MenuSettings: "Battle-Settings",
     };
 
     static Messages = {
@@ -36,8 +36,10 @@ class BattleLogsBattle {
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             this.__internal__setDefaultSettingsValues()
-            this.__internal__battleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.BattleSettings)
-            this.__internal__addSettings();
+            this.__internal__battleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
+            // this.__internal__addSettings();
+            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__battleSettings, "Battle");
+            // BattleLogs.Menu.setInputsSettings(this.Settings.BattleSettings);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
         }
     }
@@ -93,13 +95,13 @@ class BattleLogsBattle {
      * @desc Build message of battle, used in class of log
      *
      * @param {Object} log
-     * @param {Boolean}summarize: Set to true if it's summarize log
+     * @param {Boolean} summarize: Set to true if it's summarize log
      *
      * @returns battle message for battle logs message
      */
     static buildBattleMessage(log, summarize = false) {
         const type = summarize ? log.logType : log.type
-        const displaySummary = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.BattleSettings)["misc-summary"];
+        const displaySummary = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"];
         let fragments = []
 
         const userSpanFragments = [];
@@ -118,7 +120,7 @@ class BattleLogsBattle {
         const uAttrsMessage = this.__internal__convertAttributesToMessage(log.user, uBannedStats);
         if (uAttrsMessage) {
             userSpanFragments.push(uAttrsMessage);
-            userSpan.innerHTML = userSpanFragments.filter(Boolean).join(this.__internal__joiner.stats[BattleLogs.Message.Settings.Format]);
+            userSpan.innerHTML = userSpanFragments.filter(Boolean).join(this.__internal__joiner.labelWithStats[BattleLogs.Message.Settings.Format]);
             fragments.push(userSpan.outerHTML)
         }
 
@@ -139,7 +141,7 @@ class BattleLogsBattle {
         const oAttrsMessage = this.__internal__convertAttributesToMessage(log.opponent, oBannedStats);
         if (oAttrsMessage) {
             opponentSpanFragments.push(oAttrsMessage);
-            opponentSpan.innerHTML = opponentSpanFragments.filter(Boolean).join(this.__internal__joiner.stats[BattleLogs.Message.Settings.Format]);
+            opponentSpan.innerHTML = opponentSpanFragments.filter(Boolean).join(this.__internal__joiner.labelWithStats[BattleLogs.Message.Settings.Format]);
             fragments.push(opponentSpan.outerHTML);
         }
 
@@ -155,7 +157,7 @@ class BattleLogsBattle {
         const rAttrsMessage = this.__internal__convertAttributesToMessage(log.rewards);
         if (rAttrsMessage) {
             rewardsSpanFragments.push(rAttrsMessage);
-            rewardsSpan.innerHTML = rewardsSpanFragments.filter(Boolean).join(this.__internal__joiner.stats[BattleLogs.Message.Settings.Format]);
+            rewardsSpan.innerHTML = rewardsSpanFragments.filter(Boolean).join(this.__internal__joiner.labelWithStats[BattleLogs.Message.Settings.Format]);
             fragments.push(rewardsSpan.outerHTML);
         }
 
@@ -183,13 +185,18 @@ class BattleLogsBattle {
         return this.__internal__createRewards(type)
     }
 
+    /**
+     * @desc Update settings of class
+     */
+    static updateSettings() {
+        this.__internal__battleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
+    }
+
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
     /*********************************************************************/
 
     static __internal__battleSettings = null;
-    static __internal__delayUpdate = null;
-    static __internal__inputsSettings = [];
     static __internal__joiner = {
         stats: {
             normal: ", ",
@@ -445,7 +452,7 @@ class BattleLogsBattle {
         },
         color: {
             name: "Couleur",
-            display: "#64ff64",
+            display: "#ffd064",
             setting: true,
             text: "Couleur des messages",
             type: "color"
@@ -479,107 +486,6 @@ class BattleLogsBattle {
         }
     }
 
-
-    /**
-     * @desc Add settings of battle in battle logs menu
-     */
-    static __internal__addSettings() {
-        const battleSettings = this.__internal__battleSettings
-        Object.entries(this.__internal__menuSettings).forEach(entry => {
-            const [topKey, values] = entry;
-
-            // Create section for every stats settings
-            const divElem = document.createElement("div");
-            divElem.classList.add("settings-section")
-
-            // Create title
-            const title = document.createElement("h3");
-            title.textContent = values.title
-
-            // Create list
-            const list = document.createElement("ul")
-            Object.entries(values.stats).forEach(value => {
-                const [key, objValue] = value
-                // If stat can be set in settings
-                if (objValue.setting) {
-                    // Create item
-                    const bullet = document.createElement("li")
-                    bullet.classList.add("disable-select")
-
-                    // Create input checkbox
-                    const checkbox = document.createElement("input")
-                    checkbox.id = topKey + '-' + key
-                    checkbox.name = topKey + '-' + key
-                    checkbox.type = objValue.type
-
-                    if (battleSettings !== null && checkbox.name in battleSettings) {
-                        if (checkbox.type === "checkbox") {
-                            checkbox.checked = battleSettings[checkbox.name] ? battleSettings[checkbox.name] : checkbox.checked
-                        } else if (checkbox.type === "color") {
-                            checkbox.value = battleSettings[checkbox.name] ? battleSettings[checkbox.name] : checkbox.value
-                        }
-                    } else {
-                        if (objValue.type === "checkbox") {
-                            checkbox.checked = objValue.display
-                        } else if (objValue.type === "color") {
-                            checkbox.value = objValue.display
-                        }
-                        checkbox.checked = objValue.display
-                        battleSettings[checkbox.name] = objValue.display
-                    }
-                    this.__internal__toggleCheckedInput(checkbox)
-                    this.__internal__inputsSettings.push(checkbox)
-
-                    // Create label
-                    const label = document.createElement("label")
-                    label.htmlFor = topKey + '-' + key
-                    label.textContent = objValue.text
-
-                    // Append input and label to item
-                    bullet.appendChild(checkbox)
-                    bullet.appendChild(label)
-
-                    // Append item to list
-                    list.appendChild(bullet)
-                }
-            })
-            // Append title and list to section
-            divElem.appendChild(title)
-            divElem.appendChild(list)
-
-            // Append section to menu settings
-            BattleLogs.Menu.BattleLogsSettings.appendChild(divElem)
-
-            // Set inputs settings
-            this.__internal__setInputsSettings();
-        })
-    }
-
-    static __internal__setInputsSettings() {
-        this.__internal__inputsSettings.forEach((input) => {
-            const settings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.BattleSettings);
-            if (input.type === "checkbox") {
-                settings[input.name] = input.checked;
-            } else if (input.type === "color") {
-                settings[input.name] = input.value;
-            }
-            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.BattleSettings, settings);
-            this.__internal__battleSettings = settings;
-        });
-    }
-
-    /**
-     * @desc Add event on settings inputs
-     *
-     * @param {Element} inputElem: The input element to add toggle checked
-     */
-    static __internal__toggleCheckedInput(inputElem) {
-        inputElem.onchange = () => {
-            this.__internal__setInputsSettings();
-            this.__internal__updateMessages();
-        }
-    }
-
     /**
      * @desc Convert attributes of objects in message
      *
@@ -608,8 +514,22 @@ class BattleLogsBattle {
                 labelSpan.classList.add("normal-stat")
 
                 const valueSpan = document.createElement("span");
-                valueSpan.textContent = value.toString();
-
+                if (Array.isArray(value)) {
+                    let items = []
+                    value.forEach(item => {
+                        if (typeof item === "string") {
+                            items.push(item)
+                        } else {
+                            const objectSpan = document.createElement("span");
+                            objectSpan.classList.add("rarity-" + item.rarity);
+                            objectSpan.textContent = item.count > 1 ? `${item.name} (x${item.count})` : item.name;
+                            items.push(objectSpan.outerHTML)
+                        }
+                    })
+                    valueSpan.innerHTML = items.join(', ');
+                } else {
+                    valueSpan.textContent = value.toString();
+                }
                 stats.push(this.Messages[BattleLogs.Message.Settings.Format].stat.format(labelSpan.outerHTML, valueSpan.outerHTML));
             }
         })
@@ -650,15 +570,7 @@ class BattleLogsBattle {
             if (dataRewards["event"]) {
                 rewards.event = dataRewards["event"]
             }
-            //TODO: Use /play/load?raw=true to map shortname to name
-            const rewardsType = ['item', 'object', 'arme', 'calv'];
-            for (const type of rewardsType) {
-                if (type in dataRewards) {
-                    for (const item of dataRewards[type]) {
-                        rewards.items.push(item.count > 1 ? `${item.value} (x${item.count})` : `${item.value}`);
-                    }
-                }
-            }
+            rewards.items = this.__internal__createRewardItems(dataRewards);
         } else {
             if (data["aloUser"]) {
                 rewards.alo = data["aloUser"]
@@ -673,6 +585,38 @@ class BattleLogsBattle {
         if (data["expUser"]) {
             rewards.exp = data["expUser"]
         }
+    }
+
+    /**
+     * @desc Create rewards of battle
+     *
+     * @param {Object} dataRewards: Rewards of battle
+     *
+     * @return rewards of battle
+     */
+    static __internal__createRewardItems(dataRewards) {
+        const rewardsType = {
+            item: {class: "Load"},
+            arme: {class: "Load"},
+            calv: {class: "Load"},
+            object: {class: "Roues"}
+        };
+        let items = [];
+        for (const type of Object.keys(rewardsType)) {
+            if (type in dataRewards) {
+                for (const item of dataRewards[type]) {
+                    const object = BattleLogs[rewardsType[type]["class"]].getObjectByShortName(item.value);
+                    let existingItem = items.find(i => i.name === object["name"]);
+                    if (existingItem === undefined) {
+                        items.push({name: object["name"], count: item.count, rarity: object["rarity"], type:type});
+                    } else {
+                        existingItem.count += 1
+                    }
+                }
+            }
+        }
+
+        return items;
     }
 
     /**
@@ -831,20 +775,10 @@ class BattleLogsBattle {
     }
 
     /**
-     * @desc Update message and add delay to prevent excessive reload when user toggle filters in settings
-     */
-    static __internal__updateMessages() {
-        clearTimeout(this.__internal__delayUpdate);
-        this.__internal__delayUpdate = setTimeout(function () {
-            BattleLogs.Message.updateMessages()
-        }, 1500);
-    }
-
-    /**
      * @desc Sets the Menu settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.BattleSettings, {});
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.MenuSettings, {});
     }
 
     /**

@@ -251,7 +251,10 @@
     font-weight: bold;
     text-transform: uppercase;
 }
-.short-label {}
+.short-label {
+    font-weight: bold;
+    text-transform: uppercase;
+}
 .list-label {
     font-size: 13px;
     font-weight: bold;
@@ -315,6 +318,39 @@ button.selected {
     -webkit-user-select: none;
     -ms-user-select: none;
 }
+
+/********************/
+/* Objects colors   */
+/********************/
+.rarity-0 {
+    color: #b9b8b8;
+    font-weight: bold;
+}
+.rarity-1 {
+    color: #9be98f;
+    font-weight: bold;
+}
+.rarity-2 {
+    color: #629ce9;
+    font-weight: bold;
+}
+.rarity-3 {
+    color: #eb9ce9;
+    font-weight: bold;
+}
+.rarity-4 {
+    color: #ebdd54;
+    font-weight: bold;
+}
+.rarity-5 {
+    color: #ea5a54;
+    font-weight: bold;
+}
+.rarity-6 {
+    color: #3fc4cf;
+    font-weight: bold;
+}
+
 
 /********************/
 /* SVG icons        */

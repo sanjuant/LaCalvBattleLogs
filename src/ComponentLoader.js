@@ -31,6 +31,8 @@ class BattleLogsComponentLoader
 
         this.__loadingOrder += 1;
         this.__addScript("src/lib/Interceptor.js");
+        this.__addScript("src/lib/Load.js");
+        this.__addScript("src/lib/Roues.js");
         this.__addScript("src/lib/Update.js");
         this.__addScript("src/lib/Wbclassement.js");
         this.__addScript("src/lib/Boss.js");

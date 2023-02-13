@@ -156,14 +156,17 @@ class BattleLogsCsv {
             if (newKey === headerKey && parentKey === '') {
                 return log[headerKey] === null ? "" : log[headerKey].toString();
             } else if (newKey === headerKey && parentKey !== '') {
+                if (BattleLogs.Utils.isArray(log[key]) && log[key].length > 0) {
+                    return JSON.stringify(log[key])
+                } else if (BattleLogs.Utils.isObject(log[key])){
+                    return JSON.stringify(log[key])
+                }
                 return log[key] === null ? "" : log[key].toString();
             }
 
             if (BattleLogs.Utils.isObject(log[key])) {
                 let value = this.__internal__getValue(headerKey, log[key], key);
-                if (BattleLogs.Utils.isArray(value) && value.length > 0) {
-                    return value.join(" | ");
-                } else if (value) {
+                if (value) {
                     return value.toString();
                 }
             }
