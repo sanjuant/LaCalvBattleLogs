@@ -43,7 +43,7 @@ class BattleLogsLoad {
                 return foundObject;
             }
         }
-        return null;
+        return shortName;
     }
 
     /*********************************************************************\
