@@ -34,13 +34,13 @@ class BattleLogsWbclassement {
         }
 
         if (typeof data !== "object") return;
-        if (this.__internal__top.length > 0 && data["top"]?.length === 0 && BattleLogs.Update.Wb < 0) {
+        if (this.__internal__top.length > 0 && data["top"]?.length < this.__internal__top.length && BattleLogs.Update.Wb < 0) {
             this.__internal__addWbClassementToLog();
         }
-        if (data["top"]?.length === 0 || data["top"]?.length > 1) {
+        if (data["top"]) {
             this.__internal__top = data["top"];
         }
-        if (data["user"] && data["top"]?.length === 0 || data["top"]?.length > 1) {
+        if (data["user"]) {
             this.__internal__user = data["user"];
         }
         if (data["remaining"]) {
