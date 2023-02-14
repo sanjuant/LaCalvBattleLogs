@@ -59,7 +59,7 @@ class BattleLogsUpdate {
         }
 
         // Play sound when boss is available
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb > 0) {
+        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.Streaming) === "false" && this.Streaming && this.Wb >= 0) {
             BattleLogs.Sound.notifWhenBossAvailable(); // Streaming starting
         } else if (this.Streaming && this.Wb === -1 && !BattleLogs.Sound.SoundEmitted.bossAvailable) {
             if (this.__internal__dateForSoundBossAvailable === null) {
