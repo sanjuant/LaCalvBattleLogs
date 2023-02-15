@@ -605,7 +605,10 @@ class BattleLogsBattle {
         for (const type of Object.keys(rewardsType)) {
             if (type in dataRewards) {
                 for (const item of dataRewards[type]) {
-                    const object = BattleLogs[rewardsType[type]["class"]].getObjectByShortName(item.value);
+                    let object = BattleLogs[rewardsType[type]["class"]].getObjectByShortName(item.value);
+                    if (typeof object === "string"){
+                        object = {name: item.value, count: item.count, rarity: -1, type:type};
+                    }
                     let existingItem = items.find(i => i.name === object["name"]);
                     if (existingItem === undefined) {
                         items.push({name: object["name"], count: item.count, rarity: object["rarity"], type:type});
