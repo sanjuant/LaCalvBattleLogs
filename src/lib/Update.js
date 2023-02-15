@@ -38,6 +38,14 @@ class BattleLogsUpdate {
             return;
         }
 
+        // Set roues and load if not loaded
+        if (!BattleLogs.Roues.hasLoaded()) {
+            BattleLogs.Update.queryUrl("roues", "GET")
+        }
+        if (!BattleLogs.Load.hasLoaded()) {
+            BattleLogs.Update.queryUrl("load", "GET")
+        }
+
         if (data["streaming"]) {
             this.Streaming = data["streaming"];
         }
@@ -55,7 +63,7 @@ class BattleLogsUpdate {
 
         // Run a query to Wbclassement to get the most accurate ranking
         if (this.Streaming && (BattleLogs.Utils.minElapsedBetweenDate(BattleLogs.Wbclassement.UpdateDate, new Date()) > 3 || BattleLogs.Wbclassement.Remaining < 100000)) {
-            this.__internal__queryUrl("wbclassement", "GET");
+            this.queryUrl("wbclassement", "GET");
         }
 
         // Play sound when boss is available
@@ -87,6 +95,23 @@ class BattleLogsUpdate {
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.DateSoundBossAvailable, this.__internal__dateForSoundBossAvailable);
     }
 
+    /**
+     * @desc Query url from LaCalv
+     *
+     * @param {string} url: Url to query
+     * @param {string} method: Http method
+     */
+    static queryUrl(url, method = "GET") {
+        let request = new XMLHttpRequest();
+        request.open(
+            method,
+            "https://lacalv.fr/play/" + url,
+            true
+        );
+        request.setRequestHeader("nounce", this.__internal__nounce);
+        request.send();
+    }
+
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
@@ -106,23 +131,6 @@ class BattleLogsUpdate {
                 BattleLogs.Notif.createNotif(notif["text"], notif["date"])
             }
         })
-    }
-
-    /**
-     * @desc Query url from LaCalv
-     *
-     * @param {string} url: Url to query
-     * @param {string} method: Http method
-     */
-    static __internal__queryUrl(url, method = "GET") {
-        let request = new XMLHttpRequest();
-        request.open(
-            method,
-            "https://lacalv.fr/play/" + url,
-            true
-        );
-        request.setRequestHeader("nounce", this.__internal__nounce);
-        request.send();
     }
 
     /**

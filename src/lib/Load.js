@@ -46,6 +46,24 @@ class BattleLogsLoad {
         return shortName;
     }
 
+    /**
+     * @desc Return true if load has loaded
+     *
+     * @return true if load objects has loaded else false
+     */
+    static hasLoaded() {
+        if (this.__internal__items.length === 0) {
+            return false;
+        }
+        if (this.__internal__armes.length === 0) {
+            return false;
+        }
+        if (this.__internal__calvs.length === 0) {
+            return false;
+        }
+        return true;
+    }
+
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
