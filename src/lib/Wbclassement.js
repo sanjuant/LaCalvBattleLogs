@@ -12,7 +12,7 @@ class BattleLogsWbclassement {
      */
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
-            this.__internal__top = [{damage: -1, pseudoTwitch: "Name", tours: 0}];
+            this.__internal__top = [];
             this.__internal__user = {classement: -1, damages: 0, max: 0};
             this.UpdateDate = new Date();
             this.Remaining = Number.MAX_SAFE_INTEGER;
@@ -36,7 +36,11 @@ class BattleLogsWbclassement {
         // Check user, top is is lower and remaining upper previous value
         let firstUserDamageHasReduce;
         if (data["top"][0]) {
-            firstUserDamageHasReduce = data["top"][0]["damage"] < this.__internal__top[0]["damage"];
+            if (this.__internal__top[0]) {
+                firstUserDamageHasReduce = data["top"][0]["damage"] < this.__internal__top[0]["damage"];
+            } else {
+                firstUserDamageHasReduce = false;
+            }
         } else {
             firstUserDamageHasReduce = true;
         }
