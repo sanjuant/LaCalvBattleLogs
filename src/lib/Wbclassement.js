@@ -12,7 +12,7 @@ class BattleLogsWbclassement {
      */
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
-            this.__internal__top = [];
+            this.__internal__top = [{damage: -1, pseudoTwitch: "Name", tours: 0}];
             this.__internal__user = {classement: -1, damages: 0, max: 0};
             this.UpdateDate = new Date();
             this.Remaining = Number.MAX_SAFE_INTEGER;
@@ -33,20 +33,47 @@ class BattleLogsWbclassement {
             return
         }
 
-        if (typeof data !== "object") return;
-        if (this.__internal__top.length > 0 && data["top"]?.length < this.__internal__top.length && BattleLogs.Update.Wb < 0) {
-            this.__internal__addWbClassementToLog();
+        // Check user, top is is lower and remaining upper previous value
+        let firstUserDamageHasReduce;
+        if (data["top"][0]) {
+            firstUserDamageHasReduce = data["top"][0]["damage"] < this.__internal__top[0]["damage"];
+        } else {
+            firstUserDamageHasReduce = true;
         }
-        if (data["top"]) {
+
+        let playerDamageHasReduce = false;
+        if (data["user"]) {
+            playerDamageHasReduce = data["user"]["damages"] < this.__internal__user["damages"];
+        }
+
+        let bossHealthRemainingHasIncreased = false;
+        if (data["remaining"]) {
+            bossHealthRemainingHasIncreased = data["remaining"] > this.Remaining;
+        }
+
+        if (firstUserDamageHasReduce && playerDamageHasReduce && bossHealthRemainingHasIncreased && !this.__internal__WbclassementPrinted) {
+            this.__internal__addWbClassementToLog();
+            this.__internal__WbclassementPrinted = true;
+        }
+
+        // If wbclassement has printed, set lowers values
+        if (data["top"] && !firstUserDamageHasReduce || this.__internal__WbclassementPrinted) {
             this.__internal__top = data["top"];
         }
-        if (data["user"]) {
+        if (data["user"] && !playerDamageHasReduce || this.__internal__WbclassementPrinted) {
             this.__internal__user = data["user"];
         }
-        if (data["remaining"]) {
+        if (data["remaining"] && !bossHealthRemainingHasIncreased || this.__internal__WbclassementPrinted) {
             this.Remaining = data["remaining"];
         }
-        this.UpdateDate = new Date();
+
+        if (this.__internal__WbclassementPrinted) {
+            this.__internal__WbclassementPrinted = false;
+        }
+
+        if (!firstUserDamageHasReduce && !playerDamageHasReduce && !bossHealthRemainingHasIncreased) {
+            this.UpdateDate = new Date();
+        }
     }
 
     /*********************************************************************\
@@ -54,6 +81,7 @@ class BattleLogsWbclassement {
      /*********************************************************************/
     static __internal__top = null;
     static __internal__user = null;
+    static __internal__WbclassementPrinted = false;
 
     /**
      * @desc Add worldboss classement to log
