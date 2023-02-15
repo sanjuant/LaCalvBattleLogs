@@ -29,7 +29,6 @@ class BattleLogsRoues {
             this.__internal__setDefaultSettingsValues()
             this.__internal__rouesSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
             BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__rouesSettings, "Roues");
-
         }
     }
 
@@ -108,6 +107,18 @@ class BattleLogsRoues {
             const message = this.__internal__buildRouesMessage(log);
             BattleLogs.Message.appendMessage(time, message, log.type);
         }
+    }
+
+    /**
+     * @desc Return true if roues has loaded
+     *
+     * @return true if roues objects has loaded else false
+     */
+    static hasLoaded() {
+        if (this.__internal__roues.length === 0) {
+            return false;
+        }
+        return true;
     }
 
     /*********************************************************************\
