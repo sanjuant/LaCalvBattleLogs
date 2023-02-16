@@ -51,7 +51,7 @@ class BattleLogsWbclassement {
         }
 
         let bossHealthRemainingHasIncreased = false;
-        if (data["remaining"]) {
+        if (data["remaining"] && BattleLogs.Update.Wb >= 0) {
             bossHealthRemainingHasIncreased = data["remaining"] > this.Remaining;
         }
 
