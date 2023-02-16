@@ -177,11 +177,15 @@ class BattleLogsRoues {
      * @param {Number} count: Count of roue
      * @param {string} short: Short name of roue
      * @param {Array} dataItems: Array of items
-     * @param {Array} rouesType: Type of roue
+     * @param {string} rouesType: Type of roue
      *
      */
     static __internal__addRouesToLog(count, short, dataItems, rouesType) {
         const itemsArray = this.__internal__createRewardItemsArray(dataItems);
+        const isCoquille = rouesType === "coquille";
+        const verb = isCoquille ? "cassé" : "ouvert";
+        count = isCoquille ? count * 100 : count;
+
         let name;
         if (short === "exclusive") {
             name = rouesType
@@ -194,9 +198,7 @@ class BattleLogsRoues {
                 name = name.split(" ")[0] + "s " + name.split(" ")[1] + "s";
             }
         }
-        const isCoquille = rouesType === "coquille";
-        const verb = isCoquille ? "cassé" : "ouvert";
-        count = isCoquille ? count * 100 : count;
+
         const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, this.Messages[BattleLogs.Message.Settings.Format].format(count, name, verb), itemsArray, rouesType);
         BattleLogs.Notif.appendNotif(log);
     }
