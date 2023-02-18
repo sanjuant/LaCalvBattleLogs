@@ -163,7 +163,7 @@ class BattleLogsRoues {
         },
         labelWithItems: {
             normal: " ",
-            short: " ",
+            short: ":",
             list: " : \n"
         },
         normal: " ",
@@ -199,7 +199,9 @@ class BattleLogsRoues {
             }
         }
 
-        const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, this.Messages[BattleLogs.Message.Settings.Format].format(count, name, verb), itemsArray, rouesType);
+        const message = "{0}|{1}|{2}".format(count, name, verb);
+
+        const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray, rouesType);
         BattleLogs.Notif.appendNotif(log);
     }
 
@@ -214,7 +216,16 @@ class BattleLogsRoues {
         const groups = this.__internal__groupItemsByType(log.rewards.items);
         const fragments = [];
 
-        fragments.push(log.message)
+        if (log.message.includes("|")) {
+            fragments.push(this.Messages[BattleLogs.Message.Settings.Format].format(
+                log.message.split("|")[0].trim(),
+                log.message.split("|")[1].trim(),
+                log.message.split("|")[2].trim())
+            );
+        } else {
+            fragments.push(log.message);
+        }
+
         const rouesSpan = document.createElement("span");
         for (const group in groups) {
             const rouesSpanFragments = [];
@@ -240,7 +251,7 @@ class BattleLogsRoues {
 
         rouesSpan.innerHTML = fragments.join(this.__internal__joiner[BattleLogs.Message.Settings.Format]);
 
-        return rouesSpan.outerHTML
+        return rouesSpan.outerHTML;
     }
 
     /**
