@@ -46,7 +46,7 @@ class BattleLogsUpdate {
             BattleLogs.Update.queryUrl("load", "GET")
         }
 
-        if (data["streaming"]) {
+        if ("streaming" in data) {
             this.Streaming = data["streaming"];
         }
         if ("wb" in data) {
