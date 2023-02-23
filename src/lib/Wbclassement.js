@@ -35,7 +35,7 @@ class BattleLogsWbclassement {
 
         // Check user, top is is lower and remaining upper previous value
         let firstUserDamageHasReduce;
-        if (data["top"][0]) {
+        if ("top" in data && data["top"].length > 0) {
             if (this.__internal__top[0]) {
                 firstUserDamageHasReduce = data["top"][0]["damage"] < this.__internal__top[0]["damage"];
             } else {
@@ -51,7 +51,7 @@ class BattleLogsWbclassement {
         }
 
         let bossHealthRemainingHasIncreased = false;
-        if (data["remaining"] && BattleLogs.Update.Wb >= 0) {
+        if (data["remaining"]) {
             bossHealthRemainingHasIncreased = data["remaining"] > this.Remaining;
         }
 
@@ -67,7 +67,7 @@ class BattleLogsWbclassement {
         if (data["user"] && !playerDamageHasReduce || this.__internal__WbclassementPrinted) {
             this.__internal__user = data["user"];
         }
-        if (data["remaining"] && !bossHealthRemainingHasIncreased || this.__internal__WbclassementPrinted) {
+        if (data["remaining"] && (!bossHealthRemainingHasIncreased || BattleLogs.Update.Wb < 0) || this.__internal__WbclassementPrinted) {
             this.Remaining = data["remaining"];
         }
 
