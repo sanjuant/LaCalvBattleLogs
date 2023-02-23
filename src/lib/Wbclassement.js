@@ -75,7 +75,7 @@ class BattleLogsWbclassement {
             this.__internal__WbclassementPrinted = false;
         }
 
-        if (!firstUserDamageHasReduce && !playerDamageHasReduce && !bossHealthRemainingHasIncreased) {
+        if (!firstUserDamageHasReduce && !playerDamageHasReduce && (!bossHealthRemainingHasIncreased || BattleLogs.Update.Wb < 0)) {
             this.UpdateDate = new Date();
         }
     }
