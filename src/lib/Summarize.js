@@ -75,11 +75,10 @@ class BattleLogsSummarize {
      * @param {Object} log: log to convert in message
      */
     static appendMessage(log) {
-        const time = BattleLogs.Utils.getDate(log.time).toLocaleTimeString();
         const message = BattleLogs[log.logType].buildMessage(log, true);
         const type = log.logType + " " + log.type;
         if (BattleLogs.Message.Filters[log.type].enable) {
-            BattleLogs.Message.appendMessage(time, message, type);
+            BattleLogs.Message.appendMessage( message, type, log);
         }
     }
 
@@ -204,7 +203,7 @@ class BattleLogsSummarize {
     static Log = class {
         constructor(type, logType, user, opponent, rewards) {
             this.type = type;
-            this.time = new Date();
+            this.time = new Date().toISOString();
             this.user = user;
             this.opponent = opponent;
             this.rewards = rewards;

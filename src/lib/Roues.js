@@ -103,9 +103,8 @@ class BattleLogsRoues {
      */
     static appendMessage(log) {
         if (this.__internal__rouesSettings["display-" + log.rouesType]) {
-            const time = BattleLogs.Utils.getDate(log.time).toLocaleTimeString();
             const message = this.__internal__buildRouesMessage(log);
-            BattleLogs.Message.appendMessage(time, message, log.type);
+            BattleLogs.Message.appendMessage(message, log.type, log);
         }
     }
 
@@ -302,7 +301,7 @@ class BattleLogsRoues {
     static Log = class {
         constructor(type, logType, message, items, roueType) {
             this.type = type;
-            this.time = new Date();
+            this.time = new Date().toISOString();
             this.message = message;
             this.rewards = {items: items};
             this.logType = logType;

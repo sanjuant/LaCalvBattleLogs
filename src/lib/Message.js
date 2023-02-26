@@ -76,18 +76,20 @@ class BattleLogsMessage {
     /**
      * @desc Append message to battle logs wrapper
      *
-     * @param {string} time: Time displayed for message
      * @param {string} message: Message to append
      * @param {string} type: Type of message displayed
+     * @param {Object} log: Object of log to get information
      */
-    static appendMessage(time, message, type) {
+    static appendMessage(message, type, log) {
         // Create p element to group spans
         const pElem = document.createElement("p");
+        pElem.dataset.time = BattleLogs.Utils.getDateString(log.time);
+        pElem.dataset.type = log.type;
 
         // Create span element for time
         const spanTimeEl = document.createElement("span");
         spanTimeEl.classList.add("time");
-        spanTimeEl.innerHTML = time;
+        spanTimeEl.innerHTML = BattleLogs.Utils.getDateObject(log.time).toLocaleTimeString();
 
         // Create span element for message
         const spanMsgEl = document.createElement("span");
@@ -96,8 +98,16 @@ class BattleLogsMessage {
 
         // Create span element for type
         const spanTypeEl = document.createElement("span");
+        const subSpan = document.createElement("span");
         spanTypeEl.classList.add("type");
-        spanTypeEl.innerHTML = type;
+        subSpan.innerHTML = type;
+
+        spanTypeEl.onclick = () => {
+            this.deleteMessage(pElem)
+        }
+
+        spanTypeEl.appendChild(subSpan)
+
 
         // Append spans to p element
         pElem.appendChild(spanTimeEl);
@@ -128,6 +138,31 @@ class BattleLogsMessage {
                 BattleLogs.Summarize.appendMessage(log);
             }
         });
+    }
+
+    /**
+     * @desc Delete message
+     *
+     * @param {Element} pElem: Message element to delete
+     */
+    static deleteMessage(pElem) {
+        const type = pElem.dataset.type
+        const time = pElem.dataset.time
+
+        if (type.slice(0, 1) === 'x') {
+            let index = BattleLogs.Summarize.LogsArray[type].findIndex((log) => log.time === time);
+            if (index !== -1) {
+                BattleLogs.Summarize.LogsArray[type].splice(index, 1);
+            }
+            BattleLogs.Utils.LocalStorage.delLogValue(BattleLogs.Summarize.Settings[type].Logs, time)
+        } else {
+            let index = BattleLogs[type].LogsArray.findIndex((log) => log.time === time);
+            if (index !== -1) {
+                BattleLogs[type].LogsArray.splice(index, 1);
+            }
+            BattleLogs.Utils.LocalStorage.delLogValue(BattleLogs[type].Settings.Logs, time)
+        }
+        pElem.parentNode.removeChild(pElem);
     }
 
     /**
@@ -244,26 +279,29 @@ class BattleLogsMessage {
         clearButton.title = "Supprimer les messages";
 
         clearButton.onclick = () => {
-            for (const [key, value] of Object.entries(BattleLogs.Message
-                .Filters)) {
-                if (value.enable) {
-                    // Reset logs array and local storage
-                    if (BattleLogs[key]) {
-                        BattleLogs[key].LogsArray = [];
-                        BattleLogs.Utils.LocalStorage.resetDefaultComplexValue(
-                            BattleLogs[key].Settings.Logs,
-                            []
-                        );
-                    } else if (/x\d/.test(key)) {
-                        BattleLogs.Summarize.LogsArray[key] = [];
-                        BattleLogs.Utils.LocalStorage.resetDefaultComplexValue(
-                            BattleLogs.Summarize.Settings[key].Logs,
-                            []
-                        );
+            const confirmed = window.confirm("Tu vas supprimer les messages affichés, es-tu sûr ?");
+            if (confirmed) {
+                for (const [key, value] of Object.entries(BattleLogs.Message
+                    .Filters)) {
+                    if (value.enable) {
+                        // Reset logs array and local storage
+                        if (BattleLogs[key]) {
+                            BattleLogs[key].LogsArray = [];
+                            BattleLogs.Utils.LocalStorage.resetDefaultComplexValue(
+                                BattleLogs[key].Settings.Logs,
+                                []
+                            );
+                        } else if (/x\d/.test(key)) {
+                            BattleLogs.Summarize.LogsArray[key] = [];
+                            BattleLogs.Utils.LocalStorage.resetDefaultComplexValue(
+                                BattleLogs.Summarize.Settings[key].Logs,
+                                []
+                            );
+                        }
                     }
                 }
+                this.updateMessages();
             }
-            this.updateMessages();
         };
 
         containingDiv.appendChild(clearButton);

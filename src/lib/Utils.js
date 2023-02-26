@@ -53,8 +53,19 @@ class BattleLogsUtils {
      *
      * @return Date in date object
      */
-    static getDate(time) {
+    static getDateObject(time) {
         return typeof time === "string" ? new Date(time) : time;
+    }
+
+    /**
+     * @desc Parse date and return date string
+     *
+     * @param {string, Date} time: Date in string or date format
+     *
+     * @return Date in date string
+     */
+    static getDateString(time) {
+        return typeof time !== "string" ? time.toISOString() : time;
     }
 
     /**
@@ -110,7 +121,7 @@ class BattleLogsUtils {
      */
     static sortArrayByDate(array) {
         return array.sort((a, b) =>
-            this.getDate(a.time) - this.getDate(b.time)
+            this.getDateObject(a.time) - this.getDateObject(b.time)
         );
     }
 

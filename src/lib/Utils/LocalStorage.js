@@ -33,6 +33,24 @@ class BattleLogsUtilsLocalStorage
     }
 
     /**
+     * @desc Gets the value associated to @p key from the local storage
+     *
+     * @param {string} key: The key to set the value of
+     * @param {string} time: Time of log to delete
+     */
+    static delLogValue(key, time)
+    {
+        const value = this.getComplexValue(key)
+        if (Array.isArray(value)) {
+            let index = value.findIndex((log) => log.time === time);
+            if (index !== -1) {
+                value.splice(index, 1);
+            }
+        }
+        localStorage.setItem(this.__internal__getSaveSpecificKey(key), JSON.stringify(value));
+    }
+
+    /**
      * @desc Sets the value associated to @p key to @p defaultValue from the local storage,
      *        if it was never set before
      *
