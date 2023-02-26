@@ -31,14 +31,13 @@ class BattleLogsNotif {
      * @param {Object} log: log to convert in message
      */
     static appendMessage(log) {
-        const time = BattleLogs.Utils.getDate(log.time).toLocaleTimeString();
         const message = log.message;
         const type = log.type;
         if (BattleLogs.Message.Filters[log.type].enable) {
             if (log.logType) {
                 BattleLogs[log.logType].appendMessage(log)
             } else {
-                BattleLogs.Message.appendMessage(time, message, type);
+                BattleLogs.Message.appendMessage(message, type, log);
             }
         }
     }
@@ -125,7 +124,7 @@ class BattleLogsNotif {
     static Log = class {
         constructor(type, message, date) {
             this.type = type;
-            this.time = new Date();
+            this.time = new Date().toISOString();
             this.message = message;
             this.date = date;
         }

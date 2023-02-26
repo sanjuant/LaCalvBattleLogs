@@ -108,7 +108,7 @@ class BattleLogsCsv {
                 // use a recursive function to get all values
                 let value = this.__internal__getValue(header, log);
                 if (header === "time") {
-                    value = BattleLogs.Utils.getDate(value).toLocaleString();
+                    value = BattleLogs.Utils.getDateObject(value).toLocaleString();
                 }
                 // Remove breakline and semicolon
                 value = value.replace(/&nbsp;|;/g, ' ').replace(/\n/g, '|')
