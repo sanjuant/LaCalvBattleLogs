@@ -108,7 +108,8 @@ class BattleLogsUpdate {
             "https://lacalv.fr/play/" + url,
             true
         );
-        request.setRequestHeader("nounce", this.__internal__nounce);
+        request.setRequestHeader("nounce", JSON.stringify(this.__internal__nounce));
+
         request.send();
     }
 
