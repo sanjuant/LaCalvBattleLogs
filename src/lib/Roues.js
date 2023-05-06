@@ -54,7 +54,7 @@ class BattleLogsRoues {
             const short = segments.pop() || segments.pop(); // Handle potential trailing slash
             const count = new URLSearchParams(url.search).get('count') || 1;
             let rouesType;
-            if (short.match(/^(c|d|r|re)$/)) {
+            if (short.match(/^(c|d|r|re|beta)$/)) {
                 rouesType = "oeuf"
             } else if (short.match(/^(coquille_c|coquille_d|coquille_r|coquille_re)$/)) {
                 rouesType = "coquille"
