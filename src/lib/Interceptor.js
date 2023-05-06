@@ -79,7 +79,7 @@ class BattleLogsInterceptor {
             BattleLogs.Boss.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/roues")) {
             BattleLogs.Roues.parseResponse(xhr)
-        } else if (xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(c|d|r|re)\?count/)
+        } else if (xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(c|d|r|re|beta)\?count/)
             || xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(coquille_c|coquille_d|coquille_r|coquille_re)\?count/)
             || xhr.responseURL.startsWith("https://lacalv.fr/play/exclusive")) {
             BattleLogs.Roues.parseResponse(xhr)
