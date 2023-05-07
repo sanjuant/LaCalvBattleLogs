@@ -115,12 +115,17 @@ class BattleLogsUpdate {
                 true
             );
             let nounce = this.__internal__nounce
-            let c = window.btoa(JSON.stringify({"name": this.__internal__pseudoTwitch, "time": new Date().getTime().toString()}))
-            nounce.c = window.btoa(c + this.__internal__id)
-            request.setRequestHeader("nounce", JSON.stringify(nounce));
-            request.setRequestHeader("Authorization", "Bearer COOKIE");
+            if (nounce !== null) {
+                let c = window.btoa(JSON.stringify({
+                    "name": this.__internal__pseudoTwitch,
+                    "time": new Date().getTime().toString()
+                }))
+                nounce.c = window.btoa(c + this.__internal__id)
+                request.setRequestHeader("nounce", JSON.stringify(nounce));
+                request.setRequestHeader("Authorization", "Bearer COOKIE");
 
-            request.send();
+                request.send();
+            }
         }
 
     /*********************************************************************\
