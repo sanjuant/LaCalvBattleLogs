@@ -58,6 +58,12 @@ class BattleLogsUpdate {
         if (data["nounce"]) {
             this.__internal__nounce = data["nounce"];
         }
+        if (data["id"]) {
+            this.__internal__id = data["id"];
+        }
+        if (data["pseudoTwitch"]) {
+            this.__internal__pseudoTwitch = data["pseudoTwitch"];
+        }
 
         this.__internal__addImportantNotifToLog(this.__internal__playerNotifs);
 
@@ -95,23 +101,27 @@ class BattleLogsUpdate {
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.DateSoundBossAvailable, this.__internal__dateForSoundBossAvailable);
     }
 
-    /**
-     * @desc Query url from LaCalv
-     *
-     * @param {string} url: Url to query
-     * @param {string} method: Http method
-     */
-    static queryUrl(url, method = "GET") {
-        let request = new XMLHttpRequest();
-        request.open(
-            method,
-            "https://lacalv.fr/play/" + url,
-            true
-        );
-        request.setRequestHeader("nounce", JSON.stringify(this.__internal__nounce));
+        /**
+         * @desc Query url from LaCalv
+         *
+         * @param {string} url: Url to query
+         * @param {string} method: Http method
+         */
+        static queryUrl(url, method = "GET") {
+            let request = new XMLHttpRequest();
+            request.open(
+                method,
+                "https://lacalv.fr/play/" + url,
+                true
+            );
+            let nounce = this.__internal__nounce
+            let c = window.btoa(JSON.stringify({"name": this.__internal__pseudoTwitch, "time": new Date().getTime().toString()}))
+            nounce.c = window.btoa(c + this.__internal__id)
+            request.setRequestHeader("nounce", JSON.stringify(nounce));
+            request.setRequestHeader("Authorization", "Bearer COOKIE");
 
-        request.send();
-    }
+            request.send();
+        }
 
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
@@ -120,6 +130,8 @@ class BattleLogsUpdate {
     static __internal__importantNotifs = ["Boss des Mondes", "Admin"];
     static __internal__nounce = null;
     static __internal__dateForSoundBossAvailable = null;
+    static __internal__pseudoTwitch = null
+    static __internal__id = null
 
     /**
      * @desc Check notif to find important notif to append to log
