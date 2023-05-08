@@ -60,6 +60,8 @@ class BattleLogsBattle {
         let actions = data["data"];
         this.__internal__setResults(user, opponent, data);
         this.__internal__setRewards(rewards, data, user.result)
+        this.__internal__setDmg(user, opponent, data);
+
 
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
@@ -78,7 +80,6 @@ class BattleLogsBattle {
                     event = action.events[event]
                     if (event.type === "Attaque") {
                         if (event.name === "ATTAQUE") {
-                            this.__internal__incrementDmg(user, opponent, event);
                             this.__internal__incrementEsquive(user, opponent, event);
                         } else if (event.name === "bouclier") {
 
@@ -683,6 +684,18 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Set dmg of battle
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: action of battle
+     */
+    static __internal__setDmg(user, opponent, action) {
+        if ("damages" in action) user.dmg = action["damages"];
+        if ("damagesOpponent" in action) opponent.dmg = action["damagesOpponent"];
+    }
+
+    /**
      * @desc Increment tour of player
      *
      * @param {Object} user: User of battle
@@ -739,21 +752,6 @@ class BattleLogsBattle {
             if ("renvoi" in action["data"]) opponent.renvoi += action["data"]["renvoi"];
         } else if (action["from"] === opponent.getName()) {
             if ("renvoi" in action["data"]) user.renvoi += action["data"]["renvoi"];
-        }
-    }
-
-    /**
-     * @desc Increment dommage of player
-     *
-     * @param {Object} user: User of battle
-     * @param {Object} opponent: Opponent of battle
-     * @param {JSON} event: event of action
-     */
-    static __internal__incrementDmg(user, opponent, event) {
-        if (event.target === user.name) {
-            if ("change" in event && "old" in event.change && "new" in event.change) opponent.dmg += event.change["old"] - event.change["new"];
-        } else {
-            if ("change" in event && "old" in event.change && "new" in event.change) user.dmg += event.change["old"] - event.change["new"];
         }
     }
 
