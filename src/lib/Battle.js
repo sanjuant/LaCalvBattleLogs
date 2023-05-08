@@ -52,40 +52,53 @@ class BattleLogsBattle {
      * @returns stats user, opponent and rewards
      */
     static getStatsFromData(data) {
-        if (!data["user"] || !data["opponent"]) return;
-        const user = this.__internal__createPlayer("user", data["user"]["pseudoTwitch"]);
-        const opponent = this.__internal__createPlayer("opponent", "pseudoTwitch" in data["opponent"] ? data["opponent"]["pseudoTwitch"] : data["opponent"]["name"]);
+        if (!data["A"] || !data["B"]) return;
+        const user = this.__internal__createPlayer("user", data["A"]["name"]);
+        const opponent = this.__internal__createPlayer("opponent", data["B"]["name"]);
         const rewards = this.__internal__createRewards("rewards");
 
-        let actions = data["battle"][0];
-        this.__internal__setResults(user, opponent, actions);
+        let actions = data["data"];
+        this.__internal__setResults(user, opponent, data);
         this.__internal__setRewards(rewards, data, user.result)
 
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
             this.__internal__setHealth(user, opponent, action);
 
-            let current;
-            if (action.from === user.name) {
-                current = user;
-            } else if (action.from === opponent.name) {
-                current = opponent;
-            }
+            // let current;
+            // if (action.from === user.name) {
+            //     current = user;
+            // } else if (action.from === opponent.name) {
+            //     current = opponent;
+            // }
 
-            if (action.data && action.action === "atk") {
-                this.__internal__incrementTour(current, action);
-                this.__internal__incrementDoubleCoup(current, action);
-                this.__internal__incrementVdv(current, action);
-                this.__internal__incrementStun(user, opponent, action);
-                this.__internal__incrementEsquive(user, opponent, action);
-                this.__internal__incrementErosion(current, action);
-                this.__internal__incrementRenvoi(user, opponent, action);
-                this.__internal__incrementDmg(current, action);
-            } else if (action.data && action.action === "poison") {
-                this.__internal__incrementPoison(current, action);
-            } else if (action.data && action.action === "chance") {
-                this.__internal__incrementVieGain(current, action);
+            if (action.events && action.events.length > 0) {
+                this.__internal__incrementTour(user, opponent, action);
+                for (let event in action.events) {
+                    event = action.events[event]
+                    if (event.type === "Attaque") {
+                        if (event.name === "ATTAQUE") {
+                            this.__internal__incrementDmg(user, opponent, event);
+                            this.__internal__incrementEsquive(user, opponent, event);
+                        } else if (event.name === "bouclier") {
+
+                        }
+
+                    }
+                }
+
+                // this.__internal__incrementDoubleCoup(current, action);
+                // this.__internal__incrementVdv(current, action);
+                // this.__internal__incrementStun(user, opponent, action);
+                // this.__internal__incrementErosion(current, action);
+                // this.__internal__incrementRenvoi(user, opponent, action);
+
             }
+            // else if (action.data && action.action === "poison") {
+            //     this.__internal__incrementPoison(current, action);
+            // } else if (action.data && action.action === "chance") {
+            //     this.__internal__incrementVieGain(current, action);
+            // }
         }
 
         return {user, opponent, rewards};
@@ -543,12 +556,11 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      * @param {JSON} actions: Actions of battle
      */
-    static __internal__setResults(user, opponent, actions) {
-        let result = actions[actions.length - 1];
-        if ("winner" in result && "looser" in result && user.name === result.winner) {
+    static __internal__setResults(user, opponent, data) {
+        if ("winner" in data && "looser" in data && user.name === data.winner) {
             user.result = "winner";
             opponent.result = "looser";
-        } else if ("winner" in result && "looser" in result) {
+        } else if ("winner" in data && "looser" in data) {
             user.result = "looser";
             opponent.result = "winner";
         }
@@ -630,16 +642,18 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__setShields(user, opponent, action) {
-        if (action["u1"] && action["u2"]) {
-            if (action["m1"] && action["m2"]) {
-                user.bouclierBase = action["m1"][24];
-                opponent.bouclierBase = action["m2"][24];
+        if (action["attacker"] && action["defender"]) {
+            if (action["turn"] === 0) {
+                user.bouclierBase = action["attacker"]["computed"]["bouclier"] ? action["attacker"]["computed"]["bouclier"] : 0;
+                opponent.bouclierBase = action["defender"]["computed"]["bouclier"] ? action["defender"]["computed"]["bouclier"] : 0;
             }
-            if (action["u1"]["modifiers"]) {
-                user.bouclier = action["u1"]["modifiers"][24];
-            }
-            if (action["u2"]["modifiers"]) {
-                opponent.bouclier = action["u2"]["modifiers"][24];
+
+            if (action["attacker"]["name"] === user.name) {
+                user.bouclier = action["attacker"]["computed"]["bouclier"] ? action["attacker"]["computed"]["bouclier"] : 0;
+                opponent.bouclier = action["defender"]["computed"]["bouclier"] ? action["defender"]["computed"]["bouclier"] : 0;
+            } else if (action["attacker"]["name"] === opponent.name) {
+                opponent.bouclier = action["attacker"]["computed"]["bouclier"] ? action["attacker"]["computed"]["bouclier"] : 0;
+                user.bouclier = action["defender"]["computed"]["bouclier"] ? action["defender"]["computed"]["bouclier"] : 0;
             }
         }
     }
@@ -652,24 +666,29 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__setHealth(user, opponent, action) {
-        if (action["u1"] && action["u2"]) {
-            if (action["m1"] && action["m2"]) {
-                user.vieBase = action["u1"]["pv"];
-                opponent.vieBase = action["u2"]["pv"];
+        if (action["attacker"] && action["defender"]) {
+            if (action["turn"] === 0) {
+                user.vieBase = action["pvs"]["A"];
+                opponent.vieBase = action["pvs"]["B"];
             }
-            user.vie = action["u1"]["pv"];
-            opponent.vie = action["u2"]["pv"];
+            user.vie = action["pvs"]["A"];
+            opponent.vie = action["pvs"]["B"];
         }
     }
 
     /**
      * @desc Increment tour of player
      *
-     * @param {Object} current: Current player of battle
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
      * @param {JSON} action: Action of battle
      */
-    static __internal__incrementTour(current, action) {
-        if (action["from"] === current.getName()) current.tour += 1;
+    static __internal__incrementTour(user, opponent, action) {
+        if (action.attacker.name.includes(user.name)) {
+            user.tour += 1;
+        } else if (action.attacker.name.includes(opponent.name)) {
+           opponent.tour += 1;
+        }
     }
 
     /**
@@ -720,11 +739,16 @@ class BattleLogsBattle {
     /**
      * @desc Increment dommage of player
      *
-     * @param {Object} current: Current player of battle
-     * @param {JSON} action: Action of battle
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} event: event of action
      */
-    static __internal__incrementDmg(current, action) {
-        if ("dmg" in action["data"]) current.dmg += action["data"]["dmg"];
+    static __internal__incrementDmg(user, opponent, event) {
+        if (event.target === user.name) {
+            if ("change" in event && "old" in event.change && "new" in event.change) opponent.dmg += event.change["old"] - event.change["new"];
+        } else {
+            if ("change" in event && "old" in event.change && "new" in event.change) user.dmg += event.change["old"] - event.change["new"];
+        }
     }
 
     /**
@@ -747,13 +771,13 @@ class BattleLogsBattle {
      *
      * @param {Object} user: User of battle
      * @param {Object} opponent: Opponent of battle
-     * @param {JSON} action: Action of battle
+     * @param {JSON} event: Event of battle
      */
-    static __internal__incrementEsquive(user, opponent, action) {
-        if (action["from"] === user.getName()) {
-            if (action["data"]["oblocked"] === true) opponent.esquive += 1;
-        } else if (action["from"] === opponent.getName()) {
-            if (action["data"]["oblocked"] === true) user.esquive += 1;
+    static __internal__incrementEsquive(user, opponent, event) {
+        if (event.target === user.name) {
+            if ("esquived" in event && event.esquived) user.esquive += 1;
+        } else {
+            if ("esquived" in event && event.esquived) opponent.esquive += 1;
         }
     }
 
