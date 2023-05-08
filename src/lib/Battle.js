@@ -554,7 +554,7 @@ class BattleLogsBattle {
      *
      * @param {Object} user: User of battle
      * @param {Object} opponent: Opponent of battle
-     * @param {JSON} actions: Actions of battle
+     * @param {JSON} data: data of battle
      */
     static __internal__setResults(user, opponent, data) {
         if ("winner" in data && "looser" in data && user.name === data.winner) {
@@ -594,8 +594,14 @@ class BattleLogsBattle {
                 rewards.event = data["event"]
             }
         }
-        if (data["expUser"]) {
-            rewards.exp = data["expUser"]
+        if (data["experienceA"]) {
+            rewards.exp = data["experienceA"]
+        }
+        if (data["aloA"]) {
+            rewards.alo = data["aloA"]
+        }
+        if (data["eloA"]) {
+            rewards.elo = data["eloA"]
         }
     }
 
@@ -684,9 +690,9 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementTour(user, opponent, action) {
-        if (action.attacker.name.includes(user.name)) {
+        if (action.attacker.name === user.name) {
             user.tour += 1;
-        } else if (action.attacker.name.includes(opponent.name)) {
+        } else if (action.attacker.name === opponent.name) {
            opponent.tour += 1;
         }
     }
