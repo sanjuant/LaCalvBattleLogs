@@ -66,13 +66,17 @@ class BattleLogsBattle {
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
             this.__internal__setHealth(user, opponent, action);
+            this.__internal__incrementDoubleCoup(user, opponent, action);
+            this.__internal__incrementStun(user, opponent, action);
 
             // let current;
-            // if (action.from === user.name) {
+            // if (action["attacker"] === user.name) {
             //     current = user;
-            // } else if (action.from === opponent.name) {
+            // } else if (action["attacker"] === opponent.name) {
             //     current = opponent;
             // }
+
+
 
             if (action.events && action.events.length > 0) {
                 this.__internal__incrementTour(user, opponent, action);
@@ -88,9 +92,7 @@ class BattleLogsBattle {
                     }
                 }
 
-                // this.__internal__incrementDoubleCoup(current, action);
                 // this.__internal__incrementVdv(current, action);
-                // this.__internal__incrementStun(user, opponent, action);
                 // this.__internal__incrementErosion(current, action);
                 // this.__internal__incrementRenvoi(user, opponent, action);
 
@@ -713,11 +715,26 @@ class BattleLogsBattle {
     /**
      * @desc Increment double coup of player
      *
-     * @param {Object} current: Current player of battle
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
      * @param {JSON} action: Action of battle
      */
-    static __internal__incrementDoubleCoup(current, action) {
-        if (action["data"]["dc"] === true) current.dc += 1;
+    static __internal__incrementDoubleCoup(user, opponent, action) {
+        if (action["attacker"]["name"] === user.name) {
+            if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
+                user.dc += 1;
+            }
+            if ("doubleCoup" in action["defender"]["computed"] && action["defender"]["computed"]["doubleCoup"] === true) {
+                opponent.dc += 1;
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
+                opponent.dc += 1;
+            }
+            if ("doubleCoup" in action["defender"]["computed"] && action["defender"]["computed"]["doubleCoup"] === true) {
+                user.dc += 1;
+            }
+        }
     }
 
     /**
@@ -763,11 +780,29 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementStun(user, opponent, action) {
-        if (action["from"] === user.getName()) {
-            if (action["data"]["ublocked"] === true) opponent.stun += 1;
-        } else if (action["from"] === opponent.getName()) {
-            if (action["data"]["ublocked"] === true) user.stun += 1;
+        // if (action["from"] === user.getName()) {
+        //     if (action["data"]["ublocked"] === true) opponent.stun += 1;
+        // } else if (action["from"] === opponent.getName()) {
+        //     if (action["data"]["ublocked"] === true) user.stun += 1;
+        // }
+
+        if (action["events"].length === 1 && action["events"][0]["name"] === "BLOQUAGE") {
+            if (action["attacker"]["name"] === user.name) {
+                opponent.stun += 1;
+            } else if (action["attacker"]["name"] === opponent.name) {
+                user.stun += 1;
+            }
         }
+        //
+        // if (action["defender"]["name"] === user.name && action["attacker"]["name"] === opponent.name) {
+        //     if ("blocked" in action["defender"]["computed"] && action["defender"]["computed"]["blocked"] === true) {
+        //         opponent.stun += 1;
+        //     }
+        // } else if (action["defender"]["name"] === opponent.name && action["attacker"]["name"] === user.name) {
+        //     if ("blocked" in action["defender"]["computed"] && action["defender"]["computed"]["blocked"] === true) {
+        //         user.stun += 1;
+        //     }
+        // }
     }
 
     /**
