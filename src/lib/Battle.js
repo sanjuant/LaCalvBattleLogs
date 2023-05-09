@@ -60,14 +60,14 @@ class BattleLogsBattle {
         let actions = data["data"];
         this.__internal__setResults(user, opponent, data);
         this.__internal__setRewards(rewards, data, user.result)
-        this.__internal__setDmg(user, opponent, data);
+        // this.__internal__setDmg(user, opponent, data);
 
 
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
             this.__internal__setHealth(user, opponent, action);
             this.__internal__incrementDoubleCoup(user, opponent, action);
-            this.__internal__incrementStun(user, opponent, action);
+            // this.__internal__incrementStun(user, opponent, action);
 
             // let current;
             // if (action["attacker"] === user.name) {
@@ -85,10 +85,14 @@ class BattleLogsBattle {
                     if (event.type === "Attaque") {
                         if (event.name === "ATTAQUE") {
                             this.__internal__incrementEsquive(user, opponent, event);
-                        } else if (event.name === "bouclier") {
-
+                            this.__internal__incrementDmg(user, opponent, action, event);
+                        }else if (event.name === "BLOQUAGE") {
+                            this.__internal__incrementStun(user, opponent, action);
                         }
-
+                    } else if (event.type === "Chaque début de tour") {
+                        if (event.name === "Heal") {
+                            this.__internal__incrementVieGain(user, opponent, action, event);
+                        }
                     }
                 }
 
@@ -713,6 +717,26 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment dommage of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: Event of battle
+     */
+    static __internal__incrementDmg(user, opponent, action, event) {
+        if (action["attacker"]["name"].includes(user.name)) {
+            if (event.target === opponent.name)  {
+                if ("change" in event && "old" in event.change && "new" in event.change) user.dmg += event.change["old"] - event.change["new"];
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if (event.target === user.name) {
+                if ("change" in event && "old" in event.change && "new" in event.change) opponent.dmg += event.change["old"] - event.change["new"];
+            }
+        }
+    }
+
+    /**
      * @desc Increment double coup of player
      *
      * @param {Object} user: User of battle
@@ -724,15 +748,9 @@ class BattleLogsBattle {
             if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
                 user.dc += 1;
             }
-            if ("doubleCoup" in action["defender"]["computed"] && action["defender"]["computed"]["doubleCoup"] === true) {
-                opponent.dc += 1;
-            }
         } else if (action["attacker"]["name"] === opponent.name) {
             if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
                 opponent.dc += 1;
-            }
-            if ("doubleCoup" in action["defender"]["computed"] && action["defender"]["computed"]["doubleCoup"] === true) {
-                user.dc += 1;
             }
         }
     }
@@ -780,29 +798,11 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementStun(user, opponent, action) {
-        // if (action["from"] === user.getName()) {
-        //     if (action["data"]["ublocked"] === true) opponent.stun += 1;
-        // } else if (action["from"] === opponent.getName()) {
-        //     if (action["data"]["ublocked"] === true) user.stun += 1;
-        // }
-
-        if (action["events"].length === 1 && action["events"][0]["name"] === "BLOQUAGE") {
-            if (action["attacker"]["name"] === user.name) {
-                opponent.stun += 1;
-            } else if (action["attacker"]["name"] === opponent.name) {
-                user.stun += 1;
-            }
+        if (action["attacker"]["name"] === user.name) {
+            opponent.stun += 1;
+        } else if (action["attacker"]["name"] === opponent.name) {
+            user.stun += 1;
         }
-        //
-        // if (action["defender"]["name"] === user.name && action["attacker"]["name"] === opponent.name) {
-        //     if ("blocked" in action["defender"]["computed"] && action["defender"]["computed"]["blocked"] === true) {
-        //         opponent.stun += 1;
-        //     }
-        // } else if (action["defender"]["name"] === opponent.name && action["attacker"]["name"] === user.name) {
-        //     if ("blocked" in action["defender"]["computed"] && action["defender"]["computed"]["blocked"] === true) {
-        //         user.stun += 1;
-        //     }
-        // }
     }
 
     /**
@@ -833,11 +833,23 @@ class BattleLogsBattle {
     /**
      * @desc Increment gain de vie of player
      *
-     * @param {Object} current: Current player of battle
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
      * @param {JSON} action: Action of battle
+     * @param {JSON} event: event of battle
      */
-    static __internal__incrementVieGain(current, action) {
-        if ("pv" in action["data"]) current.vieGain += action["data"]["pv"];
+    static __internal__incrementVieGain(user, opponent, action, event) {
+        if (action["attacker"]["name"] === user.name) {
+            if ("change" in event) {
+                console.log("User:" + user.name + " " + event["change"]["new"] + " " + event["change"]["old"]);
+                user.vieGain += event["change"]["new"] - event["change"]["old"];
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if ("change" in event) {
+                console.log("Opponent:" + opponent.name + " " + event["change"]["new"] + " " + event["change"]["old"]);
+                opponent.vieGain += event["change"]["new"] - event["change"]["old"];
+            }
+        }
     }
 
     /**
