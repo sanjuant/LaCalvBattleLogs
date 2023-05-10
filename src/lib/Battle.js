@@ -110,6 +110,8 @@ class BattleLogsBattle {
             // }
         }
 
+        this.__internal__setDmgTotal(user, opponent)
+
         return {user, opponent, rewards};
     }
 
@@ -254,13 +256,24 @@ class BattleLogsBattle {
             text: "Vie restante",
             type: "checkbox"
         },
+        dmgTotal: {
+            name: {
+                normal: "Dommage Total",
+                short: "DmgTot",
+                list: "Dommage Total"
+            },
+            display: true,
+            setting: true,
+            text: "Dégâts totaux",
+            type: "checkbox"
+        },
         dmg: {
             name: {
                 normal: "Dommage",
                 short: "Dmg",
                 list: "Dommage"
             },
-            display: true,
+            display: false,
             setting: true,
             text: "Dégâts infligés",
             type: "checkbox"
@@ -584,6 +597,17 @@ class BattleLogsBattle {
             user.result = "looser";
             opponent.result = "winner";
         }
+    }
+
+    /**
+     * @desc Set total dmg of battle
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     */
+    static __internal__setDmgTotal(user, opponent) {
+        user.dmgTotal = user.dmg + user.brulure;
+        opponent.dmgTotal = opponent.dmg + opponent.brulure;
     }
 
     /**

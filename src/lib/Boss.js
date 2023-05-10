@@ -9,30 +9,30 @@ class BattleLogsBoss {
     };
 
     static Messages = {
-        normal: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3}.",
-        short: "Tour:{0} Dmg:{1}",
-        list: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3}.",
+        normal: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3} totaux.",
+        short: "Tour:{0} DmgTot:{1}",
+        list: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3} totaux.",
         summarize: {
-            normal: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3} en moyenne.",
-            short: "Tour:{0} Dmg:{1}",
-            list: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3} en moyenne."
+            normal: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3} totaux en moyenne.",
+            short: "Tour:{0} DmgTot:{1}",
+            list: "Tu as attaqué {0} tour{2} et infligé {1} dommage{3} totaux en moyenne."
         }
     };
 
     static BannedStats = {
         normal: {
             user: [
-                "tour", "dmg", "result"
+                "tour", "dmgTotal", "result"
             ],
             opponent: ["vie", "result"]
         },
         short: {
-            user: ["tour", "dmg", "result"],
+            user: ["tour", "dmgTotal", "result"],
             opponent: ["vie", "result"]
         },
         list: {
             user: [
-                "tour", "dmg", "result"
+                "tour", "dmgTotal", "result"
             ],
             opponent: ["vie", "result"]
         }
@@ -124,11 +124,11 @@ class BattleLogsBoss {
         let fragments = [];
         if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"]) {
             if (summarize) {
-                fragments.push(this.Messages.summarize[BattleLogs.Message.Settings.Format].format(log.user.tour, log.user.dmg, log.user.tour > 1 ? "s" : "", log.user.dmg > 1 ? "s" : ""))
+                fragments.push(this.Messages.summarize[BattleLogs.Message.Settings.Format].format(log.user.tour, log.user.dmgTotal, log.user.tour > 1 ? "s" : "", log.user.dmgTotal > 1 ? "s" : ""))
             } else {
                 fragments.push(
                     this.Messages[BattleLogs.Message.Settings.Format]
-                        .format(log.user.tour, log.user.dmg, log.user.tour > 1 ? "s" : "", log.user.dmg > 1 ? "s" : "")
+                        .format(log.user.tour, log.user.dmgTotal, log.user.tour > 1 ? "s" : "", log.user.dmgTotal > 1 ? "s" : "")
                 );
             }
         }
