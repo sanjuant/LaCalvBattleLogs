@@ -93,6 +93,8 @@ class BattleLogsBattle {
                         if (event.name === "Heal") {
                             this.__internal__incrementVieGain(user, opponent, action, event);
                         }
+                    } else if (event.type === "Brûlé" && event.name === "brulé") {
+                        this.__internal__incrementBrulure(user, opponent, action, event);
                     }
                 }
 
@@ -371,6 +373,17 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Dégâts empoisonnés",
+            type: "checkbox"
+        },
+        brulure: {
+            name: {
+                normal: "Brulure",
+                short: "Bru",
+                list: "Brulure"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts brulés",
             type: "checkbox"
         },
         result: {
@@ -841,13 +854,31 @@ class BattleLogsBattle {
     static __internal__incrementVieGain(user, opponent, action, event) {
         if (action["attacker"]["name"] === user.name) {
             if ("change" in event) {
-                console.log("User:" + user.name + " " + event["change"]["new"] + " " + event["change"]["old"]);
                 user.vieGain += event["change"]["new"] - event["change"]["old"];
             }
         } else if (action["attacker"]["name"] === opponent.name) {
             if ("change" in event) {
-                console.log("Opponent:" + opponent.name + " " + event["change"]["new"] + " " + event["change"]["old"]);
                 opponent.vieGain += event["change"]["new"] - event["change"]["old"];
+            }
+        }
+    }
+
+    /**
+     * @desc Increment brulure of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: event of battle
+     */
+    static __internal__incrementBrulure(user, opponent, action, event) {
+        if (action["attacker"]["name"] === user.name) {
+            if ("change" in event) {
+                opponent.brulure += event["change"]["old"] - event["change"]["new"];
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if ("change" in event) {
+                user.brulure += event["change"]["old"] - event["change"]["new"];
             }
         }
     }
@@ -882,6 +913,7 @@ class BattleLogsBattle {
         player.renvoi = 0;
         player.erosion = 0;
         player.poison = 0;
+        player.brulure = 0;
         player.result = "";
         return player;
     }
