@@ -82,7 +82,7 @@ class BattleLogsBattle {
                         } else if (event.name === "BLOQUAGE") {
                             this.__internal__incrementStun(user, opponent, action);
                         } else if (event.name === "SAIGNEMENT") {
-                            this.__internal__incrementSaignement(user, opponent, action);
+                            this.__internal__incrementSaignement(user, opponent, action, event);
                         }
                     } else if (event.type === "Chaque début de tour") {
                         if (event.name === "Heal") {
