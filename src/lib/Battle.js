@@ -61,8 +61,6 @@ class BattleLogsBattle {
         let actions = data["data"];
         this.__internal__setResults(user, opponent, data);
         this.__internal__setRewards(rewards, data, user.result)
-        // this.__internal__setDmg(user, opponent, data);
-
 
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
@@ -103,8 +101,6 @@ class BattleLogsBattle {
                         }
                     }
                 }
-
-
             }
         }
 
@@ -135,10 +131,15 @@ class BattleLogsBattle {
             uLabelSpan.textContent = this.Messages[BattleLogs.Message.Settings.Format].user;
             userSpanFragments.push(uLabelSpan.outerHTML);
         }
-        const uBannedStats = displaySummary
+        let uBannedStats = []
+        const uBannedStatsForSummary = displaySummary
             ? BattleLogs[type].BannedStats[BattleLogs.Message.Settings.Format].user
             : []
         ;
+        uBannedStats = uBannedStats.concat(uBannedStatsForSummary)
+        if (summarize === true) {
+            uBannedStats.push("stuffAtk");
+        }
         const uAttrsMessage = this.__internal__convertAttributesToMessage(log.user, uBannedStats);
         if (uAttrsMessage) {
             userSpanFragments.push(uAttrsMessage);
@@ -430,17 +431,6 @@ class BattleLogsBattle {
             text: "Afficher le résultat",
             type: "checkbox"
         },
-        // stuffAtk: {
-        //     name: {
-        //         normal: "Stuff Attaque",
-        //         short: "StfAtk",
-        //         list: "Stuff Attaque"
-        //     },
-        //     display: false,
-        //     setting: true,
-        //     text: "Stuff attaque",
-        //     type: "checkbox"
-        // },
         name: {
             name: {
                 normal: "Nom",
@@ -456,13 +446,13 @@ class BattleLogsBattle {
     static __internal__stats_user = {
         stuffAtk: {
             name: {
-                normal: "Stuff Attaque",
-                short: "StfAtk",
-                list: "Stuff Attaque"
+                normal: "Stuff",
+                short: "Stuff",
+                list: "Stuff"
             },
             display: false,
             setting: true,
-            text: "Stuff attaque",
+            text: "Afficher le stuff",
             type: "checkbox"
         },
         color: {
@@ -620,7 +610,6 @@ class BattleLogsBattle {
                     labelSpan.textContent = this.__internal__rewards[key].name[BattleLogs.Message.Settings.Format];
                 } else {
                     const internal_stats = Object.assign(this.__internal__stats, this.__internal__stats_user, this.__internal__stats_opponent)
-                    console.log(key, internal_stats[key])
                     labelSpan.textContent = internal_stats[key].name[BattleLogs.Message.Settings.Format];
                 }
                 labelSpan.classList.add("normal-stat")
@@ -1030,12 +1019,10 @@ class BattleLogsBattle {
     static __internal__incrementMaraboutage(user, opponent, action, event) {
         if (action["attacker"]["name"] === user.name) {
             if ("change" in event) {
-                console.log(event["change"]["old"] - event["change"]["new"])
                 opponent.maraboutage += event["change"]["old"] - event["change"]["new"];
             }
         } else if (action["attacker"]["name"] === opponent.name) {
             if ("change" in event) {
-                console.log(event["change"]["old"] - event["change"]["new"])
                 user.maraboutage += event["change"]["old"] - event["change"]["new"];
             }
         }
