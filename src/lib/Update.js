@@ -65,7 +65,7 @@ class BattleLogsUpdate {
         if (data["pseudoTwitch"]) {
             this.__internal__pseudoTwitch = data["pseudoTwitch"];
         }
-        if (data["player"] && data["player"]["stuffAtk"]) {
+        if (data["player"] && data["player"]["stuffAtk"] >= 0) {
             this.stuffAtk = data["player"]["stuffAtk"] + 1;
         }
 
