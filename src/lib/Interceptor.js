@@ -59,7 +59,7 @@ class BattleLogsInterceptor {
         if (xhr.responseURL === "https://lacalv.fr/play/load") {
             // console.log("UPDATE")
             BattleLogs.Load.parseResponse(xhr)
-        } else if (xhr.responseURL === "https://lacalv.fr/play/update") {
+        } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/update")) {
             // console.log("UPDATE")
             BattleLogs.Update.parseResponse(xhr)
         } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
