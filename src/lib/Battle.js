@@ -430,17 +430,17 @@ class BattleLogsBattle {
             text: "Afficher le résultat",
             type: "checkbox"
         },
-        stuffAtk: {
-            name: {
-                normal: "Stuff Attaque",
-                short: "Stuff Attaque",
-                list: "Stuff Attaque"
-            },
-            display: false,
-            setting: false,
-            text: "",
-            type: "checkbox"
-        },
+        // stuffAtk: {
+        //     name: {
+        //         normal: "Stuff Attaque",
+        //         short: "StfAtk",
+        //         list: "Stuff Attaque"
+        //     },
+        //     display: false,
+        //     setting: true,
+        //     text: "Stuff attaque",
+        //     type: "checkbox"
+        // },
         name: {
             name: {
                 normal: "Nom",
@@ -454,6 +454,17 @@ class BattleLogsBattle {
         }
     }
     static __internal__stats_user = {
+        stuffAtk: {
+            name: {
+                normal: "Stuff Attaque",
+                short: "StfAtk",
+                list: "Stuff Attaque"
+            },
+            display: false,
+            setting: true,
+            text: "Stuff attaque",
+            type: "checkbox"
+        },
         color: {
             name: "Couleur",
             display: "#8094ff",
@@ -608,7 +619,9 @@ class BattleLogsBattle {
                 if (attributes.type === "rewards") {
                     labelSpan.textContent = this.__internal__rewards[key].name[BattleLogs.Message.Settings.Format];
                 } else {
-                    labelSpan.textContent = this.__internal__stats[key].name[BattleLogs.Message.Settings.Format];
+                    const internal_stats = Object.assign(this.__internal__stats, this.__internal__stats_user, this.__internal__stats_opponent)
+                    console.log(key, internal_stats[key])
+                    labelSpan.textContent = internal_stats[key].name[BattleLogs.Message.Settings.Format];
                 }
                 labelSpan.classList.add("normal-stat")
 
@@ -783,18 +796,6 @@ class BattleLogsBattle {
             user.vie = action["pvs"]["A"];
             opponent.vie = action["pvs"]["B"];
         }
-    }
-
-    /**
-     * @desc Set dmg of battle
-     *
-     * @param {Object} user: User of battle
-     * @param {Object} opponent: Opponent of battle
-     * @param {JSON} action: action of battle
-     */
-    static __internal__setDmg(user, opponent, action) {
-        if ("damages" in action) user.dmg = action["damages"];
-        if ("damagesOpponent" in action) opponent.dmg = action["damagesOpponent"];
     }
 
     /**
