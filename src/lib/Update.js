@@ -9,6 +9,7 @@ class BattleLogsUpdate {
 
     static Streaming = false;
     static Wb = Number.MIN_VALUE;
+    static stuffAtk = 0;
 
     /**
      * @desc Initialize Class
@@ -63,6 +64,9 @@ class BattleLogsUpdate {
         }
         if (data["pseudoTwitch"]) {
             this.__internal__pseudoTwitch = data["pseudoTwitch"];
+        }
+        if (data["player"] && data["player"]["stuffAtk"]) {
+            this.stuffAtk = data["player"]["stuffAtk"] + 1;
         }
 
         this.__internal__addImportantNotifToLog(this.__internal__playerNotifs);
