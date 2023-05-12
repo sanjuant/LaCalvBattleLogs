@@ -54,6 +54,7 @@ class BattleLogsBattle {
     static getStatsFromData(data) {
         if (!data["A"] || !data["B"]) return;
         const user = this.__internal__createPlayer("user", data["A"]["name"]);
+        user.stuffAtk = BattleLogs.Update.stuffAtk;
         const opponent = this.__internal__createPlayer("opponent", data["B"]["name"]);
         const rewards = this.__internal__createRewards("rewards");
 
@@ -427,6 +428,17 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Afficher le résultat",
+            type: "checkbox"
+        },
+        stuffAtk: {
+            name: {
+                normal: "Stuff Attaque",
+                short: "Stuff Attaque",
+                list: "Stuff Attaque"
+            },
+            display: false,
+            setting: false,
+            text: "",
             type: "checkbox"
         },
         name: {
