@@ -493,6 +493,28 @@ class BattleLogsBattle {
             text: "Expériences gagnées",
             type: "checkbox"
         },
+        expFamAtk: {
+            name: {
+                normal: "Familier d'attaque",
+                short: "FamAtk",
+                list: "Expérience familier d'attaque"
+            },
+            display: false,
+            setting: true,
+            text: "Expériences familier d'attaque",
+            type: "checkbox"
+        },
+        expFamDef: {
+            name: {
+                normal: "Familier de défense",
+                short: "FamDef",
+                list: "Expérience familier de défense"
+            },
+            display: false,
+            setting: true,
+            text: "Expériences familier de défense",
+            type: "checkbox"
+        },
         elo: {
             name: {
                 normal: "Elo",
@@ -659,6 +681,12 @@ class BattleLogsBattle {
         }
         if (data["experienceA"]) {
             rewards.exp = data["experienceA"]
+        }
+        if (data["experiencefAtk"]) {
+            rewards.expFamAtk = data["experiencefAtk"]
+        }
+        if (data["experiencefDef"]) {
+            rewards.expFamDef = data["experiencefDef"]
         }
         if (data["aloA"]) {
             rewards.alo = data["aloA"]
@@ -1049,6 +1077,9 @@ class BattleLogsBattle {
         rewards.elo = 0;
         rewards.alo = 0;
         rewards.exp = 0;
+        rewards.exp = 0;
+        rewards.expFamAtk = 0;
+        rewards.expFamDef = 0;
         rewards.event = 0;
         rewards.items = [];
         return rewards;
