@@ -890,11 +890,11 @@ class BattleLogsBattle {
     static __internal__incrementErosion(user, opponent, action) {
         if (action["defender"]["name"] === user.name) {
             if ("eroded" in action["defender"]["computed"]) {
-                opponent.erosion += action["defender"]["computed"]["eroded"];
+                opponent.erosion = action["defender"]["computed"]["eroded"];
             }
         } else if (action["defender"]["name"] === opponent.name) {
             if ("eroded" in action["defender"]["computed"]) {
-                user.erosion += action["defender"]["computed"]["eroded"];
+                user.erosion = action["defender"]["computed"]["eroded"];
             }
         }
     }
