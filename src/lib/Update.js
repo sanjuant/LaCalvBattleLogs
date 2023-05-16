@@ -10,6 +10,7 @@ class BattleLogsUpdate {
     static Streaming = false;
     static Wb = Number.MIN_VALUE;
     static stuffAtk = 0;
+    static stuffs = {};
 
     /**
      * @desc Initialize Class
@@ -64,6 +65,9 @@ class BattleLogsUpdate {
         }
         if (data["pseudoTwitch"]) {
             this.__internal__pseudoTwitch = data["pseudoTwitch"];
+        }
+        if (data["player"]) {
+            this.__internal__parse_player_stuffs(data["player"]);
         }
         if (data["player"] && data["player"]["stuffAtk"] >= 0) {
             this.stuffAtk = data["player"]["stuffAtk"] + 1;
@@ -175,5 +179,19 @@ class BattleLogsUpdate {
             this.Settings.Streaming,
             false
         );
+    }
+
+    /**
+     * @desc Sets the stuffs of player
+     *
+     * @param {Object} player: Player object
+     */
+    static __internal__parse_player_stuffs(player) {
+        if ("calvs" in player && "items" in player && "armes" in player && "stuffs" in player) {
+            for (let i = 0; i < player["calvs"].length; i++) {
+                let name = player["stuffs"][i] ? player["stuffs"][i] : "Slot #"+ (i + 1).toString()
+                this.stuffs[i] = {"name": name, "calv": player["calvs"][i], "arme": player["armes"][i], "items": player["items"][i]}
+            }
+        }
     }
 }

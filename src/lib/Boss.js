@@ -75,9 +75,10 @@ class BattleLogsBoss {
         const {
             user,
             opponent,
-            rewards
+            rewards,
+            stuff
         } = BattleLogs.Battle.getStatsFromData(data);
-        const log = this.__internal__addLog(user, opponent, rewards);
+        const log = this.__internal__addLog(user, opponent, rewards, stuff);
         this.appendMessage(log);
         if (this.LogsArray.length % BattleLogs.Summarize.Settings.x10.Count === 0) {
             BattleLogs.Summarize.addLog(
@@ -149,11 +150,12 @@ class BattleLogsBoss {
      * @param {Object} user: User of battle
      * @param {Object} opponent: Opponent of battle
      * @param {Object} rewards: Rewards of battle
+     * @param {Object} stuff: Stuff of battle
      *
      * @return Log added
      */
-    static __internal__addLog(user, opponent, rewards) {
-        const log = new this.Logs(this.Settings.Type, user, opponent, rewards);
+    static __internal__addLog(user, opponent, rewards, stuff) {
+        const log = new this.Logs(this.Settings.Type, user, opponent, rewards, stuff);
         this.LogsArray.push(log);
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
 
@@ -193,12 +195,13 @@ class BattleLogsBoss {
     }
 
     static Logs = class {
-        constructor(type, user, opponent, rewards) {
+        constructor(type, user, opponent, rewards, stuff) {
             this.type = type;
             this.time = new Date().toISOString();
             this.user = user;
             this.opponent = opponent;
             this.rewards = rewards;
+            this.stuff = stuff;
         }
     };
 }

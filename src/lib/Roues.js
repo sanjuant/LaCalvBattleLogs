@@ -90,6 +90,28 @@ class BattleLogsRoues {
     }
 
     /**
+     * @desc Get object item by name
+     *
+     * @param {string} name: name of object needed
+     *
+     * @return found object or null
+     */
+    static getObjectByName(name) {
+        let internalArrays = [
+            this.__internal__roues,
+        ];
+        for (let internalArray of internalArrays) {
+            let foundObject = internalArray.find(item => {
+                return item.name === name
+            });
+            if (foundObject) {
+                return foundObject;
+            }
+        }
+        return name;
+    }
+
+    /**
      * @desc Update settings of class
      */
     static updateSettings() {

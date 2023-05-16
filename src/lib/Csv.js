@@ -132,7 +132,7 @@ class BattleLogsCsv {
         for (let key in log) {
             const newKey = parentKey ? `${parentKey.charAt(0)}.${key}` : key;
             if (parentKey !== '' && this.__internal__bannedSubKeys.includes(key)) continue;
-            if (BattleLogs.Utils.isObject(log[key])) {
+            if (BattleLogs.Utils.isObject(log[key]) && !["calv", "arme"].includes(key)) {
                 this.__internal__getKeys(log[key], headers, key);
             } else {
                 headers.add(newKey);

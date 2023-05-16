@@ -70,11 +70,12 @@ class BattleLogsTob {
         const {
             user,
             opponent,
-            rewards
+            rewards,
+            stuff
         } = BattleLogs.Battle.getStatsFromData(data);
         const url = new URL(xhr.responseURL);
         const stage = new URLSearchParams(url.search).get('step');
-        const log = this.__internal__addLog(user, opponent, rewards, stage);
+        const log = this.__internal__addLog(user, opponent, rewards, stage, stuff);
         this.appendMessage(log);
         if (this.LogsArray.length % BattleLogs.Summarize.Settings.x10.Count === 0) {
             BattleLogs.Summarize.addLog(
@@ -147,11 +148,12 @@ class BattleLogsTob {
      * @param {Object} opponent: Opponent of battle
      * @param {Object} rewards: Rewards of battle
      * @param {string} stage: Stage of battle
+     * @param {string} stuff: Stuff of battle
      *
      * @return Log added
      */
-    static __internal__addLog(user, opponent, rewards, stage) {
-        const log = new this.Log(this.Settings.Type, user, opponent, rewards, stage);
+    static __internal__addLog(user, opponent, rewards, stage, stuff) {
+        const log = new this.Log(this.Settings.Type, user, opponent, rewards, stage, stuff);
         this.LogsArray.push(log);
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
 
@@ -169,13 +171,14 @@ class BattleLogsTob {
     }
 
     static Log = class {
-        constructor(type, user, opponent, rewards, stage) {
+        constructor(type, user, opponent, rewards, stage, stuff) {
             this.type = type;
             this.time = new Date().toISOString();
             this.user = user;
             this.opponent = opponent;
             this.rewards = rewards;
             this.stage = stage;
+            this.stuff = stuff;
         }
     };
 }
