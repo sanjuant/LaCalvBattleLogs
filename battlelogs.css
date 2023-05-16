@@ -338,6 +338,11 @@ button.selected {
     -webkit-user-select: none;
     -ms-user-select: none;
 }
+.stuff-name {
+    font-size: revert;
+    font-weight: initial;
+    text-transform: initial;
+}
 
 /********************/
 /* Objects colors   */

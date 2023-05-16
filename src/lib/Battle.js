@@ -54,13 +54,14 @@ class BattleLogsBattle {
     static getStatsFromData(data) {
         if (!data["A"] || !data["B"]) return;
         const user = this.__internal__createPlayer("user", data["A"]["name"]);
-        user.stuffAtk = BattleLogs.Update.stuffAtk;
         const opponent = this.__internal__createPlayer("opponent", data["B"]["name"]);
         const rewards = this.__internal__createRewards("rewards");
+        const stuff = this.__internal__createStuff("stuff");
 
         let actions = data["data"];
         this.__internal__setResults(user, opponent, data);
         this.__internal__setRewards(rewards, data, user.result)
+        this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
 
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
@@ -106,7 +107,7 @@ class BattleLogsBattle {
 
         this.__internal__setDmgTotal(user, opponent)
 
-        return {user, opponent, rewards};
+        return {user, opponent, rewards, stuff};
     }
 
     /**
@@ -120,6 +121,7 @@ class BattleLogsBattle {
     static buildBattleMessage(log, summarize = false) {
         const type = summarize ? log.logType : log.type
         const displaySummary = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"];
+        const displayStuff = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-stuff"];
         let fragments = []
 
         const userSpanFragments = [];
@@ -137,9 +139,6 @@ class BattleLogsBattle {
             : []
         ;
         uBannedStats = uBannedStats.concat(uBannedStatsForSummary)
-        if (summarize === true) {
-            uBannedStats.push("stuffAtk");
-        }
         const uAttrsMessage = this.__internal__convertAttributesToMessage(log.user, uBannedStats);
         if (uAttrsMessage) {
             userSpanFragments.push(uAttrsMessage);
@@ -182,6 +181,23 @@ class BattleLogsBattle {
             rewardsSpanFragments.push(rAttrsMessage);
             rewardsSpan.innerHTML = rewardsSpanFragments.filter(Boolean).join(this.__internal__joiner.labelWithStats[BattleLogs.Message.Settings.Format]);
             fragments.push(rewardsSpan.outerHTML);
+        }
+
+        if (displayStuff && log.stuff) {
+            const stuffSpanFragments = [];
+            const sLabelSpan = document.createElement("span");
+            sLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
+            console.log(log.stuff)
+            sLabelSpan.innerHTML = `${log.stuff.type.toUpperCase()} <span class="stuff-name">(#${log.stuff.slot} - ${log.stuff.name})</span>`;
+            stuffSpanFragments.push(sLabelSpan.outerHTML);
+
+            const stuffSpan = document.createElement("span");
+            const sAttrsMessage = this.__internal__convertStuffToMessage(log.stuff);
+            if (sAttrsMessage) {
+                stuffSpanFragments.push(sAttrsMessage);
+                stuffSpan.innerHTML = stuffSpanFragments.filter(Boolean).join(this.__internal__joiner.labelWithStats[BattleLogs.Message.Settings.Format]);
+                fragments.push(stuffSpan.outerHTML);
+            }
         }
 
         return fragments.join(this.__internal__joiner.stats[BattleLogs.Message.Settings.Format]);
@@ -444,17 +460,6 @@ class BattleLogsBattle {
         }
     }
     static __internal__stats_user = {
-        stuffAtk: {
-            name: {
-                normal: "Stuff",
-                short: "Stuff",
-                list: "Stuff"
-            },
-            display: false,
-            setting: true,
-            text: "Afficher le stuff",
-            type: "checkbox"
-        },
         color: {
             name: "Couleur",
             display: "#8094ff",
@@ -566,6 +571,13 @@ class BattleLogsBattle {
             text: "Afficher le résumé des combats",
             type: "checkbox"
         },
+        stuff: {
+            name: "Stuff",
+            display: false,
+            setting: true,
+            text: "Afficher le stuff utilisé",
+            type: "checkbox"
+        },
     }
     static __internal__menuSettings = {
         user: {
@@ -635,6 +647,51 @@ class BattleLogsBattle {
             }
         })
         return stats.join(this.__internal__joiner.stats[BattleLogs.Message.Settings.Format]);
+    }
+
+    /**
+     * @desc Convert stuff in message
+     *
+     * @param {Object} stuff: Stuff to convert in message
+     *
+     * @returns Converted attributes in messages
+     */
+    static __internal__convertStuffToMessage(stuff) {
+        let stuffMsg = [];
+        Object.entries(stuff).forEach(attribute => {
+            const [key, value] = attribute;
+
+            if (["arme", "calv", "items"].includes(key)) {
+                const labelSpan = document.createElement("span");
+                labelSpan.textContent = key.toUpperCase();
+                labelSpan.classList.add("normal-stat")
+
+                const valueSpan = document.createElement("span");
+                if (Array.isArray(value)) {
+                    let items = []
+                    value.forEach(item => {
+                        if (typeof item === "string") {
+                            items.push(item)
+                        } else {
+                            const objectSpan = document.createElement("span");
+                            objectSpan.classList.add("rarity-" + item.rarity);
+                            objectSpan.textContent = item.name;
+                            items.push(objectSpan.outerHTML)
+                        }
+                    })
+                    valueSpan.innerHTML = items.join(', ');
+                } else {
+                    if (typeof value === "string") {
+                        valueSpan.textContent = value.toString();
+                    } else {
+                        valueSpan.classList.add("rarity-" + value.rarity);
+                        valueSpan.textContent = value.name;
+                    }
+                }
+                stuffMsg.push(this.Messages[BattleLogs.Message.Settings.Format].stat.format(labelSpan.outerHTML, valueSpan.outerHTML));
+            }
+        })
+        return stuffMsg.join(this.__internal__joiner.stats[BattleLogs.Message.Settings.Format]);
     }
 
     /**
@@ -708,6 +765,31 @@ class BattleLogsBattle {
         if (data["eloA"]) {
             rewards.elo = data["eloA"]
         }
+    }
+
+    /**
+     * @desc Set stuff of battle
+     *
+     * @param {Object} stuff: Stuff of battle
+     * @param {int} stuffAtk: Stuff equiped in atk
+     * @param {Object} stuffs: Sutffs of player
+     */
+    static __internal__setStuff(stuff, stuffAtk, stuffs) {
+        stuff.slot = stuffAtk
+        stuff.name = stuffs[stuffAtk - 1].name;
+        let objectCalv = BattleLogs.Load.getObjectByName(stuffs[stuffAtk - 1].calv);
+        stuff.calv = objectCalv === '_' ? objectCalv : {name: objectCalv["name"], rarity: objectCalv["rarity"]};
+        let objectArme = BattleLogs.Load.getObjectByName(stuffs[stuffAtk - 1].arme);
+        stuff.arme = objectArme === '_' ? objectArme : {name: objectArme["name"], rarity: objectArme["rarity"]};
+
+        stuff.items = [];
+        console.log(stuffs[stuffAtk - 1].items)
+        for (const item of stuffs[stuffAtk - 1].items) {
+            let objectItem = BattleLogs.Load.getObjectByName(item);
+            stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
+        }
+
+        console.log(stuff)
     }
 
     /**
@@ -1085,6 +1167,22 @@ class BattleLogsBattle {
         return rewards;
     }
 
+    /**
+     * @desc Create stuff object
+     *
+     * @param {string} type: stuff
+     * @returns stuff object
+     */
+    static __internal__createStuff(type = "stuff") {
+        const stuff = new this.Stuff(type);
+        stuff.slot = 0;
+        stuff.name = null;
+        stuff.calv = null;
+        stuff.arme = null;
+        stuff.items = [];
+        return stuff;
+    }
+
     static Player = class {
         constructor(type, name) {
             this.type = type;
@@ -1109,6 +1207,20 @@ class BattleLogsBattle {
     }
 
     static Rewards = class {
+        constructor(type) {
+            this.type = type;
+        }
+
+        getType() {
+            return this.type;
+        }
+
+        setType(value) {
+            this.type = value;
+        }
+    }
+
+    static Stuff = class {
         constructor(type) {
             this.type = type;
         }

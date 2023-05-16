@@ -47,6 +47,30 @@ class BattleLogsLoad {
     }
 
     /**
+     * @desc Get object item by name
+     *
+     * @param {string} name: name of object needed
+     *
+     * @return found object or null
+     */
+    static getObjectByName(name) {
+        let internalArrays = [
+            this.__internal__items,
+            this.__internal__armes,
+            this.__internal__calvs
+        ];
+        for (let internalArray of internalArrays) {
+            let foundObject = internalArray.find(item => {
+                return item.name === name
+            });
+            if (foundObject) {
+                return foundObject;
+            }
+        }
+        return name;
+    }
+
+    /**
      * @desc Return true if load has loaded
      *
      * @return true if load objects has loaded else false
