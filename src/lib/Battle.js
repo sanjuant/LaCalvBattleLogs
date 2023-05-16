@@ -12,18 +12,21 @@ class BattleLogsBattle {
             user: "Joueur",
             opponent: "Adversaire",
             rewards: "Récompenses",
+            stuff: "Stuff <span class='stuff-name'>(#{0} - {1})</span>",
             stat: "{0}&nbsp;{1}"
         },
         short: {
             user: "",
             opponent: "",
             rewards: "",
+            stuff: "#{0}-{1}</span>",
             stat: "{0}:{1}"
         },
         list: {
             user: "Joueur",
             opponent: "Adversaire",
             rewards: "Récompenses",
+            stuff: "Stuff <span class='stuff-name'>(#{0} - {1})</span>",
             stat: "&nbsp;&nbsp;&nbsp;&nbsp;{0} : {1}"
         },
     }
@@ -187,8 +190,7 @@ class BattleLogsBattle {
             const stuffSpanFragments = [];
             const sLabelSpan = document.createElement("span");
             sLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
-            console.log(log.stuff)
-            sLabelSpan.innerHTML = `${log.stuff.type.toUpperCase()} <span class="stuff-name">(#${log.stuff.slot} - ${log.stuff.name})</span>`;
+            sLabelSpan.innerHTML = this.Messages[BattleLogs.Message.Settings.Format].stuff.format(log.stuff.slot, log.stuff.name);
             stuffSpanFragments.push(sLabelSpan.outerHTML);
 
             const stuffSpan = document.createElement("span");
@@ -578,6 +580,39 @@ class BattleLogsBattle {
             text: "Afficher le stuff utilisé",
             type: "checkbox"
         },
+        arme: {
+            name: {
+                normal: "Arme",
+                short: "Arm",
+                list: "Arme"
+            },
+            display: false,
+            setting: false,
+            text: "arme",
+            type: "checkbox"
+        },
+        calv: {
+            name: {
+                normal: "Calv",
+                short: "Clv",
+                list: "Calv"
+            },
+            display: false,
+            setting: false,
+            text: "calv",
+            type: "checkbox"
+        },
+        items: {
+            name: {
+                normal: "Items",
+                short: "Itm",
+                list: "Items"
+            },
+            display: false,
+            setting: false,
+            text: "items",
+            type: "checkbox"
+        },
     }
     static __internal__menuSettings = {
         user: {
@@ -663,7 +698,7 @@ class BattleLogsBattle {
 
             if (["arme", "calv", "items"].includes(key)) {
                 const labelSpan = document.createElement("span");
-                labelSpan.textContent = key.toUpperCase();
+                labelSpan.textContent = this.__internal__misc[key].name[BattleLogs.Message.Settings.Format];
                 labelSpan.classList.add("normal-stat")
 
                 const valueSpan = document.createElement("span");
