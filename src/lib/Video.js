@@ -22,6 +22,8 @@ class BattleLogsVideo {
             twitch.innerHTML = twitch.innerHTML.replace(/<!--|-->|\r?\n|\r/g, "");
             this.BattleLogsTwitchVideo = twitch.querySelector(".video")
             this.BattleLogsTwitchVideo.style.display = "none";
+            this.BattleLogsTwitchVideo.style.width = "100%";
+            this.BattleLogsTwitchVideo.style.height = "190px";
             this.BattleLogsTwitchChat = twitch.querySelector(".tchat")
 
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
@@ -49,7 +51,7 @@ class BattleLogsVideo {
             videoButton.classList.add("selected");
             videoButton.title = "Masquer la vidéo Twitch";
             this.BattleLogsTwitchVideo.style.display = "block";
-            this.BattleLogsTwitchChat.style.height = "84%";
+            this.BattleLogsTwitchChat.style.height = "80%";
         } else {
             videoButton.title = "Afficher la vidéo Twitch";
             this.BattleLogsTwitchVideo.style.display = "none";
@@ -62,7 +64,7 @@ class BattleLogsVideo {
                 videoButton.classList.add("selected");
                 videoButton.title = "Masquer la vidéo Twitch";
                 this.BattleLogsTwitchVideo.style.display = "block";
-                this.BattleLogsTwitchChat.style.height = "84%";
+                this.BattleLogsTwitchChat.style.height = "80%";
             } else {
                 videoButton.classList.remove("selected");
                 videoButton.title = "Afficher la vidéo Twitch";
