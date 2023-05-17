@@ -21,6 +21,7 @@ class BattleLogs
     static Csv = BattleLogsCsv;
     static Sound = BattleLogsSound;
     static Battlewbtry = BattleLogsBattlewbtry;
+    static Video = BattleLogsVideo;
 
     static InitSteps = class BattleLogsInitSteps
     {
@@ -73,6 +74,7 @@ class BattleLogs
             // Additionnal components
             this.Csv.initialize(initStep);
             this.Sound.initialize(initStep);
+            this.Video.initialize(initStep);
         }
 
         console.log(`%cBattleLogs started`, "color:#00A7FF;font-weight:900;");
