@@ -491,3 +491,44 @@ button.selected {
     text-align: left;
     padding-bottom: 1em;
 }
+
+/********************/
+/* Prompt           */
+/********************/
+.prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #232327;
+    padding: 20px;
+    border: 1px solid #0c0c0d;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.prompt label {
+    display: block;
+    margin-bottom: 10px;
+}
+.prompt input[type="text"] {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+.prompt .button-container {
+    text-align: right;
+}
+.prompt button {
+    padding: 5px 10px;
+    background-color: #29585b;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.prompt button:last-child {
+    background-color: #e94045;
+    margin-right: 0;
+}
