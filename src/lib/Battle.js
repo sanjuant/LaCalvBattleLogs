@@ -80,7 +80,7 @@ class BattleLogsBattle {
                     event = action.events[event]
                     if (event.type === "Attaque") {
                         if (event.name === "ATTAQUE") {
-                            this.__internal__incrementEsquive(user, opponent, event);
+                            this.__internal__incrementEsquive(user, opponent, action, event);
                             this.__internal__incrementDmg(user, opponent, action, event);
                         } else if (event.name === "BLOQUAGE") {
                             this.__internal__incrementStun(user, opponent, action);
@@ -818,13 +818,10 @@ class BattleLogsBattle {
         stuff.arme = objectArme === '_' ? objectArme : {name: objectArme["name"], rarity: objectArme["rarity"]};
 
         stuff.items = [];
-        console.log(stuffs[stuffAtk - 1].items)
         for (const item of stuffs[stuffAtk - 1].items) {
             let objectItem = BattleLogs.Load.getObjectByName(item);
             stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
         }
-
-        console.log(stuff)
     }
 
     /**
@@ -1055,13 +1052,18 @@ class BattleLogsBattle {
      *
      * @param {Object} user: User of battle
      * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
      * @param {JSON} event: Event of battle
      */
-    static __internal__incrementEsquive(user, opponent, event) {
-        if (event.target === user.name) {
-            if ("esquived" in event && event.esquived) user.esquive += 1;
-        } else {
-            if ("esquived" in event && event.esquived) opponent.esquive += 1;
+    static __internal__incrementEsquive(user, opponent, action, event) {
+        if (action["attacker"]["name"] === user.name && event.target === opponent.name) {
+            if ("esquived" in event && event.esquived) {
+                user.esquive += 1;
+            }
+        } if (action["attacker"]["name"] === opponent.name && event.target === user.name) {
+            if ("esquived" in event && event.esquived) {
+                opponent.esquive += 1;
+            }
         }
     }
 
