@@ -1058,11 +1058,11 @@ class BattleLogsBattle {
     static __internal__incrementEsquive(user, opponent, action, event) {
         if (action["attacker"]["name"] === user.name && event.target === opponent.name) {
             if ("esquived" in event && event.esquived) {
-                user.esquive += 1;
+                opponent.esquive += 1;
             }
         } if (action["attacker"]["name"] === opponent.name && event.target === user.name) {
             if ("esquived" in event && event.esquived) {
-                opponent.esquive += 1;
+                user.esquive += 1;
             }
         }
     }
