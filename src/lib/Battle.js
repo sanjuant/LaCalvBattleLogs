@@ -13,21 +13,24 @@ class BattleLogsBattle {
             opponent: "Adversaire",
             rewards: "Récompenses",
             stuff: "Stuff <span class='stuff-name'>(#{0} - {1})</span>",
-            stat: "{0}&nbsp;{1}"
+            stat: "{0}&nbsp;{1}",
+            familier: "<span class='normal-familier'>(F:{0})</span>"
         },
         short: {
             user: "",
             opponent: "",
             rewards: "",
             stuff: "#{0}-{1}</span>",
-            stat: "{0}:{1}"
+            stat: "{0}:{1}",
+            familier: "<span class='short-familier'>(F:{0})</span>"
         },
         list: {
             user: "Joueur",
             opponent: "Adversaire",
             rewards: "Récompenses",
             stuff: "Stuff <span class='stuff-name'>(#{0} - {1})</span>",
-            stat: "&nbsp;&nbsp;&nbsp;&nbsp;{0} : {1}"
+            stat: "&nbsp;&nbsp;&nbsp;&nbsp;{0} : {1}",
+            familier: " <span class='list-familier'>(F:{0})</span>"
         },
     }
 
@@ -57,7 +60,13 @@ class BattleLogsBattle {
     static getStatsFromData(data) {
         if (!data["A"] || !data["B"]) return;
         const user = this.__internal__createPlayer("user", data["A"]["name"]);
+        if ("fA" in data) {
+            user.famName = data["fA"]["name"]
+        }
         const opponent = this.__internal__createPlayer("opponent", data["B"]["name"]);
+        if ("fB" in data) {
+            opponent.famName = data["fB"]["name"]
+        }
         const rewards = this.__internal__createRewards("rewards");
         const stuff = this.__internal__createStuff("stuff");
 
@@ -459,7 +468,49 @@ class BattleLogsBattle {
             setting: true,
             text: "Afficher le nom",
             type: "checkbox"
-        }
+        },
+        famTour: {
+            name: "Tour",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
+        famVie: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
+        famDmg: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
+        famVieBase: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
+        famEsquive: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
+        famName: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
     }
     static __internal__stats_user = {
         color: {
@@ -646,10 +697,15 @@ class BattleLogsBattle {
         Object.entries(attributes).forEach(attribute => {
             const [key, value] = attribute;
             const settingKey = attributes.type + '-' + key
+            const famKey = "fam" + key.capitalize()
+            let famValue = null
+            if (famKey in attributes) {
+                famValue = attributes[famKey]
+            }
 
             // Only display stat if value is not 0 and not banned
             if (this.__internal__battleSettings[settingKey]
-                && (typeof value === "number" && value !== 0 || Array.isArray(value) && value.length > 0 || typeof value === "string" && value.length > 0)
+                && (typeof value === "number" && value !== 0 || typeof famValue === "number" && famValue !== 0 || Array.isArray(value) && value.length > 0 || typeof value === "string" && value.length > 0)
                 && !bannedAttrs.includes(key)
             ) {
                 const labelSpan = document.createElement("span");
@@ -676,7 +732,13 @@ class BattleLogsBattle {
                     })
                     valueSpan.innerHTML = items.join(', ');
                 } else {
-                    valueSpan.textContent = value.toString();
+                    if (typeof famValue === "number" && famValue !== 0) {
+                        valueSpan.innerHTML = value.toString() + this.Messages[BattleLogs.Message.Settings.Format].familier.format(famValue);
+                    } else if (typeof value === "number" && value !== 0 ) {
+                        valueSpan.textContent = value.toString();
+                    } else if (typeof value === "string") {
+                        valueSpan.textContent = value.toString();
+                    }
                 }
                 stats.push(this.Messages[BattleLogs.Message.Settings.Format].stat.format(labelSpan.outerHTML, valueSpan.outerHTML));
             }
@@ -753,8 +815,8 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      */
     static __internal__setDmgTotal(user, opponent) {
-        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi;
-        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi;
+        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.famDmg;
+        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.famDmg;
     }
 
     /**
@@ -897,7 +959,9 @@ class BattleLogsBattle {
                 opponent.vieBase = action["pvs"]["B"];
             }
             user.vie = action["pvs"]["A"];
+            user.famVie = action["pvs"]["fA"];
             opponent.vie = action["pvs"]["B"];
+            opponent.famVie = action["pvs"]["fB"];
         }
     }
 
@@ -909,10 +973,36 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementTour(user, opponent, action) {
-        if (action.attacker.name === user.name) {
+        if (action["attacker"]["name"] === user.name) {
             user.tour += 1;
-        } else if (action.attacker.name === opponent.name) {
-           opponent.tour += 1;
+        } else if (action["attacker"]["name"] === user.famName) {
+            user.famTour += 1;
+        } else if (action["attacker"]["name"] === opponent.name) {
+            opponent.tour += 1;
+        } else if (action["attacker"]["name"] === opponent.famName) {
+            opponent.famTour += 1;
+        }
+    }
+
+    /**
+     * @desc Increment esquive of battle
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: Event of battle
+     */
+    static __internal__incrementEsquive(user, opponent, action, event) {
+        if ("esquived" in event && event.esquived) {
+            if (event.target === user.name) {
+                user.esquive += 1;
+            } else if (event.target === user.famName) {
+                user.famEsquive += 1;
+            } else if (event.target === opponent.name) {
+                opponent.esquive += 1;
+            } else if (event.target === opponent.famName) {
+                opponent.famEsquive += 1;
+            }
         }
     }
 
@@ -925,13 +1015,17 @@ class BattleLogsBattle {
      * @param {JSON} event: Event of battle
      */
     static __internal__incrementDmg(user, opponent, action, event) {
-        if (action["attacker"]["name"].includes(user.name)) {
-            if (event.target === opponent.name)  {
+        if (event.target.includes(opponent.name)) {
+            if (action["attacker"]["name"] === user.name) {
                 if ("change" in event && "old" in event.change && "new" in event.change) user.dmg += event.change["old"] - event.change["new"];
+            } else if (action["attacker"]["name"] === user.famName) {
+                if ("change" in event && "old" in event.change && "new" in event.change) user.famDmg += event.change["old"] - event.change["new"];
             }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if (event.target === user.name) {
+        } else if (event.target.includes(user.name)) {
+            if (action["attacker"]["name"] === opponent.name) {
                 if ("change" in event && "old" in event.change && "new" in event.change) opponent.dmg += event.change["old"] - event.change["new"];
+            } else if (action["attacker"]["name"] === opponent.famName) {
+                if ("change" in event && "old" in event.change && "new" in event.change) opponent.famDmg += event.change["old"] - event.change["new"];
             }
         }
     }
@@ -1044,26 +1138,6 @@ class BattleLogsBattle {
             opponent.stun += 1;
         } else if (action["attacker"]["name"] === opponent.name) {
             user.stun += 1;
-        }
-    }
-
-    /**
-     * @desc Increment esquive of battle
-     *
-     * @param {Object} user: User of battle
-     * @param {Object} opponent: Opponent of battle
-     * @param {JSON} action: Action of battle
-     * @param {JSON} event: Event of battle
-     */
-    static __internal__incrementEsquive(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name && event.target === opponent.name) {
-            if ("esquived" in event && event.esquived) {
-                opponent.esquive += 1;
-            }
-        } if (action["attacker"]["name"] === opponent.name && event.target === user.name) {
-            if ("esquived" in event && event.esquived) {
-                user.esquive += 1;
-            }
         }
     }
 
@@ -1181,6 +1255,11 @@ class BattleLogsBattle {
         player.brulure = 0;
         player.maraboutage = 0;
         player.saignement = 0;
+        player.famTour = 0;
+        player.famVie = 0;
+        player.famDmg = 0;
+        player.famVieBase = 0;
+        player.famEsquive = 0;
         player.result = "";
         return player;
     }

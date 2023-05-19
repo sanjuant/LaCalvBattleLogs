@@ -287,6 +287,16 @@
 }
 .short-stat {}
 .list-stat {}
+.normal-familier {
+    font-size: 11px;
+    margin-left: 4px;
+}
+.short-familier {
+    font-size: 11px;
+}
+.list-familier {
+    font-size: 12px;
+}
 
 /********************/
 /* Utils            */
