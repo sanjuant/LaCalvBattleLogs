@@ -82,9 +82,9 @@ class BattleLogsBattle {
             this.__internal__incrementVdv(user, opponent, action);
             this.__internal__incrementErosion(user, opponent, action);
             this.__internal__incrementRenvoi(user, opponent, action);
+            this.__internal__incrementTour(user, opponent, action);
 
             if (action.events && action.events.length > 0) {
-                this.__internal__incrementTour(user, opponent, action);
                 for (let event in action.events) {
                     event = action.events[event]
                     if (event.type === "Attaque") {
