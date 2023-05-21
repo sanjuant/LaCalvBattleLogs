@@ -76,6 +76,7 @@ class BattleLogsBattle {
         this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
 
         for (let [, action] of actions.entries()) {
+            if (action.turn === 0) continue;
             this.__internal__setShields(user, opponent, action);
             this.__internal__setHealth(user, opponent, action);
             this.__internal__incrementDoubleCoup(user, opponent, action);
