@@ -34,6 +34,9 @@ class BattleLogsBattle {
         },
     }
 
+    static BattleSettings = null;
+
+
     /**
      * @desc Initialize Class, and restores previous running state if needed
      *
@@ -42,9 +45,9 @@ class BattleLogsBattle {
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             this.__internal__setDefaultSettingsValues()
-            this.__internal__battleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
+            this.BattleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
             // this.__internal__addSettings();
-            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__battleSettings, "Battle");
+            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.BattleSettings, "Battle");
             // BattleLogs.Menu.setInputsSettings(this.Settings.BattleSettings);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
         }
@@ -76,9 +79,10 @@ class BattleLogsBattle {
         this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
 
         for (let [, action] of actions.entries()) {
-            if (action.turn === 0) continue;
             this.__internal__setShields(user, opponent, action);
             this.__internal__setHealth(user, opponent, action);
+            if (action.turn === 0) continue;
+
             this.__internal__incrementDoubleCoup(user, opponent, action);
             this.__internal__incrementVdv(user, opponent, action);
             this.__internal__incrementErosion(user, opponent, action);
@@ -139,7 +143,7 @@ class BattleLogsBattle {
 
         const userSpanFragments = [];
         const userSpan = document.createElement("span");
-        userSpan.style.color = this.__internal__battleSettings["user-color"];
+        userSpan.style.color = this.BattleSettings["user-color"];
         if (this.Messages[BattleLogs.Message.Settings.Format].user !== "") {
             const uLabelSpan = document.createElement("span");
             uLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
@@ -162,7 +166,7 @@ class BattleLogsBattle {
 
         const opponentSpanFragments = [];
         const opponentSpan = document.createElement("span");
-        opponentSpan.style.color = this.__internal__battleSettings["opponent-color"];
+        opponentSpan.style.color = this.BattleSettings["opponent-color"];
         if (this.Messages[BattleLogs.Message.Settings.Format].opponent !== "") {
             const oLabelSpan = document.createElement("span");
             oLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
@@ -182,7 +186,7 @@ class BattleLogsBattle {
 
         const rewardsSpanFragments = [];
         const rewardsSpan = document.createElement("span");
-        rewardsSpan.style.color = this.__internal__battleSettings["rewards-color"];
+        rewardsSpan.style.color = this.BattleSettings["rewards-color"];
         if (this.Messages[BattleLogs.Message.Settings.Format].rewards !== "") {
             const rLabelSpan = document.createElement("span");
             rLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
@@ -240,14 +244,13 @@ class BattleLogsBattle {
      * @desc Update settings of class
      */
     static updateSettings() {
-        this.__internal__battleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
+        this.BattleSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
     }
 
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
     /*********************************************************************/
 
-    static __internal__battleSettings = null;
     static __internal__joiner = {
         stats: {
             normal: ", ",
@@ -506,10 +509,14 @@ class BattleLogsBattle {
             type: "checkbox"
         },
         famName: {
-            name: "",
+            name: {
+                normal: "Familier",
+                short: "Fam",
+                list: "Familier"
+            },
             display: false,
-            setting: false,
-            text: "",
+            setting: true,
+            text: "Afficher le nom du familier",
             type: "checkbox"
         },
     }
@@ -632,6 +639,13 @@ class BattleLogsBattle {
             text: "Afficher le stuff utilisé",
             type: "checkbox"
         },
+        time: {
+            name: "Heure",
+            display: true,
+            setting: true,
+            text: "Afficher l'heure",
+            type: "checkbox"
+        },
         arme: {
             name: {
                 normal: "Arme",
@@ -705,7 +719,7 @@ class BattleLogsBattle {
             }
 
             // Only display stat if value is not 0 and not banned
-            if (this.__internal__battleSettings[settingKey]
+            if (this.BattleSettings[settingKey]
                 && (typeof value === "number" && value !== 0 || typeof famValue === "number" && famValue !== 0 || Array.isArray(value) && value.length > 0 || typeof value === "string" && value.length > 0)
                 && !bannedAttrs.includes(key)
             ) {
