@@ -87,31 +87,29 @@ class BattleLogsMessage {
         pElem.dataset.type = log.type;
 
         // Create span element for time
-        const spanTimeEl = document.createElement("span");
-        spanTimeEl.classList.add("time");
-        spanTimeEl.innerHTML = BattleLogs.Utils.getDateObject(log.time).toLocaleTimeString();
+        if (BattleLogs.Battle.BattleSettings["misc-time"]) {
+            const spanTimeEl = document.createElement("span");
+            spanTimeEl.classList.add("time");
+            spanTimeEl.innerHTML = BattleLogs.Utils.getDateObject(log.time).toLocaleTimeString();
+            pElem.appendChild(spanTimeEl);
+        }
 
         // Create span element for message
         const spanMsgEl = document.createElement("span");
         spanMsgEl.classList.add("format-" + BattleLogs.Message.Settings.Format);
         spanMsgEl.innerHTML = message;
+        pElem.appendChild(spanMsgEl);
+
 
         // Create span element for type
         const spanTypeEl = document.createElement("span");
         const subSpan = document.createElement("span");
         spanTypeEl.classList.add("type");
         subSpan.innerHTML = type;
-
         spanTypeEl.onclick = () => {
             this.deleteMessage(pElem)
         }
-
         spanTypeEl.appendChild(subSpan)
-
-
-        // Append spans to p element
-        pElem.appendChild(spanTimeEl);
-        pElem.appendChild(spanMsgEl);
         pElem.appendChild(spanTypeEl);
 
         // Conserve only last 50 messages in html container
