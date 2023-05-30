@@ -192,11 +192,15 @@ class BattleLogsUpdate {
                 let name = player["stuffs"][i] ? player["stuffs"][i] : "Slot #"+ (i + 1).toString()
                 this.stuffs[i] = {"name": name, "calv": player["calvs"][i], "arme": player["armes"][i], "items": player["items"][i]}
                 if ("familiers" in player) {
-                    if (player["familiers"][i] === null) {
+                    if (player["familiers"][i] === null || player["familiers"][i] === undefined) {
                         continue
                     }
-                    this.stuffs[i].famAtk = player["familiers"][i]["attack"].capitalize()
-                    this.stuffs[i].famDef = player["familiers"][i]["defense"].capitalize()
+                    if ("attack" in player["familiers"][i]) {
+                        this.stuffs[i].famAtk = player["familiers"][i]["attack"].capitalize()
+                    }
+                    if ("defense" in player["familiers"][i]) {
+                        this.stuffs[i].famDef = player["familiers"][i]["defense"].capitalize()
+                    }
                 }
             }
         }
