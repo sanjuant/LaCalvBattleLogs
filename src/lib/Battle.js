@@ -681,6 +681,28 @@ class BattleLogsBattle {
             text: "calv",
             type: "checkbox"
         },
+        famAtk: {
+            name: {
+                normal: "FamAtk",
+                short: "FamA",
+                list: "FamAtk"
+            },
+            display: false,
+            setting: false,
+            text: "famatk",
+            type: "checkbox"
+        },
+        famDef: {
+            name: {
+                normal: "FamDef",
+                short: "FamD",
+                list: "FamDef"
+            },
+            display: false,
+            setting: false,
+            text: "famdef",
+            type: "checkbox"
+        },
         items: {
             name: {
                 normal: "Items",
@@ -786,7 +808,7 @@ class BattleLogsBattle {
         Object.entries(stuff).forEach(attribute => {
             const [key, value] = attribute;
 
-            if (["arme", "calv", "items"].includes(key)) {
+            if (["arme", "calv", "items", "famAtk", "famDef"].includes(key)) {
                 const labelSpan = document.createElement("span");
                 labelSpan.textContent = this.__internal__misc[key].name[BattleLogs.Message.Settings.Format];
                 labelSpan.classList.add("normal-stat")
@@ -912,6 +934,9 @@ class BattleLogsBattle {
             let objectItem = BattleLogs.Load.getObjectByName(item);
             stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
         }
+
+        stuff.famAtk = stuffs[stuffAtk - 1].famAtk.capitalize()
+        stuff.famDef = stuffs[stuffAtk - 1].famDef.capitalize()
     }
 
     /**
@@ -1341,6 +1366,8 @@ static __internal__createPlayer(type, name) {
         stuff.calv = null;
         stuff.arme = null;
         stuff.items = [];
+        stuff.famAtk = "";
+        stuff.famDef = "";
         return stuff;
     }
 
