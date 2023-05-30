@@ -100,6 +100,8 @@ class BattleLogsBattle {
                             this.__internal__incrementStun(user, opponent, action);
                         } else if (event.name === "SAIGNEMENT") {
                             this.__internal__incrementSaignement(user, opponent, action, event);
+                        } else if (event.name === "PARALYSIE") {
+                            this.__internal__incrementParalysie(user, opponent, action);
                         }
                     } else if (event.type === "Chaque début de tour") {
                         if (event.name === "Heal") {
@@ -449,6 +451,17 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Dégâts saignement",
+            type: "checkbox"
+        },
+        paralysie: {
+            name: {
+                normal: "Paralysie",
+                short: "Par",
+                list: "Paralysie"
+            },
+            display: false,
+            setting: true,
+            text: "Nombre de paralysie",
             type: "checkbox"
         },
         result: {
@@ -1177,6 +1190,21 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment paralysie of battle
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     */
+    static __internal__incrementParalysie(user, opponent, action) {
+        if (action["attacker"]["name"] === user.name) {
+            opponent.paralysie += 1;
+        } else if (action["attacker"]["name"] === opponent.name) {
+            user.paralysie += 1;
+        }
+    }
+
+    /**
      * @desc Increment gain de vie of player
      *
      * @param {Object} user: User of battle
@@ -1243,42 +1271,43 @@ class BattleLogsBattle {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.MenuSettings, {});
     }
 
-    /**
-     * @desc Create player object
-     *
-     * @param {string} type: user or opponent
-     * @param {string} name: name of player
-     * @returns player object
-     */
-    static __internal__createPlayer(type, name) {
-        const player = new this.Player(type, name);
-        player.tour = 0;
-        player.vie = 0;
-        player.dmgTotal = 0;
-        player.dmg = 0;
-        player.vieBase = 0;
-        player.vieGain = 0;
-        player.bouclier = 0;
-        player.bouclierBase = 0;
-        player.esquive = 0;
-        player.stun = 0;
-        player.dc = 0;
-        player.vdv = 0;
-        player.renvoi = 0;
-        player.erosion = 0;
-        player.poison = 0;
-        player.brulure = 0;
-        player.maraboutage = 0;
-        player.saignement = 0;
-        player.famTour = 0;
-        player.famVie = 0;
-        player.famDmg = 0;
-        player.famVieBase = 0;
-        player.famEsquive = 0;
-        player.famName = "";
-        player.result = "";
-        return player;
-    }
+/**
+ * @desc Create player object
+ *
+ * @param {string} type: user or opponent
+ * @param {string} name: name of player
+ * @returns player object
+ */
+static __internal__createPlayer(type, name) {
+    const player = new this.Player(type, name);
+    player.tour = 0;
+    player.vie = 0;
+    player.dmgTotal = 0;
+    player.dmg = 0;
+    player.vieBase = 0;
+    player.vieGain = 0;
+    player.bouclier = 0;
+    player.bouclierBase = 0;
+    player.esquive = 0;
+    player.stun = 0;
+    player.dc = 0;
+    player.vdv = 0;
+    player.renvoi = 0;
+    player.erosion = 0;
+    player.poison = 0;
+    player.brulure = 0;
+    player.maraboutage = 0;
+    player.saignement = 0;
+    player.paralysie = 0
+    player.famTour = 0;
+    player.famVie = 0;
+    player.famDmg = 0;
+    player.famVieBase = 0;
+    player.famEsquive = 0;
+    player.famName = "";
+    player.result = "";
+    return player;
+}
 
     /**
      * @desc Create rewards object
