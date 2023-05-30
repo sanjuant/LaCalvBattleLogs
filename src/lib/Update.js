@@ -189,7 +189,10 @@ class BattleLogsUpdate {
     static __internal__parse_player_stuffs(player) {
         if ("calvs" in player && "items" in player && "armes" in player && "stuffs" in player) {
             for (let i = 0; i < player["calvs"].length; i++) {
-                let name = player["stuffs"][i] ? player["stuffs"][i] : "Slot #"+ (i + 1).toString()
+                let name = "Slot #"+ (i + 1).toString()
+                if (i in player["stuffs"]) {
+                    name = player["stuffs"][i] ? player["stuffs"][i] : "Slot #"+ (i + 1).toString()
+                }
                 this.stuffs[i] = {"name": name, "calv": player["calvs"][i], "arme": player["armes"][i], "items": player["items"][i]}
                 if ("familiers" in player) {
                     if (player["familiers"][i] === null || player["familiers"][i] === undefined) {
