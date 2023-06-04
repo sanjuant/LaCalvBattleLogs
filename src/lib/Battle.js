@@ -119,6 +119,10 @@ class BattleLogsBattle {
                         } else if (event.name === "POISON") {
                             this.__internal__incrementPoison(user, opponent, action, event);
                         }
+                    }  else if (event.type === "Confusion") {
+                        if (event.name === "Intimidé") {
+                            this.__internal__incrementIntimidation(user, opponent, action, event);
+                        }
                     }
                 }
             }
@@ -451,6 +455,17 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Dégâts saignement",
+            type: "checkbox"
+        },
+        intimidation: {
+            name: {
+                normal: "Intimidation",
+                short: "Int",
+                list: "Intimidation"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts intimidation",
             type: "checkbox"
         },
         paralysie: {
@@ -1215,6 +1230,26 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment intimidation degats of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: event of battle
+     */
+    static __internal__incrementIntimidation(user, opponent, action, event) {
+        if (action["attacker"]["name"] === user.name) {
+            if ("change" in event) {
+                opponent.intimidation += event["change"]["old"] - event["change"]["new"];
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if ("change" in event) {
+                user.intimidation += event["change"]["old"] - event["change"]["new"];
+            }
+        }
+    }
+
+    /**
      * @desc Increment paralysie of battle
      *
      * @param {Object} user: User of battle
@@ -1323,6 +1358,7 @@ static __internal__createPlayer(type, name) {
     player.brulure = 0;
     player.maraboutage = 0;
     player.saignement = 0;
+    player.intimidation = 0;
     player.paralysie = 0
     player.famTour = 0;
     player.famVie = 0;
