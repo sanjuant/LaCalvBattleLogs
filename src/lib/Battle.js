@@ -908,8 +908,8 @@ class BattleLogsBattle {
             if (data["eloUser"]) {
                 rewards.elo = result === "winner" ? data["eloUser"] : -Math.abs(data["eloUser"]);
             }
-            if (data["event"]) {
-                rewards.event = data["event"]
+            if (data["eventA"]) {
+                rewards.event = data["eventA"]
             }
         }
         if (data["experienceA"]) {
