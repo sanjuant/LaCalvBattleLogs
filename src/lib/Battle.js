@@ -927,6 +927,9 @@ class BattleLogsBattle {
         if (data["eloA"]) {
             rewards.elo = data["eloA"]
         }
+        if (data["eventA"]) {
+            rewards.event = data["eventA"]
+        }
     }
 
     /**
