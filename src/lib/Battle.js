@@ -111,15 +111,19 @@ class BattleLogsBattle {
                         if (event.name === "Heal") {
                             this.__internal__incrementVieGain(user, opponent, action, event);
                         }
+                    } else if (event.type === "Un sort lancé par un monstre ou un familier") {
+                        if (event.name === "Heal") {
+                            this.__internal__incrementVieGain(user, opponent, action, event);
+                        }
                     } else if (event.type === "Brûlé" && event.name === "brulé") {
                         this.__internal__incrementBrulure(user, opponent, action, event);
-                    }  else if (event.type === "Poison") {
+                    } else if (event.type === "Poison") {
                         if (event.name === "MARABOUTAGE") {
                             this.__internal__incrementMaraboutage(user, opponent, action, event);
                         } else if (event.name === "POISON") {
                             this.__internal__incrementPoison(user, opponent, action, event);
                         }
-                    }  else if (event.type === "Confusion") {
+                    } else if (event.type === "Confusion") {
                         if (event.name === "Intimidé") {
                             this.__internal__incrementIntimidation(user, opponent, action, event);
                         }
@@ -254,8 +258,8 @@ class BattleLogsBattle {
     }
 
     /*********************************************************************\
-    /***    Internal members, should never be used by other classes    ***\
-    /*********************************************************************/
+     /***    Internal members, should never be used by other classes    ***\
+     /*********************************************************************/
 
     static __internal__joiner = {
         stats: {
@@ -806,7 +810,7 @@ class BattleLogsBattle {
                 } else {
                     if (typeof famValue === "number" && famValue !== 0) {
                         valueSpan.innerHTML = value.toString() + this.Messages[BattleLogs.Message.Settings.Format].familier.format(famValue);
-                    } else if (typeof value === "number" && value !== 0 ) {
+                    } else if (typeof value === "number" && value !== 0) {
                         valueSpan.textContent = value.toString();
                     } else if (typeof value === "string") {
                         valueSpan.textContent = value.toString();
@@ -983,12 +987,12 @@ class BattleLogsBattle {
             if (type in dataRewards) {
                 for (const item of dataRewards[type]) {
                     let object = BattleLogs[rewardsType[type]["class"]].getObjectByShortName(item.value);
-                    if (typeof object === "string"){
-                        object = {name: item.value, count: item.count, rarity: -1, type:type};
+                    if (typeof object === "string") {
+                        object = {name: item.value, count: item.count, rarity: -1, type: type};
                     }
                     let existingItem = items.find(i => i.name === object["name"]);
                     if (existingItem === undefined) {
-                        items.push({name: object["name"], count: item.count, rarity: object["rarity"], type:type});
+                        items.push({name: object["name"], count: item.count, rarity: object["rarity"], type: type});
                     } else {
                         existingItem.count += 1
                     }
@@ -1353,45 +1357,45 @@ class BattleLogsBattle {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.MenuSettings, {});
     }
 
-/**
- * @desc Create player object
- *
- * @param {string} type: user or opponent
- * @param {string} name: name of player
- * @returns player object
- */
-static __internal__createPlayer(type, name) {
-    const player = new this.Player(type, name);
-    player.tour = 0;
-    player.vie = 0;
-    player.dmgTotal = 0;
-    player.dmg = 0;
-    player.vieBase = 0;
-    player.vieGain = 0;
-    player.bouclier = 0;
-    player.bouclierBase = 0;
-    player.esquive = 0;
-    player.stun = 0;
-    player.dc = 0;
-    player.vdv = 0;
-    player.renvoi = 0;
-    player.erosion = 0;
-    player.poison = 0;
-    player.brulure = 0;
-    player.maraboutage = 0;
-    player.saignement = 0;
-    player.intimidation = 0;
-    player.paralysie = 0
-    player.famTour = 0;
-    player.famVie = 0;
-    player.famDmg = 0;
-    player.famVieBase = 0;
-    player.famEsquive = 0;
-    player.famVieGain = 0;
-    player.famName = "";
-    player.result = "";
-    return player;
-}
+    /**
+     * @desc Create player object
+     *
+     * @param {string} type: user or opponent
+     * @param {string} name: name of player
+     * @returns player object
+     */
+    static __internal__createPlayer(type, name) {
+        const player = new this.Player(type, name);
+        player.tour = 0;
+        player.vie = 0;
+        player.dmgTotal = 0;
+        player.dmg = 0;
+        player.vieBase = 0;
+        player.vieGain = 0;
+        player.bouclier = 0;
+        player.bouclierBase = 0;
+        player.esquive = 0;
+        player.stun = 0;
+        player.dc = 0;
+        player.vdv = 0;
+        player.renvoi = 0;
+        player.erosion = 0;
+        player.poison = 0;
+        player.brulure = 0;
+        player.maraboutage = 0;
+        player.saignement = 0;
+        player.intimidation = 0;
+        player.paralysie = 0
+        player.famTour = 0;
+        player.famVie = 0;
+        player.famDmg = 0;
+        player.famVieBase = 0;
+        player.famEsquive = 0;
+        player.famVieGain = 0;
+        player.famName = "";
+        player.result = "";
+        return player;
+    }
 
     /**
      * @desc Create rewards object
