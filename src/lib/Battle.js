@@ -1290,7 +1290,7 @@ class BattleLogsBattle {
                 }
             } else if (action["attacker"]["name"] === user.famName) {
                 if ("change" in event && "old" in event.change && "new" in event.change) {
-                    user.famvieGain += event["change"]["new"] - event["change"]["old"];
+                    user.famVieGain += event["change"]["new"] - event["change"]["old"];
                 }
             }
         } else if (event.target.includes(opponent.name)) {
@@ -1300,7 +1300,7 @@ class BattleLogsBattle {
                 }
             } else if (action["attacker"]["name"] === opponent.famName) {
                 if ("change" in event && "old" in event.change && "new" in event.change) {
-                    opponent.famvieGain += event["change"]["new"] - event["change"]["old"];
+                    opponent.famVieGain += event["change"]["new"] - event["change"]["old"];
                 }
             }
         }
