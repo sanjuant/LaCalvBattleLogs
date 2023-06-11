@@ -1276,13 +1276,25 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVieGain(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                user.vieGain += event["change"]["new"] - event["change"]["old"];
+        if (event.target.includes(user.name)) {
+            if (action["attacker"]["name"] === user.name) {
+                if ("change" in event) {
+                    user.vieGain += event["change"]["new"] - event["change"]["old"];
+                }
+            } else if (action["attacker"]["name"] === user.famName) {
+                if ("change" in event && "old" in event.change && "new" in event.change) {
+                    user.famvieGain += event["change"]["new"] - event["change"]["old"];
+                }
             }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                opponent.vieGain += event["change"]["new"] - event["change"]["old"];
+        } else if (event.target.includes(opponent.name)) {
+            if (action["attacker"]["name"] === opponent.name) {
+                if ("change" in event) {
+                    opponent.vieGain += event["change"]["new"] - event["change"]["old"];
+                }
+            } else if (action["attacker"]["name"] === opponent.famName) {
+                if ("change" in event && "old" in event.change && "new" in event.change) {
+                    opponent.famvieGain += event["change"]["new"] - event["change"]["old"];
+                }
             }
         }
     }
@@ -1368,6 +1380,7 @@ static __internal__createPlayer(type, name) {
     player.famDmg = 0;
     player.famVieBase = 0;
     player.famEsquive = 0;
+    player.famvieGain = 0;
     player.famName = "";
     player.result = "";
     return player;
