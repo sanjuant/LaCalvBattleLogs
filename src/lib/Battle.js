@@ -536,6 +536,13 @@ class BattleLogsBattle {
             text: "",
             type: "checkbox"
         },
+        famVieGain: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
         famName: {
             name: {
                 normal: "Familier",
