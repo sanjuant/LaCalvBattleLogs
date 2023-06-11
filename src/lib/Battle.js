@@ -1380,7 +1380,7 @@ static __internal__createPlayer(type, name) {
     player.famDmg = 0;
     player.famVieBase = 0;
     player.famEsquive = 0;
-    player.famvieGain = 0;
+    player.famVieGain = 0;
     player.famName = "";
     player.result = "";
     return player;
