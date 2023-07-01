@@ -115,8 +115,10 @@ class BattleLogsBattle {
                         if (event.name === "Heal") {
                             this.__internal__incrementVieGain(user, opponent, action, event);
                         }
+                    } else if (event.type === "Électrocuté" && event.name === "électrocuté") {
+                        this.__internal__incrementElectrocution(user, opponent, action, event);
                     } else if (event.type === "Brûlé" && event.name === "brulé") {
-                        this.__internal__incrementBrulure(user, opponent, action, event);
+                            this.__internal__incrementBrulure(user, opponent, action, event);
                     } else if (event.type === "Poison") {
                         if (event.name === "MARABOUTAGE") {
                             this.__internal__incrementMaraboutage(user, opponent, action, event);
@@ -426,6 +428,17 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Dégâts empoisonnés",
+            type: "checkbox"
+        },
+        electrocution: {
+            name: {
+                normal: "Électrocution",
+                short: "Elc",
+                list: "Électrocution"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts d'électrocution",
             type: "checkbox"
         },
         brulure: {
@@ -1311,6 +1324,26 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment electrocution of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: event of battle
+     */
+    static __internal__incrementElectrocution(user, opponent, action, event) {
+        if (action["attacker"]["name"] === user.name) {
+            if ("change" in event) {
+                opponent.electrocution += event["change"]["old"] - event["change"]["new"];
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if ("change" in event) {
+                user.electrocution += event["change"]["old"] - event["change"]["new"];
+            }
+        }
+    }
+
+    /**
      * @desc Increment brulure of player
      *
      * @param {Object} user: User of battle
@@ -1381,6 +1414,7 @@ class BattleLogsBattle {
         player.renvoi = 0;
         player.erosion = 0;
         player.poison = 0;
+        player.electrocution = 0;
         player.brulure = 0;
         player.maraboutage = 0;
         player.saignement = 0;
