@@ -19,6 +19,7 @@ que [Violentmonkey](https://violentmonkey.github.io/). Voici les liens pour inst
 - [Google Chrome](https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
 - [Opera](https://addons.opera.com/en/extensions/details/violent-monkey/)
 - [Safari](https://safari-extensions.apple.com/details/?id=net.violentmonkey.Violentmonkey-1HV5)
+- [Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/violentmonkey/eeagobfjdenkkddmbclomhiblgggliao)
 
 Une fois que vous avez installé l'extension, cliquez sur le bouton "Ajouter ce script" ci-dessous pour installer le script sur votre navigateur.
 
