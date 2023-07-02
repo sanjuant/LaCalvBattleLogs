@@ -125,6 +125,8 @@ class BattleLogsBattle {
                         } else if (event.name === "POISON") {
                             this.__internal__incrementPoison(user, opponent, action, event);
                         }
+                    }  else if (event.type === "Venin" && event.name === "VENIN") {
+                        this.__internal__incrementVenin(user, opponent, action, event);
                     } else if (event.type === "Confusion") {
                         if (event.name === "Intimidé") {
                             this.__internal__incrementIntimidation(user, opponent, action, event);
@@ -428,6 +430,17 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Dégâts empoisonnés",
+            type: "checkbox"
+        },
+        venin: {
+            name: {
+                normal: "Venin",
+                short: "Ven",
+                list: "Venin"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts de venin",
             type: "checkbox"
         },
         electrocution: {
@@ -1257,6 +1270,26 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment venin of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: event of battle
+     */
+    static __internal__incrementVenin(user, opponent, action, event) {
+        if (action["attacker"]["name"] === user.name) {
+            if ("change" in event) {
+                opponent.venin += event["change"]["old"] - event["change"]["new"];
+            }
+        } else if (action["attacker"]["name"] === opponent.name) {
+            if ("change" in event) {
+                user.venin += event["change"]["old"] - event["change"]["new"];
+            }
+        }
+    }
+
+    /**
      * @desc Increment intimidation degats of player
      *
      * @param {Object} user: User of battle
@@ -1414,6 +1447,7 @@ class BattleLogsBattle {
         player.renvoi = 0;
         player.erosion = 0;
         player.poison = 0;
+        player.venin = 0;
         player.electrocution = 0;
         player.brulure = 0;
         player.maraboutage = 0;
