@@ -92,43 +92,43 @@ class BattleLogsBattle {
             if (action.events && action.events.length > 0) {
                 for (let event in action.events) {
                     event = action.events[event]
-                    if (event.type === "Attaque") {
-                        if (event.name === "ATTAQUE") {
+                    if (event.type.toLowerCase()  === "attaque" ) {
+                        if (event.name.toLowerCase() === "attaque" ) {
                             this.__internal__incrementEsquive(user, opponent, action, event);
                             this.__internal__incrementDmg(user, opponent, action, event);
-                        } else if (event.name === "BLOQUAGE") {
+                        } else if (event.name.toLowerCase()  === "bloquage" ) {
                             this.__internal__incrementStun(user, opponent, action);
-                        } else if (event.name === "SAIGNEMENT") {
+                        } else if (event.name.toLowerCase()  === "saignement" ) {
                             this.__internal__incrementSaignement(user, opponent, action, event);
-                        } else if (event.name === "PARALYSIE") {
+                        } else if (event.name.toLowerCase()  === "paralysie" ) {
                             this.__internal__incrementParalysie(user, opponent, action);
                         }
-                    } else if (event.type === "Chaque début de tour") {
-                        if (event.name === "Heal") {
+                    } else if (event.type.toLowerCase() === "chaque début de tour") {
+                        if (event.name.toLowerCase() === "heal") {
                             this.__internal__incrementVieGain(user, opponent, action, event);
                         }
-                    } else if (event.type === "Une fois par combat") {
-                        if (event.name === "Heal") {
+                    } else if (event.type.toLowerCase() === "une fois par combat") {
+                        if (event.name.toLowerCase() === "heal") {
                             this.__internal__incrementVieGain(user, opponent, action, event);
                         }
-                    } else if (event.type === "Un sort lancé par un monstre ou un familier") {
-                        if (event.name === "Heal") {
+                    } else if (event.type.toLowerCase() === "un sort lancé par un monstre ou un familier") {
+                        if (event.name.toLowerCase() === "heal") {
                             this.__internal__incrementVieGain(user, opponent, action, event);
                         }
-                    } else if (event.type === "Électrocuté" && event.name === "électrocuté") {
+                    } else if (event.type.toLowerCase() === "électrocuté" && event.name.toLowerCase() === "électrocuté") {
                         this.__internal__incrementElectrocution(user, opponent, action, event);
-                    } else if (event.type === "Brûlé" && event.name === "brulé") {
+                    } else if (event.type.toLowerCase()  === "brûlé" && event.name.toLowerCase()  === "brulé") {
                             this.__internal__incrementBrulure(user, opponent, action, event);
-                    } else if (event.type === "Poison") {
-                        if (event.name === "MARABOUTAGE") {
+                    } else if (event.type.toLowerCase() === "poison") {
+                        if (event.name.toLowerCase() === "maraboutage") {
                             this.__internal__incrementMaraboutage(user, opponent, action, event);
-                        } else if (event.name === "POISON") {
+                        } else if (event.name.toLowerCase() === "poison") {
                             this.__internal__incrementPoison(user, opponent, action, event);
                         }
-                    }  else if (event.type === "Venin" && event.name === "VENIN") {
+                    }  else if (event.type.toLowerCase() === "venin" && event.name.toLowerCase() === "venin") {
                         this.__internal__incrementVenin(user, opponent, action, event);
-                    } else if (event.type === "Confusion") {
-                        if (event.name === "Intimidé") {
+                    } else if (event.type.toLowerCase() === "confusion") {
+                        if (event.name.toLowerCase() === "intimidé") {
                             this.__internal__incrementIntimidation(user, opponent, action, event);
                         }
                     }
