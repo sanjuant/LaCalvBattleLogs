@@ -40,6 +40,11 @@ class BattleLogsMessage {
             enable: true,
             group: 1
         },
+        Survie: {
+            title: "Survie",
+            enable: true,
+            group: 1
+        },
         Notif: {
             title: "Notif",
             enable: true,
@@ -66,6 +71,9 @@ class BattleLogsMessage {
             this.__internal__setDefaultSettingValues();
             // Restore previous session state
             this.__internal__loadSettingValues();
+            if (!this.Filters.hasOwnProperty('Survie')) {
+                this.__internal__setDefaultSettingValues();
+            }
             // Build menu
             this.__internal__buildMenu();
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
@@ -501,7 +509,11 @@ class BattleLogsMessage {
             this.Settings.MessageFilters
         );
         if (filters !== null) {
-            this.Filters = filters;
+            for (const key in this.Filters) {
+                if (filters.hasOwnProperty(key)) {
+                    this.Filters[key] = filters[key];
+                }
+            }
         }
         const format = BattleLogs.Utils.LocalStorage.getValue(
             this.Settings.MessageFormat

@@ -22,6 +22,7 @@ class BattleLogs
     static Sound = BattleLogsSound;
     static Battlewbtry = BattleLogsBattlewbtry;
     static Video = BattleLogsVideo;
+    static Survie = BattleLogsSurvie;
 
     static InitSteps = class BattleLogsInitSteps
     {
@@ -63,6 +64,7 @@ class BattleLogs
             this.Boss.initialize(initStep);
             this.Pvp.initialize(initStep);
             this.Tob.initialize(initStep);
+            this.Survie.initialize(initStep);
             this.Summarize.initialize(initStep);
             this.Notif.initialize(initStep);
 
