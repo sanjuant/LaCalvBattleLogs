@@ -57,26 +57,21 @@ class BattleLogsInterceptor {
      */
     static __internal__realProcess(xhr) {
         if (xhr.responseURL === "https://lacalv.fr/play/load") {
-            // console.log("UPDATE")
             BattleLogs.Load.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/update")) {
-            // console.log("UPDATE")
             BattleLogs.Update.parseResponse(xhr)
         } else if (xhr.responseURL === "https://lacalv.fr/play/wbclassement") {
-            // console.log("CLASSEMENT")
             BattleLogs.Wbclassement.parseResponse(xhr)
         } else if (xhr.responseURL === "https://lacalv.fr/play/battlewbtry") {
-            // console.log("BATTLEWBTRY")
             BattleLogs.Battlewbtry.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battle?opponent")) {
-            // console.log("PVP")
             BattleLogs.Pvp.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battlepve")) {
-            // console.log("TOB")
             BattleLogs.Tob.parseResponse(xhr);
         } else if (xhr.responseURL === "https://lacalv.fr/play/battlewb") {
-            // console.log("WB")
             BattleLogs.Boss.parseResponse(xhr);
+        } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/battleDonjon")) {
+            BattleLogs.Survie.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/roues")) {
             BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(c|d|r|re|beta)\?count/)
