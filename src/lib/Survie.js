@@ -62,7 +62,6 @@ class BattleLogsSurvie {
             return
         }
 
-        let lost = data["lost"]
         let stats = []
         if (data["results"]) {
             for (const subdata of data["results"]) {
@@ -77,16 +76,11 @@ class BattleLogsSurvie {
             }
         }
 
-
-        console.log(stats)
-
         const url = new URL(xhr.responseURL);
         const choice = new URLSearchParams(url.search).get('choice');
-        let logs = []
         const uid = crypto.randomUUID()
         for (const stat of stats) {
             const log = this.__internal__addLog(uid, choice, stat.user, stat.opponent, stat.rewards, stat.stuff);
-            logs.push(log);
             this.appendMessage(log);
         }
     }

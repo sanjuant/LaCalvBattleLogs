@@ -71,9 +71,6 @@ class BattleLogsMessage {
             this.__internal__setDefaultSettingValues();
             // Restore previous session state
             this.__internal__loadSettingValues();
-            if (!this.Filters.hasOwnProperty('Survie')) {
-                this.__internal__setDefaultSettingValues();
-            }
             // Build menu
             this.__internal__buildMenu();
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
