@@ -1008,7 +1008,6 @@ class BattleLogsBattle {
             "calv",
             "object"
         ]
-        let itemsRefs = []
         let items = [];
         for (const type of rewardsType) {
             if (type in dataRewards) {
