@@ -430,17 +430,26 @@ class BattleLogsMenu {
      * @param {string} side: Side of console element
      */
     static __internal_changeGameSide(side) {
+        const rightBar = document.querySelector("#rightBar")
+        const gameOut = document.querySelector(".game-out")
         const game = document.querySelector(".game");
+        console.log(BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden))
         if (!game)
             return;
         if (!(side === "right")) {
-            game.style.margin = null;
+            game.style.margin = "unset"
             game.style.marginLeft = "auto";
-            game.style.marginRight = "50px";
+            gameOut.style.removeProperty("margin-left")
+            gameOut.style.marginRight = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
+            rightBar.style.right = "0";
+            rightBar.style.removeProperty("left")
         } else {
-            game.style.margin = null;
-            game.style.marginLeft = "auto";
+            game.style.margin = "unset"
             game.style.marginRight = "auto";
+            gameOut.style.removeProperty("margin-right")
+            gameOut.style.marginLeft = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
+            rightBar.style.left = "0";
+            rightBar.style.removeProperty("right")
         }
     }
 
