@@ -68,50 +68,6 @@ class BattleLogsRoues {
     }
 
     /**
-     * @desc Get object item by short name
-     *
-     * @param {string} shortName: short name of object needed
-     *
-     * @return found object or null
-     */
-    static getObjectByShortName(shortName) {
-        let internalArrays = [
-            this.__internal__roues,
-        ];
-        for (let internalArray of internalArrays) {
-            let foundObject = internalArray.find(item => {
-                return item.short === shortName
-            });
-            if (foundObject) {
-                return foundObject;
-            }
-        }
-        return shortName;
-    }
-
-    /**
-     * @desc Get object item by name
-     *
-     * @param {string} name: name of object needed
-     *
-     * @return found object or null
-     */
-    static getObjectByName(name) {
-        let internalArrays = [
-            this.__internal__roues,
-        ];
-        for (let internalArray of internalArrays) {
-            let foundObject = internalArray.find(item => {
-                return item.name === name
-            });
-            if (foundObject) {
-                return foundObject;
-            }
-        }
-        return name;
-    }
-
-    /**
      * @desc Update settings of class
      */
     static updateSettings() {
@@ -140,6 +96,18 @@ class BattleLogsRoues {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @desc Return all objects of Roues
+     *
+     * @return array of objects
+     */
+    static getObjects() {
+        const internalArrays = [
+            this.__internal__roues,
+        ];
+        return [].concat(...internalArrays)
     }
 
     /*********************************************************************\
@@ -214,7 +182,10 @@ class BattleLogsRoues {
                 name = name + "s";
             }
         } else {
-            name = this.getObjectByShortName(short)["name"];
+            name = BattleLogs.Utils.getObjectByShortName(short);
+            if (name["name"]) {
+                name = name["name"]
+            }
             if (count > 1) {
                 name = name.split(" ")[0] + "s " + name.split(" ")[1] + "s";
             }

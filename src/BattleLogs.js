@@ -7,6 +7,7 @@ class BattleLogs
     static Interceptor = BattleLogsInterceptor;
     static Load = BattleLogsLoad;
     static Roues = BattleLogsRoues;
+    static Shop = BattleLogsShop;
     static Update = BattleLogsUpdate;
     static Wbclassement = BattleLogsWbclassement;
     static Boss = BattleLogsBoss;

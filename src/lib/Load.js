@@ -23,54 +23,6 @@ class BattleLogsLoad {
     }
 
     /**
-     * @desc Get object item by short name
-     *
-     * @param {string} shortName: short name of object needed
-     *
-     * @return found object or null
-     */
-    static getObjectByShortName(shortName) {
-        let internalArrays = [
-            this.__internal__items,
-            this.__internal__armes,
-            this.__internal__calvs
-        ];
-        for (let internalArray of internalArrays) {
-            let foundObject = internalArray.find(item => {
-                return item.short === shortName
-            });
-            if (foundObject) {
-                return foundObject;
-            }
-        }
-        return shortName;
-    }
-
-    /**
-     * @desc Get object item by name
-     *
-     * @param {string} name: name of object needed
-     *
-     * @return found object or null
-     */
-    static getObjectByName(name) {
-        let internalArrays = [
-            this.__internal__items,
-            this.__internal__armes,
-            this.__internal__calvs
-        ];
-        for (let internalArray of internalArrays) {
-            let foundObject = internalArray.find(item => {
-                return item.name === name
-            });
-            if (foundObject) {
-                return foundObject;
-            }
-        }
-        return name;
-    }
-
-    /**
      * @desc Return true if load has loaded
      *
      * @return true if load objects has loaded else false
@@ -86,6 +38,20 @@ class BattleLogsLoad {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @desc Return all objects of Load
+     *
+     * @return array of objects
+     */
+    static getObjects() {
+        const internalArrays = [
+            this.__internal__items,
+            this.__internal__armes,
+            this.__internal__calvs
+        ];
+        return [].concat(...internalArrays)
     }
 
     /*********************************************************************\

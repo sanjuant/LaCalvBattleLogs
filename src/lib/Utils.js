@@ -166,6 +166,37 @@ class BattleLogsUtils {
         return this.__internal__arrayBufferToBase64(data);
     }
 
+    static getObjectByShortName(shortName) {
+        let internalArrays = [
+            BattleLogs.Load.getObjects(),
+            BattleLogs.Roues.getObjects(),
+            BattleLogs.Shop.getObjects(),
+        ];
+        const allObjects = [].concat(...internalArrays);
+        let foundObject = allObjects.find(item => {
+            return item.short === shortName
+        });
+        if (foundObject) {
+            return foundObject;
+        }
+        return name;
+    }
+
+    static getObjectByName(name) {
+        let internalArrays = [
+            BattleLogs.Load.getObjects(),
+            BattleLogs.Roues.getObjects(),
+            BattleLogs.Shop.getObjects(),
+        ];
+        const allObjects = [].concat(...internalArrays);
+        let foundObject = allObjects.find(item => {
+            return item.name === name
+        });
+        if (foundObject) {
+            return foundObject;
+        }
+        return name;
+    }
 
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
