@@ -979,14 +979,14 @@ class BattleLogsBattle {
     static __internal__setStuff(stuff, stuffAtk, stuffs) {
         stuff.slot = stuffAtk
         stuff.name = stuffs[stuffAtk - 1].name;
-        let objectCalv = BattleLogs.Load.getObjectByName(stuffs[stuffAtk - 1].calv);
+        let objectCalv = BattleLogs.Utils.getObjectByName(stuffs[stuffAtk - 1].calv);
         stuff.calv = objectCalv === '_' ? objectCalv : {name: objectCalv["name"], rarity: objectCalv["rarity"]};
-        let objectArme = BattleLogs.Load.getObjectByName(stuffs[stuffAtk - 1].arme);
+        let objectArme = BattleLogs.Utils.getObjectByName(stuffs[stuffAtk - 1].arme);
         stuff.arme = objectArme === '_' ? objectArme : {name: objectArme["name"], rarity: objectArme["rarity"]};
 
         stuff.items = [];
         for (const item of stuffs[stuffAtk - 1].items) {
-            let objectItem = BattleLogs.Load.getObjectByName(item);
+            let objectItem = BattleLogs.Utils.getObjectByName(item);
             stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
         }
 
@@ -1002,17 +1002,18 @@ class BattleLogsBattle {
      * @return rewards of battle
      */
     static __internal__createRewardItems(dataRewards) {
-        const rewardsType = {
-            item: {class: "Load"},
-            arme: {class: "Load"},
-            calv: {class: "Load"},
-            object: {class: "Roues"}
-        };
+        const rewardsType = [
+            "item",
+            "arme",
+            "calv",
+            "object"
+        ]
+        let itemsRefs = []
         let items = [];
-        for (const type of Object.keys(rewardsType)) {
+        for (const type of rewardsType) {
             if (type in dataRewards) {
                 for (const item of dataRewards[type]) {
-                    let object = BattleLogs[rewardsType[type]["class"]].getObjectByShortName(item.value);
+                    let object = BattleLogs.Utils.getObjectByShortName(item.value);
                     if (typeof object === "string") {
                         object = {name: item.value, count: item.count, rarity: -1, type: type};
                     }
