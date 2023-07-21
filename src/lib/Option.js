@@ -102,12 +102,14 @@ class BattleLogsOption {
         const side = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuSide)
         if (display) {
             chatDiv.style.display = "block";
-            gameOutDiv.style.marginRight = "18%";
-            gameOutDiv.style.marginLeft = "18%";
             if (!(side === "left")) {
+                gameOutDiv.style.marginRight = "unset";
+                gameOutDiv.style.marginLeft = "18%";
                 chatDiv.style.left = "0";
                 chatDiv.style.removeProperty("right")
             } else {
+                gameOutDiv.style.marginLeft = "unset";
+                gameOutDiv.style.marginRight = "18%";
                 chatDiv.style.right = "0";
                 chatDiv.style.removeProperty("left")
             }
