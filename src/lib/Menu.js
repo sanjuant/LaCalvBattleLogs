@@ -435,14 +435,13 @@ class BattleLogsMenu {
         const game = document.querySelector(".game");
         const menuSettings = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Option.Settings.MenuSettings);
         const hiddenByBattleLogs = menuSettings ? menuSettings["display-hiddenByBattleLogs"] : null;
+        const chatHidden = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true"
         if (!game)
             return;
         if (!(side === "right")) {
             game.style.margin = "unset"
             game.style.marginLeft = "auto";
-            // gameOut.style.removeProperty("margin-left")
-
-            if (hiddenByBattleLogs) {
+            if (hiddenByBattleLogs && chatHidden) {
                 rightBar.style.left = "0";
                 rightBar.style.removeProperty("right")
                 gameOut.style.marginLeft = "unset"
@@ -451,13 +450,12 @@ class BattleLogsMenu {
                 rightBar.style.right = "0";
                 rightBar.style.removeProperty("left")
                 gameOut.style.marginLeft = "unset"
-                gameOut.style.marginRight = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
+                gameOut.style.marginRight = chatHidden ? "0" : "18%";
             }
         } else {
             game.style.margin = "unset"
             game.style.marginRight = "auto";
-            // gameOut.style.removeProperty("margin-right")
-            if (hiddenByBattleLogs) {
+            if (hiddenByBattleLogs && chatHidden) {
                 rightBar.style.right = "0";
                 rightBar.style.removeProperty("left")
                 gameOut.style.marginRight = "unset"
@@ -466,7 +464,7 @@ class BattleLogsMenu {
                 rightBar.style.left = "0";
                 rightBar.style.removeProperty("right")
                 gameOut.style.marginRight = "unset"
-                gameOut.style.marginLeft = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
+                gameOut.style.marginLeft = chatHidden ? "0" : "18%";
             }
         }
     }
