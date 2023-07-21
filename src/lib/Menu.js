@@ -433,7 +433,8 @@ class BattleLogsMenu {
         const rightBar = document.querySelector("#rightBar")
         const gameOut = document.querySelector(".game-out")
         const game = document.querySelector(".game");
-        const hiddenByBattleLogs = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Option.Settings.MenuSettings)["display-hiddenByBattleLogs"]
+        const menuSettings = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Option.Settings.MenuSettings);
+        const hiddenByBattleLogs = menuSettings ? menuSettings["display-hiddenByBattleLogs"] : null;
         if (!game)
             return;
         if (!(side === "right")) {
