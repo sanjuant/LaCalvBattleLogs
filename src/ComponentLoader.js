@@ -51,6 +51,7 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Video.js");
         this.__addScript("src/lib/Survie.js");
         this.__addScript("src/lib/Option.js");
+        this.__addScript("src/lib/Stats.js");
 
         this.__loadingOrder += 1;
         this.__addScript("src/BattleLogs.js");

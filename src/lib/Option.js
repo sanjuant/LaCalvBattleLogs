@@ -72,7 +72,6 @@ class BattleLogsOption {
             chatButton.classList.add("selected");
             chatButton.title = "Afficher le chat Twitch";
         } else {
-            BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
             chatButton.title = "Masquer le chat Twitch";
         }
         chatButton.onclick = () => {
