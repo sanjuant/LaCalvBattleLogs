@@ -433,7 +433,7 @@ class BattleLogsMenu {
         const rightBar = document.querySelector("#rightBar")
         const gameOut = document.querySelector(".game-out")
         const game = document.querySelector(".game");
-        console.log(BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden))
+        const hiddenByBattleLogs = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Option.Settings.MenuSettings)["display-hiddenByBattleLogs"]
         if (!game)
             return;
         if (!(side === "right")) {
@@ -441,15 +441,25 @@ class BattleLogsMenu {
             game.style.marginLeft = "auto";
             gameOut.style.removeProperty("margin-left")
             gameOut.style.marginRight = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
-            rightBar.style.right = "0";
-            rightBar.style.removeProperty("left")
+            if (hiddenByBattleLogs) {
+                rightBar.style.left = "0";
+                rightBar.style.removeProperty("right")
+            } else {
+                rightBar.style.right = "0";
+                rightBar.style.removeProperty("left")
+            }
         } else {
             game.style.margin = "unset"
             game.style.marginRight = "auto";
             gameOut.style.removeProperty("margin-right")
             gameOut.style.marginLeft = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
-            rightBar.style.left = "0";
-            rightBar.style.removeProperty("right")
+            if (hiddenByBattleLogs) {
+                rightBar.style.right = "0";
+                rightBar.style.removeProperty("left")
+            } else {
+                rightBar.style.left = "0";
+                rightBar.style.removeProperty("right")
+            }
         }
     }
 
