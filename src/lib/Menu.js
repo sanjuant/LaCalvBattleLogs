@@ -523,6 +523,7 @@ class BattleLogsMenu {
         BattleLogs.Menu.__internal__battleLogsPosition = e.x;
         BattleLogs.Menu.__internal__battleLogsContainer.classList.add(
             "disable-select");
+        BattleLogs.Stats.Iframe.classList.add("pointer-none")
         parent.style.width = parseInt(getComputedStyle(parent, "").width) + dx +
             "px";
         document.onmouseup = () => {
@@ -533,6 +534,7 @@ class BattleLogsMenu {
             BattleLogs.Menu.__internal__battleLogsContainer.classList.remove(
                 "disable-select"
             );
+            BattleLogs.Stats.Iframe.classList.remove("pointer-none")
             BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
                 .width);
         };
@@ -551,6 +553,7 @@ class BattleLogsMenu {
         BattleLogs.Menu.__internal__battleLogsPosition = e.x;
         BattleLogs.Menu.__internal__battleLogsContainer.classList.add(
             "disable-select");
+        BattleLogs.Stats.Iframe.classList.add("pointer-none")
         parent.style.width = parseInt(getComputedStyle(parent, "").width) - dx +
             "px";
         document.onmouseup = () => {
@@ -561,6 +564,7 @@ class BattleLogsMenu {
             BattleLogs.Menu.__internal__battleLogsContainer.classList.remove(
                 "disable-select"
             );
+            BattleLogs.Stats.Iframe.classList.remove("pointer-none")
             BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
                 .width);
         };
