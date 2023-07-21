@@ -366,6 +366,9 @@ button.selected {
     font-weight: initial;
     text-transform: initial;
 }
+.pointer-none {
+    pointer-events: none;
+}
 
 /********************/
 /* Objects colors   */
