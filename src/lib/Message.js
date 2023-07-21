@@ -60,6 +60,8 @@ class BattleLogsMessage {
         }
     };
 
+    static SettingsButton;
+
     /**
      * @desc Builds the menu, and restores previous running state if needed
      *
@@ -187,6 +189,22 @@ class BattleLogsMessage {
             }
         }
         return logs
+    }
+
+    /**
+     * Reset selected status and update elements accordingly
+     */
+    static resetSelectedSettings() {
+        if (this.SettingsButton) {
+            BattleLogs.Utils.LocalStorage.setValue(BattleLogs.Menu.BattleLogsSettings.id, "false");
+            BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
+            this.__internal__messagesActions.classList.remove("hidden");
+            this.__internal__messagesContainer.classList.remove("hidden");
+            this.SettingsButton.classList.remove("selected");
+            this.SettingsButton.title = "Paramètres";
+            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+            BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, "false");
+        }
     }
 
     /*********************************************************************\
@@ -375,48 +393,47 @@ class BattleLogsMessage {
      * @param {Element} containingDiv: The div element to append the button to
      */
     static __internal__addSettingsButton(id, containingDiv) {
-        const buttonElem = document.createElement("button");
-        buttonElem.id = id;
-        buttonElem.classList.add("svg_settings");
+        this.SettingsButton = document.createElement("button");
+        this.SettingsButton.id = id;
+        this.SettingsButton.classList.add("svg_settings");
 
         let inSettings = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
         if (inSettings) {
             this.__internal__messagesContainer.classList.add("hidden");
             this.__internal__messagesActions.classList.add("hidden");
-            buttonElem.classList.add("selected");
-            buttonElem.title = "Logs";
+            BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
+            this.SettingsButton.classList.add("selected");
+            this.SettingsButton.title = "Logs";
         } else {
             BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
-            buttonElem.title = "Paramètres";
+            this.SettingsButton.title = "Paramètres";
         }
-        buttonElem.onclick = () => {
-            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
-                "true");
+        this.SettingsButton.onclick = () => {
+            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
             if (newStatus) {
-                if (BattleLogs.Menu.BattleLogsSettings.classList.contains(
-                    "hidden")) {
-                    BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
-                    this.__internal__messagesActions.classList.add("hidden");
-                    this.__internal__messagesContainer.classList.add("hidden");
-                    buttonElem.classList.add("selected");
-                    buttonElem.title = "Logs";
-                }
+                BattleLogs.Stats.resetSelected()
+                // if (BattleLogs.Menu.BattleLogsSettings.classList.contains("hidden")) {
+                BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
+                this.__internal__messagesActions.classList.add("hidden");
+                this.__internal__messagesContainer.classList.add("hidden");
+                this.SettingsButton.classList.add("selected");
+                this.SettingsButton.title = "Logs";
+                // }
             } else {
-                if (!BattleLogs.Menu.BattleLogsSettings.classList.contains(
-                    "hidden")) {
-                    BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
-                    this.__internal__messagesActions.classList.remove("hidden");
-                    this.__internal__messagesContainer.classList.remove("hidden");
-                    buttonElem.classList.remove("selected");
-                    buttonElem.title = "Paramètres";
-                    BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-                }
+                // if (!BattleLogs.Menu.BattleLogsSettings.classList.contains("hidden")) {
+                BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
+                this.__internal__messagesActions.classList.remove("hidden");
+                this.__internal__messagesContainer.classList.remove("hidden");
+                this.SettingsButton.classList.remove("selected");
+                this.SettingsButton.title = "Paramètres";
+                BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+                // }
             }
 
-            BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, newStatus);
+            BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, newStatus);
         };
 
-        containingDiv.appendChild(buttonElem);
+        containingDiv.appendChild(this.SettingsButton);
     }
 
     /**
