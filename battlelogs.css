@@ -548,3 +548,16 @@ button.selected {
     background-color: #e94045;
     margin-right: 0;
 }
+
+/********************/
+/* QUICKFIX         */
+/********************/
+@media screen and (max-width: 1290px) {
+    #rightBar {
+        display: none !important;
+    }
+
+    .game-out {
+        margin-left: 0 !important;
+    }
+}
