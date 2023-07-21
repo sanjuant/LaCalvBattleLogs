@@ -407,7 +407,6 @@ class BattleLogsMessage {
                     this.__internal__messagesContainer.classList.remove("hidden");
                     buttonElem.classList.remove("selected");
                     buttonElem.title = "Paramètres";
-                    BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
                 }
             }
 
