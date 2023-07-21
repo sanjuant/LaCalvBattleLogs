@@ -4,7 +4,9 @@
 
 class BattleLogsOption {
     static Settings = {
+        MenuSettings: "Option-Settings",
         OptionChatHidden: "Option-Chat-Hidden",
+        Type: "Option",
     }
 
     /**
@@ -14,16 +16,42 @@ class BattleLogsOption {
      */
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
+            // Set default settings
+            this.__internal__setDefaultSettingsValues()
+            this.__internal__optionSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
+            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
+
             // Add CSV button
             this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
-
-            // Set default settings
         }
+    }
+
+    /**
+     * @desc Update settings of class
+     */
+    static updateSettings() {
+        this.__internal__optionSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
     }
 
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
+
+    static __internal__optionSettings = null;
+    static __internal__menuSettings = {
+        display: {
+            title: "Option du chat Twitch",
+            stats: {
+                hiddenByBattleLogs: {
+                    name: "Masquer sous le BattleLogs",
+                    display: true,
+                    setting: true,
+                    text: "Masquer sous le BattleLogs",
+                    type: "checkbox"
+                },
+            }
+        }
+    }
 
     /**
      * @desc Add chat button
@@ -48,7 +76,6 @@ class BattleLogsOption {
             chatButton.title = "Masquer le chat Twitch";
         }
         chatButton.onclick = () => {
-            const chatDiv = document.querySelector("#rightBar")
             const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
             if (newStatus) {
                 // Si le chat est affiché, on le masque
@@ -71,14 +98,41 @@ class BattleLogsOption {
     static __internal__toggleChat(display) {
         const chatDiv = document.querySelector("#rightBar")
         const gameOutDiv = document.querySelector(".game-out")
+        const hiddenByBattleLogs = this.__internal__optionSettings["display-hiddenByBattleLogs"]
+        const side = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuSide)
         if (display) {
             chatDiv.style.display = "block";
             gameOutDiv.style.marginRight = "18%";
             gameOutDiv.style.marginLeft = "18%";
+            if (!(side === "left")) {
+                chatDiv.style.left = "0";
+                chatDiv.style.removeProperty("right")
+            } else {
+                chatDiv.style.right = "0";
+                chatDiv.style.removeProperty("left")
+            }
+        } else if (hiddenByBattleLogs) {
+            chatDiv.style.display = "block";
+            if (side === "left") {
+                chatDiv.style.left = "0";
+                chatDiv.style.removeProperty("right")
+            } else {
+                chatDiv.style.right = "0";
+                chatDiv.style.removeProperty("left")
+            }
+            gameOutDiv.style.marginRight = "0";
+            gameOutDiv.style.marginLeft = "0";
         } else {
             chatDiv.style.display = "none";
             gameOutDiv.style.marginRight = "0";
             gameOutDiv.style.marginLeft = "0";
         }
+    }
+
+    /**
+     * @desc Sets the Menu settings default values in the local storage
+     */
+    static __internal__setDefaultSettingsValues() {
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.MenuSettings, {});
     }
 }
