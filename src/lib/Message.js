@@ -126,7 +126,9 @@ class BattleLogsMessage {
         this.__internal__messagesContainer.appendChild(pElem);
 
         // Scroll wrapper to bottom
-        BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+        if (!(BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Message.Settings.MessageSettingsOpen) === "true")) {
+            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+        }
     }
 
     /**
@@ -407,6 +409,7 @@ class BattleLogsMessage {
                     this.__internal__messagesContainer.classList.remove("hidden");
                     buttonElem.classList.remove("selected");
                     buttonElem.title = "Paramètres";
+                    BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
                 }
             }
 
