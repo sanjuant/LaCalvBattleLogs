@@ -440,26 +440,33 @@ class BattleLogsMenu {
         if (!(side === "right")) {
             game.style.margin = "unset"
             game.style.marginLeft = "auto";
-            gameOut.style.removeProperty("margin-left")
-            gameOut.style.marginRight = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
+            // gameOut.style.removeProperty("margin-left")
+
             if (hiddenByBattleLogs) {
                 rightBar.style.left = "0";
                 rightBar.style.removeProperty("right")
+                gameOut.style.marginLeft = "unset"
+                gameOut.style.marginRight = "0";
             } else {
                 rightBar.style.right = "0";
                 rightBar.style.removeProperty("left")
+                gameOut.style.marginLeft = "unset"
+                gameOut.style.marginRight = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
             }
         } else {
             game.style.margin = "unset"
             game.style.marginRight = "auto";
-            gameOut.style.removeProperty("margin-right")
-            gameOut.style.marginLeft = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
+            // gameOut.style.removeProperty("margin-right")
             if (hiddenByBattleLogs) {
                 rightBar.style.right = "0";
                 rightBar.style.removeProperty("left")
+                gameOut.style.marginRight = "unset"
+                gameOut.style.marginLeft = "0";
             } else {
                 rightBar.style.left = "0";
                 rightBar.style.removeProperty("right")
+                gameOut.style.marginRight = "unset"
+                gameOut.style.marginLeft = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true" ? "0" : "18%";
             }
         }
     }
