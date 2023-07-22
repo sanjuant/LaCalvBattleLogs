@@ -412,22 +412,18 @@ class BattleLogsMessage {
             const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
             if (newStatus) {
                 BattleLogs.Stats.resetSelected()
-                // if (BattleLogs.Menu.BattleLogsSettings.classList.contains("hidden")) {
                 BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
                 this.__internal__messagesActions.classList.add("hidden");
                 this.__internal__messagesContainer.classList.add("hidden");
                 this.SettingsButton.classList.add("selected");
                 this.SettingsButton.title = "Logs";
-                // }
             } else {
-                // if (!BattleLogs.Menu.BattleLogsSettings.classList.contains("hidden")) {
                 BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
                 this.__internal__messagesActions.classList.remove("hidden");
                 this.__internal__messagesContainer.classList.remove("hidden");
                 this.SettingsButton.classList.remove("selected");
                 this.SettingsButton.title = "Paramètres";
                 BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-                // }
             }
 
             BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, newStatus);
