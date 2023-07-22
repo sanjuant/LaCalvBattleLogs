@@ -444,11 +444,15 @@ class BattleLogsMenu {
             if (hiddenByBattleLogs && chatHidden) {
                 rightBar.style.left = "0";
                 rightBar.style.removeProperty("right")
+                rightBar.style.height = "calc(100vh - 34px)"
+                rightBar.style.top = "34px"
                 gameOut.style.marginLeft = "unset"
                 gameOut.style.marginRight = "0";
             } else {
                 rightBar.style.right = "0";
                 rightBar.style.removeProperty("left")
+                rightBar.style.height = "100vh"
+                rightBar.style.top = "0"
                 gameOut.style.marginLeft = "unset"
                 gameOut.style.marginRight = chatHidden ? "0" : "18%";
             }
@@ -458,11 +462,15 @@ class BattleLogsMenu {
             if (hiddenByBattleLogs && chatHidden) {
                 rightBar.style.right = "0";
                 rightBar.style.removeProperty("left")
+                rightBar.style.height = "calc(100vh - 34px)"
+                rightBar.style.top = "34px"
                 gameOut.style.marginRight = "unset"
                 gameOut.style.marginLeft = "0";
             } else {
                 rightBar.style.left = "0";
                 rightBar.style.removeProperty("right")
+                rightBar.style.height = "100vh"
+                rightBar.style.top = "0"
                 gameOut.style.marginRight = "unset"
                 gameOut.style.marginLeft = chatHidden ? "0" : "18%";
             }
