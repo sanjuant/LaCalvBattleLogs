@@ -18,12 +18,11 @@ class BattleLogsStats {
      */
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
+            BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             // Add CSV button
             this.__internal__addStatsPanel()
 
             this.__internal__addStatsButton(this.Settings.StatsEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
-
-            // this.resetSelected()
         }
     }
 
@@ -101,6 +100,7 @@ class BattleLogsStats {
                 this.StatsPanel.classList.add("hidden")
                 this.StatsButton.classList.remove("selected");
                 this.StatsButton.title = "Afficher les stats";
+                BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
             }
 
             BattleLogs.Utils.LocalStorage.setValue(this.StatsButton.id, newStatus);
