@@ -101,6 +101,8 @@ class BattleLogsOption {
         const side = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuSide)
         if (display) {
             chatDiv.style.display = "block";
+            chatDiv.style.height = "100vh"
+            chatDiv.style.top = "0"
             if (!(side === "left")) {
                 gameOutDiv.style.marginRight = "unset";
                 gameOutDiv.style.marginLeft = "18%";
@@ -114,6 +116,8 @@ class BattleLogsOption {
             }
         } else if (hiddenByBattleLogs) {
             chatDiv.style.display = "block";
+            chatDiv.style.height = "calc(100vh - 34px)"
+            chatDiv.style.top = "34px"
             if (side === "left") {
                 chatDiv.style.left = "0";
                 chatDiv.style.removeProperty("right")
@@ -125,6 +129,8 @@ class BattleLogsOption {
             gameOutDiv.style.marginLeft = "0";
         } else {
             chatDiv.style.display = "none";
+            chatDiv.style.height = "100vh"
+            chatDiv.style.top = "0"
             gameOutDiv.style.marginRight = "0";
             gameOutDiv.style.marginLeft = "0";
         }
