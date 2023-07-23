@@ -21,16 +21,18 @@ class BattleLogsVideo {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             // Add Video button
             let twitch = document.querySelector(".nav-page > .container-fluid > .row");
-            twitch.innerHTML = twitch.innerHTML.replace(/<!--|-->|\r?\n|\r/g, "");
-            this.BattleLogsTwitchVideo = twitch.querySelector(".video")
-            this.BattleLogsTwitchVideo.style.display = "none";
-            this.BattleLogsTwitchVideo.style.width = "100%";
-            this.BattleLogsTwitchVideo.style.height = "190px";
-            this.BattleLogsTwitchChat = twitch.querySelector(".tchat")
-            this.BattleLogsTwitchIframe = this.BattleLogsTwitchVideo.querySelector("iframe.player");
+            if (twitch) {
+                twitch.innerHTML = twitch.innerHTML.replace(/<!--|-->|\r?\n|\r/g, "");
+                this.BattleLogsTwitchVideo = twitch.querySelector(".video")
+                this.BattleLogsTwitchVideo.style.display = "none";
+                this.BattleLogsTwitchVideo.style.width = "100%";
+                this.BattleLogsTwitchVideo.style.height = "190px";
+                this.BattleLogsTwitchChat = twitch.querySelector(".tchat")
+                this.BattleLogsTwitchIframe = this.BattleLogsTwitchVideo.querySelector("iframe.player");
 
-            BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
-            this.__internal__addVideoButton(this.Settings.VideoEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+                BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+                this.__internal__addVideoButton(this.Settings.VideoEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            }
         }
     }
 
