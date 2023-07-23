@@ -1225,11 +1225,11 @@ class BattleLogsBattle {
     static __internal__incrementRenvoi(user, opponent, action) {
         if (action["defender"]["name"] === user.name) {
             if ("renvoi" in action["defender"]["computed"]) {
-                user.renvoi += action["defender"]["computed"]["renvoi"][0]["value"];
+                user.renvoi += action["defender"]["computed"]["renvoi"]["value"];
             }
         } else if (action["defender"]["name"] === opponent.name) {
             if ("renvoi" in action["defender"]["computed"]) {
-                opponent.renvoi += action["defender"]["computed"]["renvoi"][0]["value"];
+                opponent.renvoi += action["defender"]["computed"]["renvoi"]["value"];
             }
         }
     }
