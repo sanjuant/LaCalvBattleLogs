@@ -529,9 +529,9 @@ class BattleLogsMenu {
         const parent = resizeElem.parentNode;
         const dx = BattleLogs.Menu.__internal__battleLogsPosition - e.x;
         BattleLogs.Menu.__internal__battleLogsPosition = e.x;
-        BattleLogs.Menu.__internal__battleLogsContainer.classList.add(
+        BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
             "disable-select");
-        BattleLogs.Stats.Iframe.classList.add("pointer-none")
+        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none")
         parent.style.width = parseInt(getComputedStyle(parent, "").width) + dx +
             "px";
         document.onmouseup = () => {
@@ -539,10 +539,10 @@ class BattleLogsMenu {
                 "mousemove",
                 BattleLogs.Menu.__internal_resizeRight
             );
-            BattleLogs.Menu.__internal__battleLogsContainer.classList.remove(
+            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
                 "disable-select"
             );
-            BattleLogs.Stats.Iframe.classList.remove("pointer-none")
+            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none")
             BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
                 .width);
         };
@@ -559,9 +559,9 @@ class BattleLogsMenu {
         const parent = resizeElem.parentNode;
         const dx = BattleLogs.Menu.__internal__battleLogsPosition - e.x;
         BattleLogs.Menu.__internal__battleLogsPosition = e.x;
-        BattleLogs.Menu.__internal__battleLogsContainer.classList.add(
+        BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
             "disable-select");
-        BattleLogs.Stats.Iframe.classList.add("pointer-none")
+        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none")
         parent.style.width = parseInt(getComputedStyle(parent, "").width) - dx +
             "px";
         document.onmouseup = () => {
@@ -569,10 +569,10 @@ class BattleLogsMenu {
                 "mousemove",
                 BattleLogs.Menu.__internal_resizeLeft
             );
-            BattleLogs.Menu.__internal__battleLogsContainer.classList.remove(
+            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
                 "disable-select"
             );
-            BattleLogs.Stats.Iframe.classList.remove("pointer-none")
+            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none")
             BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
                 .width);
         };
