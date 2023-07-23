@@ -531,7 +531,8 @@ class BattleLogsMenu {
         BattleLogs.Menu.__internal__battleLogsPosition = e.x;
         BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
             "disable-select");
-        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none")
+        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none");
+        document.querySelector("#GameDiv").classList.add("pointer-none");
         parent.style.width = parseInt(getComputedStyle(parent, "").width) + dx +
             "px";
         document.onmouseup = () => {
@@ -542,7 +543,8 @@ class BattleLogsMenu {
             BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
                 "disable-select"
             );
-            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none")
+            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none");
+            document.querySelector("#GameDiv").classList.remove("pointer-none");
             BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
                 .width);
         };
@@ -561,7 +563,8 @@ class BattleLogsMenu {
         BattleLogs.Menu.__internal__battleLogsPosition = e.x;
         BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
             "disable-select");
-        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none")
+        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none");
+        document.querySelector("#GameDiv").classList.add("pointer-none");
         parent.style.width = parseInt(getComputedStyle(parent, "").width) - dx +
             "px";
         document.onmouseup = () => {
@@ -572,7 +575,8 @@ class BattleLogsMenu {
             BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
                 "disable-select"
             );
-            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none")
+            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none");
+            document.querySelector("#GameDiv").classList.remove("pointer-none");
             BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
                 .width);
         };
