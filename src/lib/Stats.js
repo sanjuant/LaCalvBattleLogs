@@ -122,6 +122,14 @@ class BattleLogsStats {
             return false;
         };
 
+        this.StatsButton.onmouseup = (e) => {
+            // Check whether the wheel button has been clicked (central mouse button).
+            if (e.which === 2 || e.button === 4) {
+                const urlNewTab = "https://lacalv.fr/stats/";
+                window.open(urlNewTab, '_blank');
+            }
+        };
+
         containingDiv.appendChild(this.StatsButton);
     }
 
