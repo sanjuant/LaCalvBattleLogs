@@ -16,13 +16,16 @@ class BattleLogsOption {
      */
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
-            // Set default settings
-            this.__internal__setDefaultSettingsValues()
-            this.__internal__optionSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
-            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
+            let twitch = document.querySelector(".nav-page > .container-fluid > .row");
+            if (twitch) {
+                // Set default settings
+                this.__internal__setDefaultSettingsValues()
+                this.__internal__optionSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
+                BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
 
-            // Add CSV button
-            this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+                // Add CSV button
+                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            }
         }
     }
 
