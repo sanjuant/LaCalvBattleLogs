@@ -5,11 +5,13 @@
 class BattleLogsStats {
     static Settings = {
         StatsEnable: "Stats-Enable",
+        StatsCompare: "Stats-Compare"
     }
 
     static StatsPanel;
     static StatsButton;
     static Iframe;
+    static IframeComparaison;
 
     /**
      * @desc Builds the menu, and restores previous running state if needed
@@ -21,7 +23,6 @@ class BattleLogsStats {
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             // Add CSV button
             this.__internal__addStatsPanel()
-
             this.__internal__addStatsButton(this.Settings.StatsEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
         }
     }
@@ -58,8 +59,18 @@ class BattleLogsStats {
         this.Iframe = document.createElement("iframe");
         this.Iframe.id = 'statsLacalv';
         this.Iframe.src = '/stats/';
-        this.Iframe.style = "height:  100%; background: #18181b; width: 100%; display: block;";
+        this.Iframe.style = "height: 100%; background: #18181b; width: 100%; border: none; display: block;";
+        this.IframeComparaison = document.createElement("iframe");
+        this.IframeComparaison.id = 'statsLacalvComparaison';
+        this.IframeComparaison.src = '/stats/';
+        this.IframeComparaison.style = "height: 100%; background: #18181b; width: 100%; border: none; ";
+        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.StatsCompare) === "true") {
+            this.IframeComparaison.style.display = "block";
+        } else {
+            this.IframeComparaison.style.display = "none";
+        }
         this.StatsPanel.appendChild(this.Iframe);
+        this.StatsPanel.appendChild(this.IframeComparaison);
         BattleLogs.Menu.BattleLogsWrapper.appendChild(this.StatsPanel);
     }
 
@@ -106,6 +117,21 @@ class BattleLogsStats {
             BattleLogs.Utils.LocalStorage.setValue(this.StatsButton.id, newStatus);
         };
 
+        this.StatsButton.oncontextmenu = () => {
+            this.__internal__toggleStatsComparaison()
+            return false;
+        };
+
         containingDiv.appendChild(this.StatsButton);
+    }
+
+    static __internal__toggleStatsComparaison() {
+        const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(this.Settings.StatsCompare) === "true");
+        if (newStatus) {
+            this.IframeComparaison.style.display = "block"
+        } else {
+            this.IframeComparaison.style.display = "none"
+        }
+        BattleLogs.Utils.LocalStorage.setValue(this.Settings.StatsCompare, newStatus);
     }
 }
