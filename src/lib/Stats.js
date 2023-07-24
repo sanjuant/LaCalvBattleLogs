@@ -66,7 +66,7 @@ class BattleLogsStats {
         // Add messages container to battle logs menu
         this.StatsButton = document.createElement("button");
         this.StatsButton.id = id;
-        this.StatsButton.classList.add("svg_glossary");
+        this.StatsButton.classList.add("svg_stats");
 
         let inStats = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
         if (inStats) {
