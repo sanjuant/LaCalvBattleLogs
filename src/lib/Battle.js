@@ -573,6 +573,13 @@ class BattleLogsBattle {
             text: "",
             type: "checkbox"
         },
+        famRenvoi: {
+            name: "",
+            display: false,
+            setting: false,
+            text: "",
+            type: "checkbox"
+        },
         famName: {
             name: {
                 normal: "Familier",
@@ -917,8 +924,8 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      */
     static __internal__setDmgTotal(user, opponent) {
-        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.famDmg;
-        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.famDmg;
+        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.famDmg + user.famRenvoi;
+        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.famDmg + opponent.famRenvoi;
     }
 
     /**
@@ -1231,6 +1238,14 @@ class BattleLogsBattle {
             if ("renvoi" in action["defender"]["computed"]) {
                 opponent.renvoi += action["defender"]["computed"]["renvoi"]["value"];
             }
+        } else if (action["defender"]["name"] === user.famName) {
+            if ("renvoi" in action["defender"]["computed"]) {
+                user.famRenvoi += action["defender"]["computed"]["renvoi"]["value"];
+            }
+        } else if (action["defender"]["name"] === opponent.famName) {
+            if ("renvoi" in action["defender"]["computed"]) {
+                opponent.famRenvoi += action["defender"]["computed"]["renvoi"]["value"];
+            }
         }
     }
 
@@ -1460,6 +1475,7 @@ class BattleLogsBattle {
         player.famVieBase = 0;
         player.famEsquive = 0;
         player.famVieGain = 0;
+        player.famRenvoi = 0;
         player.famName = "";
         player.result = "";
         return player;
