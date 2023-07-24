@@ -2,6 +2,8 @@
  * @class The BattleLogsStats regroups the stats functionalities
  */
 
+// TODO: Refactor this class to change name
+
 class BattleLogsStats {
     static Settings = {
         StatsEnable: "Stats-Enable",
