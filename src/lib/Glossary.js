@@ -24,8 +24,8 @@ class BattleLogsGlossary {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             // Add CSV button
-            this.__internal__addStatsPanel()
-            this.__internal__addStatsButton(this.Settings.GlossaryEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            this.__internal__addGlossaryPanel()
+            this.__internal__addGlossaryButton(this.Settings.GlossaryEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
         }
     }
 
@@ -50,7 +50,7 @@ class BattleLogsGlossary {
     /**
      * @desc Adds the BattleLogs panel
      */
-    static __internal__addStatsPanel() {
+    static __internal__addGlossaryPanel() {
         // Add settings container
         this.GlossaryPanel = document.createElement("div");
         this.GlossaryPanel.id = "battlelogs-glossary_panel";
@@ -82,7 +82,7 @@ class BattleLogsGlossary {
      * @param {string} id: The button id
      * @param {Element} containingDiv: The div element to append the separator to
      */
-    static __internal__addStatsButton(id, containingDiv) {
+    static __internal__addGlossaryButton(id, containingDiv) {
         // Add messages container to battle logs menu
         this.GlossaryButton = document.createElement("button");
         this.GlossaryButton.id = id;
