@@ -25,7 +25,7 @@ class BattleLogs
     static Video = BattleLogsVideo;
     static Survie = BattleLogsSurvie;
     static Option = BattleLogsOption;
-    static Stats = BattleLogsStats;
+    static Glossary = BattleLogsGlossary;
 
     static InitSteps = class BattleLogsInitSteps
     {
@@ -81,7 +81,7 @@ class BattleLogs
             this.Sound.initialize(initStep);
             this.Video.initialize(initStep);
             this.Option.initialize(initStep);
-            this.Stats.initialize(initStep);
+            this.Glossary.initialize(initStep);
         }
 
         console.log(`%cBattleLogs started`, "color:#00A7FF;font-weight:900;");
