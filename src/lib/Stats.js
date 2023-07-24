@@ -64,7 +64,6 @@ class BattleLogsStats {
      */
     static __internal__addStatsButton(id, containingDiv) {
         // Add messages container to battle logs menu
-        // Don't care about this commentary
         this.StatsButton = document.createElement("button");
         this.StatsButton.id = id;
         this.StatsButton.classList.add("svg_stats");
