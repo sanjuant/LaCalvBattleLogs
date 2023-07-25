@@ -25,6 +25,8 @@ class BattleLogsOption {
 
                 // Add CSV button
                 this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+
+                this.__internal__addKonamiCode()
             }
         }
     }
@@ -55,6 +57,23 @@ class BattleLogsOption {
             }
         }
     }
+    // Konami Code sequence to be entered by the user
+    static __internal__konamiCode = [
+        "ArrowUp",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowRight",
+        "b",
+        "a"
+    ];
+    // Index to keep track of the progress of Konami Code input
+    static __internal__konamiIndex = 0;
+    // Timeout variable to reset the Konami Code input if the user takes too long
+    static __internal__konamiTimeout;
 
     /**
      * @desc Add chat button
@@ -137,6 +156,41 @@ class BattleLogsOption {
             gameOutDiv.style.marginRight = "0";
             gameOutDiv.style.marginLeft = "0";
         }
+    }
+
+
+    static __internal__resetKonamiIndex() {
+        this.__internal__konamiIndex = 0;
+    }
+
+    static __internal__addKonamiCode() {
+        this.__internal__konamiTimeout = setTimeout(() => {
+            this.__internal__resetKonamiIndex();
+        }, 5000);
+
+        document.addEventListener("keydown", (event) => {
+            clearTimeout(this.__internal__konamiTimeout);
+
+            if (event.key === this.__internal__konamiCode[this.__internal__konamiIndex]) {
+                this.__internal__konamiIndex++;
+
+                if (this.__internal__konamiIndex === this.__internal__konamiCode.length) {
+                    // Code Konami réussi : exécutez votre easter egg ici
+                    alert("EASTER EGG ! Vous avez trouvé le Konami Code !");
+                    // Vous pouvez ajouter d'autres actions ici, comme afficher des images ou changer le style de la page, etc.
+
+                    // Réinitialiser l'index pour permettre à l'utilisateur d'entrer à nouveau le code
+                    this.__internal__resetKonamiIndex();
+                }
+            } else {
+                // Réinitialiser l'index si l'utilisateur a mal entré la séquence du code
+                this.__internal__resetKonamiIndex();
+            }
+
+            this.__internal__konamiTimeout = setTimeout(() => {
+                this.__internal__resetKonamiIndex();
+            }, 2000);
+        });
     }
 
     /**
