@@ -185,7 +185,7 @@ class BattleLogsRoues {
                 name = name + "s";
             }
         } else {
-            object = BattleLogs.Utils.getObjectByShortName(short);
+            let object = BattleLogs.Utils.getObjectByShortName(short);
             if (object["name"]) {
                 name = object["name"]
             }
