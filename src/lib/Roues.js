@@ -185,9 +185,9 @@ class BattleLogsRoues {
                 name = name + "s";
             }
         } else {
-            name = BattleLogs.Utils.getObjectByShortName(short);
-            if (name["name"]) {
-                name = name["name"]
+            object = BattleLogs.Utils.getObjectByShortName(short);
+            if (object["name"]) {
+                name = object["name"]
             }
             if (count > 1) {
                 name = name.split(" ")[0] + "s " + name.split(" ")[1] + "s";

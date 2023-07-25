@@ -30,16 +30,6 @@ class BattleLogsStats {
             if (eggStats !== null) {
                 this.__internal__eggStats = eggStats;
             }
-
-            console.log(this.__internal__eggStats)
-            for (let statsKey in this.__internal__eggStats) {
-                let stats = this.__internal__eggStats[statsKey];
-                console.log(statsKey)
-                //TODO: Il faut que les items soit chargé pour les récuperer. BattleLogs.Roues.hasLoaded()
-                console.log(BattleLogs.Utils.getObjectByShortName(statsKey)["name"] + " " + stats["total"])
-                stats["total"] += 10
-            }
-            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.EggStats, this.__internal__eggStats);
         }
     }
 
@@ -153,8 +143,10 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.EggStats, {
-            "c": {"total": 30},
-            "d": {"total": 30},
+            "c": {"total": 0},
+            "d": {"total": 0},
+            "r": {"total": 0},
+            "re": {"total": 0},
         });
     }
 }
