@@ -19,6 +19,8 @@ class BattleLogsRoues {
         }
     };
 
+    static Multiplier = 1;
+
     /**
      * @desc Initialize Class
      *
@@ -48,6 +50,7 @@ class BattleLogsRoues {
 
         if (xhr.responseURL === "https://lacalv.fr/play/roues") {
             this.__internal__roues = BattleLogs.Utils.pakoUncompress(data["roues"]);
+            this.Multiplier = BattleLogs.Utils.pakoUncompress(data["multiplier"]);
         } else {
             const url = new URL(xhr.responseURL);
             const segments = url.pathname.split('/');
