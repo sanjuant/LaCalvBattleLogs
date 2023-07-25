@@ -176,7 +176,7 @@ class BattleLogsUtils {
         let foundObject = allObjects.find(item => {
             return item.short === shortName
         });
-        if (foundObject) {
+        if (foundObject !== "") {
             return foundObject;
         }
         return name;
@@ -192,7 +192,7 @@ class BattleLogsUtils {
         let foundObject = allObjects.find(item => {
             return item.name === name
         });
-        if (foundObject) {
+        if (foundObject !== "") {
             return foundObject;
         }
         return name;

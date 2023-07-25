@@ -22,11 +22,24 @@ class BattleLogsStats {
             // Add CSV button
             this.__internal__addStatsPanel()
             this.__internal__addStatsButton(this.Settings.StatsEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+
+            // Set default settings
+            this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             const eggStats = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.EggStats);
             if (eggStats !== null) {
                 this.__internal__eggStats = eggStats;
             }
+
+            console.log(this.__internal__eggStats)
+            for (let statsKey in this.__internal__eggStats) {
+                let stats = this.__internal__eggStats[statsKey];
+                console.log(statsKey)
+                //TODO: Il faut que les items soit chargé pour les récuperer. BattleLogs.Roues.hasLoaded()
+                console.log(BattleLogs.Utils.getObjectByShortName(statsKey)["name"] + " " + stats["total"])
+                stats["total"] += 10
+            }
+            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.EggStats, this.__internal__eggStats);
         }
     }
 
@@ -64,14 +77,14 @@ class BattleLogsStats {
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
-    
+
     static __internal__eggStats = null;
-    
+
     /**
      * @desc Build log of eggs stats
      */
     static __internal__buildEggStats() {
-        
+
     }
 
     /**
@@ -135,4 +148,13 @@ class BattleLogsStats {
         containingDiv.appendChild(this.StatsButton);
     }
 
+    /**
+     * @desc Sets the stats settings default values in the local storage
+     */
+    static __internal__setDefaultSettingsValues() {
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.EggStats, {
+            "c": {"total": 30},
+            "d": {"total": 30},
+        });
+    }
 }
