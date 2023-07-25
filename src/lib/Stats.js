@@ -5,6 +5,7 @@
 class BattleLogsStats {
     static Settings = {
         StatsEnable: "Stats-Enable",
+        EggStats: "Egg-Stats",
     }
 
     static StatsPanel;
@@ -21,6 +22,11 @@ class BattleLogsStats {
             // Add CSV button
             this.__internal__addStatsPanel()
             this.__internal__addStatsButton(this.Settings.StatsEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            // Restore previous session state
+            const eggStats = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.EggStats);
+            if (eggStats !== null) {
+                this.__internal__eggStats = eggStats;
+            }
         }
     }
 
@@ -38,9 +44,35 @@ class BattleLogsStats {
         }
     }
 
+    /**
+     * @desc Update log of eggs stats
+     *
+     * @param {Number} count: Count of roue
+     * @param {string} short: Short name of roue
+     * @param {Array} itemsArray: Array of items
+     * @param {string} rouesType: Type of roue
+     *
+     */
+    static updateEggStats(count, short, dataItems, rouesType) {
+        if (this.__internal__eggStats !== null) {
+            // TODO update stats
+        } else {
+            this.__internal__buildEggStats();
+        }
+    }
+
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
+    
+    static __internal__eggStats = null;
+    
+    /**
+     * @desc Build log of eggs stats
+     */
+    static __internal__buildEggStats() {
+        
+    }
 
     /**
      * @desc Adds the BattleLogs panel
