@@ -549,6 +549,7 @@ button.svg_chat {
     border: 1px solid #0c0c0d;
     border-radius: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
 }
 .prompt label {
     display: block;
@@ -570,11 +571,51 @@ button.svg_chat {
     border: none;
     cursor: pointer;
     border-radius: 5px;
-    margin-right: 10px;
 }
-.prompt button:last-child {
+.prompt button.primary {
+    background-color: #29585b;
+    color: #ffffff;
+}
+.prompt button.danger {
     background-color: #e94045;
-    margin-right: 0;
+}
+.about-popup {
+    background-color: #232327;
+    color: #ecf0f1;
+    border-radius: 5px;
+    padding: 20px;
+    width: 400px;
+    max-height: 500px;
+    overflow: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,.5);
+}
+
+.about-quote {
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.about-contributors {
+    margin-bottom: 20px;
+}
+
+.about-contributor {
+    margin: 5px 0;
+}
+
+.about-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.about-button {
+    color: #ecf0f1;
+    background-color: #29585b;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 3px;
+    cursor: pointer;
 }
 
 /********************/
