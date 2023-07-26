@@ -205,7 +205,7 @@ class BattleLogsExpedition {
         dataRewards.forEach(reward => {
             const type = reward[0];
             const object = reward[1];
-            let proba = 1;
+            let proba;
             if (object["multiplier"]) {
                 proba = object["proba"] * (1 + famRarity * 0.05)
             } else {
