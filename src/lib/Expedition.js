@@ -118,10 +118,9 @@ class BattleLogsExpedition {
      *
      */
     static __internal__addExpeditionToLog(fam, expedition, dataItems) {
-        const itemsArray = this.__internal__createRewardItemsArray(dataItems);
-
         let expeditionObject = BattleLogs.Load.getExpedition(expedition);
         let familierObject = BattleLogs.Load.getFamilier(fam);
+        const itemsArray = this.__internal__createRewardItemsArray(dataItems, familierObject["rarity"] - 1);
 
         const message = "{0}|{1}".format(familierObject["name"], expeditionObject["name"]);
 
@@ -196,19 +195,26 @@ class BattleLogsExpedition {
      * @desc Create rewards array with items
      *
      * @param {Object} dataRewards: Rewards of battle
+     * @param {Number} famRarity: Rarity of familier
      *
      * @return array with all items
      */
-    static __internal__createRewardItemsArray(dataRewards) {
+    static __internal__createRewardItemsArray(dataRewards, famRarity) {
         let items = [];
         console.log(dataRewards)
         dataRewards.forEach(reward => {
             const type = reward[0];
             const object = reward[1];
+            let proba = 1;
+            if (object["multiplier"]) {
+                proba = object["proba"] * (1 + famRarity * 0.05)
+            } else {
+                proba = object["proba"]
+            }
             const objectRef = BattleLogs.Utils.getObjectByShortName(object["value"])
             let existingItem = items.find(i => i.short === object["short"]);
             if (existingItem === undefined) {
-                items.push({short: object["value"], count: 1, rarity: object["rarity"], proba: object["proba"], type: type});
+                items.push({short: object["value"], count: 1, rarity: object["rarity"], proba: proba, type: type});
             } else {
                 existingItem.count += 1
             }
