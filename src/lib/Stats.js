@@ -26,10 +26,8 @@ class BattleLogsStats {
             // Set default settings
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
-            const eggStats = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.EggStats);
-            if (eggStats !== null) {
-                this.__internal__eggStats = eggStats;
-            }
+            this.__internal__eggStats = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.EggStats);
+            
         }
     }
 
@@ -52,16 +50,22 @@ class BattleLogsStats {
      *
      * @param {Number} count: Count of roue
      * @param {string} short: Short name of roue
-     * @param {Array} itemsArray: Array of items
+     * @param {Array} items: Array of items
      * @param {string} rouesType: Type of roue
+     * @param {Number} cost: price of a roue
      *
      */
-    static updateEggStats(count, short, dataItems, rouesType) {
-        if (this.__internal__eggStats !== null) {
-            // TODO update stats
-        } else {
-            this.__internal__buildEggStats();
+    static updateEggStats(count, short, items, rouesType, cost) {
+        if (rouesType === "oeuf") {
+            let price = 0;
+            this.__internal__eggStats[short]["total"] += count;
+            this.__internal__eggStats[short]["cost"] += count * BattleLogsRoues.Multiplier * cost;
+            items.forEach(item => {
+                this.__internal__eggStats[short]["itemsPerRarity"][item["rarity"]] += item["count"];
+            })
+            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.EggStats, this.__internal__eggStats);
         }
+
     }
 
     /*********************************************************************\
@@ -69,13 +73,6 @@ class BattleLogsStats {
      /*********************************************************************/
 
     static __internal__eggStats = null;
-
-    /**
-     * @desc Build log of eggs stats
-     */
-    static __internal__buildEggStats() {
-
-    }
 
     /**
      * @desc Adds the BattleLogs panel
@@ -143,10 +140,11 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.EggStats, {
-            "c": {"total": 0},
-            "d": {"total": 0},
-            "r": {"total": 0},
-            "re": {"total": 0},
+            "time" : new Date().toISOString(),
+            "c" : {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
+            "d" : {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
+            "r" : {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
+            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
         });
     }
 }

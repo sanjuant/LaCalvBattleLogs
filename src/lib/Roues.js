@@ -66,7 +66,8 @@ class BattleLogsRoues {
             } else {
                 return;
             }
-            this.__internal__addRouesToLog(count, short, data["new"], rouesType);
+            let rewards = this.__internal__addRouesToLog(count, short, data["new"], rouesType);
+            BattleLogsStats.updateEggStats(Number(count), short, rewards["items"], rouesType, rewards["cost"]);
         }
     }
 
@@ -177,6 +178,7 @@ class BattleLogsRoues {
         const isCoquille = rouesType === "coquille";
         const verb = isCoquille ? "cassé" : "ouvert";
         count = isCoquille ? count * 100 : count;
+        let cost = 0;
 
         let name;
         if (short === "exclusive") {
@@ -186,6 +188,7 @@ class BattleLogsRoues {
             }
         } else {
             let object = BattleLogs.Utils.getObjectByShortName(short);
+            cost = object["cost"];
             if (object["name"]) {
                 name = object["name"]
             }
@@ -196,8 +199,9 @@ class BattleLogsRoues {
 
         const message = "{0}|{1}|{2}".format(count, name, verb);
 
-        const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray, rouesType);
+        const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray, rouesType, cost);
         BattleLogs.Notif.appendNotif(log);
+        return { "items" : itemsArray, "cost" : cost};
     }
 
     /**
@@ -295,13 +299,14 @@ class BattleLogsRoues {
     }
 
     static Log = class {
-        constructor(type, logType, message, items, roueType) {
+        constructor(type, logType, message, items, roueType, cost) {
             this.type = type;
             this.time = new Date().toISOString();
             this.message = message;
             this.rewards = {items: items};
             this.logType = logType;
             this.rouesType = roueType;
+            this.cost = cost
         }
     };
 }
