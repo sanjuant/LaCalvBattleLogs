@@ -122,6 +122,8 @@ class BattleLogsVideo {
 
         let button = document.createElement("button");
         button.textContent = "Valider";
+        button.classList.add("primary")
+        button.style.marginRight = "10px"
         button.addEventListener("click", function() {
             BattleLogs.Video.BattleLogsTwitchChannel = input.value;
             BattleLogs.Video.__internal__changeTwitchChannel(input.value)
@@ -133,6 +135,7 @@ class BattleLogsVideo {
 
         let closeButton = document.createElement("button");
         closeButton.textContent = "Fermer";
+        closeButton.classList.add("danger")
         closeButton.addEventListener("click", function() {
             promptContainer.remove();
             removeEventListeners();
@@ -143,7 +146,7 @@ class BattleLogsVideo {
         promptContainer.appendChild(buttonContainer);
 
         document.addEventListener("click", function(event) {
-            if (!promptContainer.contains(event.target)) {
+            if (!promptContainer.contains(event.target) && document.querySelector(".prompt")) {
                 promptContainer.remove();
                 removeEventListeners();
             }
