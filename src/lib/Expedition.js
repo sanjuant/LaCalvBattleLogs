@@ -31,7 +31,7 @@ class BattleLogsExpedition {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             this.__internal__setDefaultSettingsValues()
             this.__internal__expeditionsSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
-            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__expeditionsSettings, "Roues");
+            BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__expeditionsSettings, "Expedition");
         }
     }
 
@@ -67,7 +67,8 @@ class BattleLogsExpedition {
      * @param {Object} log: log to convert in message
      */
     static appendMessage(log) {
-        if (this.__internal__expeditionsSettings["display-" + log.rouesType]) {
+        if (this.__internal__expeditionsSettings["display-" + log.logType.toLowerCase()]) {
+            console.log(0)
             const message = this.__internal__buildExpeditionMessage(log);
             BattleLogs.Message.appendMessage(message, log.type, log);
         }
@@ -83,8 +84,8 @@ class BattleLogsExpedition {
         display: {
             title: "Affichages des expéditions",
             stats: {
-                expeditions: {
-                    name: "Expéditions",
+                expedition: {
+                    name: "Expédition",
                     display: true,
                     setting: true,
                     text: "Afficher les récompenses d'expéditions",
@@ -163,7 +164,8 @@ class BattleLogsExpedition {
             groups[group].forEach(item => {
                 const objectSpan = document.createElement("span");
                 objectSpan.classList.add("rarity-" + item.rarity);
-                objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(item.count > 1 ? `${item.name} (x${item.count})` : item.name);
+                let proba = Math.round(((Math.round(item.proba * 1000) / 1000 * 100) * 1000) / 1000)
+                objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(item.count > 1 ? `${item.name} (x${item.count}) [${proba}%]` : `${item.name} [${proba}%]`);
                 items.push(objectSpan.outerHTML)
             })
             valueSpan.innerHTML = items.join(this.__internal__joiner.items[BattleLogs.Message.Settings.Format]);
@@ -205,19 +207,12 @@ class BattleLogsExpedition {
         dataRewards.forEach(reward => {
             const type = reward[0];
             const object = reward[1];
-            let proba;
-            if (object["multiplier"]) {
-                proba = object["proba"] * (1 + famRarity * 0.05)
-            } else {
-                proba = object["proba"]
-            }
+            let proba = object["multiplier"] ? object["proba"] * (1 + famRarity * 0.05) : object["proba"];
             const objectRef = BattleLogs.Utils.getObjectByShortName(object["value"])
-            let existingItem = items.find(i => i.short === object["short"]);
-            if (existingItem === undefined) {
-                items.push({short: object["value"], count: 1, rarity: object["rarity"], proba: proba, type: type});
-            } else {
-                existingItem.count += 1
-            }
+            let name = objectRef["name"] ? objectRef["name"] : object["value"];
+            let count = object["count"] ? object["count"] : 1
+            let rarity = objectRef["rarity"] ? objectRef["rarity"] : 0
+            items.push({name: name, count: count, rarity: rarity, proba: proba, type: type})
         })
 
         return items;
