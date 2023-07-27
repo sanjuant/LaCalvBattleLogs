@@ -9,11 +9,8 @@ class BattleLogsExpedition {
     };
 
     static Messages = {
-        // Tu as ouvert un ticket
-        // Nanano{0} a terminé Plaines chevelues{1}
-        // Nanano est revenu de la Ruées vers l'or
         normal: "{0} a terminé {1}.",
-        short: "{0}:{1}",
+        short: "{0} a terminé {1}",
         list: "{0} a terminé {1}.",
         item: {
             normal: "{0}",
@@ -102,7 +99,7 @@ class BattleLogsExpedition {
         },
         labelWithItems: {
             normal: " ",
-            short: ":",
+            short: "",
             list: " : \n"
         },
         normal: " ",
@@ -150,28 +147,27 @@ class BattleLogsExpedition {
         }
 
         const expeditionSpan = document.createElement("span");
-        for (const group in groups) {
-            const rouesSpanFragments = [];
-            // Add label for item type
-            const rLabelSpan = document.createElement("span");
-            rLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
-            rLabelSpan.textContent = group.capitalize();
-            rouesSpanFragments.push(rLabelSpan.outerHTML)
 
-            let items = []
-            // Format item to html
-            const valueSpan = document.createElement("span");
-            groups[group].forEach(item => {
-                const objectSpan = document.createElement("span");
-                objectSpan.classList.add("rarity-" + item.rarity);
-                let proba = Math.round(((Math.round(item.proba * 1000) / 1000 * 100) * 1000) / 1000)
-                objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(item.count > 1 ? `${item.name} (x${item.count}) [${proba}%]` : `${item.name} [${proba}%]`);
-                items.push(objectSpan.outerHTML)
-            })
-            valueSpan.innerHTML = items.join(this.__internal__joiner.items[BattleLogs.Message.Settings.Format]);
-            rouesSpanFragments.push(valueSpan.outerHTML);
-            fragments.push(rouesSpanFragments.join(this.__internal__joiner.labelWithItems[BattleLogs.Message.Settings.Format]));
-        }
+        const expdedtionSpanFragments = [];
+        // Add label for item type
+        const rLabelSpan = document.createElement("span");
+        rLabelSpan.classList.add(`${BattleLogs.Message.Settings.Format}-label`);
+        rLabelSpan.textContent = BattleLogs.Battle.Messages[BattleLogs.Message.Settings.Format].rewards
+        expdedtionSpanFragments.push(rLabelSpan.outerHTML)
+
+        let items = []
+        // Format item to html
+        const valueSpan = document.createElement("span");
+        log.rewards.items.forEach(item => {
+            const objectSpan = document.createElement("span");
+            objectSpan.classList.add("rarity-" + item.rarity);
+            let proba = Math.round(item.proba * 1000) / 10
+            objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(`${item.name} (x${item.count}) [${proba}%]`);
+            items.push(objectSpan.outerHTML)
+        })
+        valueSpan.innerHTML = items.join(this.__internal__joiner.items[BattleLogs.Message.Settings.Format]);
+        expdedtionSpanFragments.push(valueSpan.outerHTML);
+        fragments.push(expdedtionSpanFragments.join(this.__internal__joiner.labelWithItems[BattleLogs.Message.Settings.Format]));
 
         expeditionSpan.innerHTML = fragments.join(this.__internal__joiner[BattleLogs.Message.Settings.Format]);
 
@@ -208,9 +204,16 @@ class BattleLogsExpedition {
             const type = reward[0];
             const object = reward[1];
             let proba = object["multiplier"] ? object["proba"] * (1 + famRarity * 0.05) : object["proba"];
-            const objectRef = BattleLogs.Utils.getObjectByShortName(object["value"])
-            let name = objectRef["name"] ? objectRef["name"] : object["value"];
-            let count = object["count"] ? object["count"] : 1
+            let name;
+            let count;
+            if (isNaN(parseInt(object["value"], 10))) {
+                name = type === "alopiece" ? "Alopièce" : object["value"]
+                count = object["value"]
+            } else {
+                const objectRef = BattleLogs.Utils.getObjectByShortName(object["value"])
+                name = objectRef["name"] ? objectRef["name"] : object["value"];
+                count = object["count"] ? object["count"] : 1
+            }
             let rarity = objectRef["rarity"] ? objectRef["rarity"] : 0
             items.push({name: name, count: count, rarity: rarity, proba: proba, type: type})
         })
