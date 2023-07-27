@@ -262,7 +262,7 @@
 }
 
 /*********************/
-/* Stats Elements    */
+/* Glossary Elements    */
 /*********************/
 .glossary {
     display: flex;
@@ -273,6 +273,10 @@
 #battlelogs-glossary_panel.hidden {
     display: none;
 }
+
+/*********************/
+/* Stats Elements    */
+/*********************/
 
 /********************/
 /* Format */

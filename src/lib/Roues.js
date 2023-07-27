@@ -67,7 +67,9 @@ class BattleLogsRoues {
                 return;
             }
             let rewards = this.__internal__addRouesToLog(count, short, data["new"], rouesType);
-            BattleLogsStats.updateEggStats(Number(count), short, rewards["items"], rouesType, rewards["cost"]);
+            if (rouesType === "oeuf") {
+                BattleLogsStats.updateEggStats(Number(count), short, rewards["items"], rouesType, rewards["cost"]);
+            }
         }
     }
 

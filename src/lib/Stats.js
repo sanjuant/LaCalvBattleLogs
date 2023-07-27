@@ -46,7 +46,7 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Update log of eggs stats
+     * @desc Update eggs stats
      *
      * @param {Number} count: Count of roue
      * @param {string} short: Short name of roue
@@ -57,7 +57,6 @@ class BattleLogsStats {
      */
     static updateEggStats(count, short, items, rouesType, cost) {
         if (rouesType === "oeuf") {
-            let price = 0;
             this.__internal__eggStats[short]["total"] += count;
             this.__internal__eggStats[short]["cost"] += count * BattleLogsRoues.Multiplier * cost;
             items.forEach(item => {
@@ -89,7 +88,7 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Add Sound button
+     * @desc Add Stats button
      *
      * @param {string} id: The button id
      * @param {Element} containingDiv: The div element to append the separator to
