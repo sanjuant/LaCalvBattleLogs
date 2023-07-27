@@ -80,6 +80,8 @@ class BattleLogsInterceptor {
             || xhr.responseURL.match(/^https:\/\/lacalv\.fr\/play\/(coquille_c|coquille_d|coquille_r|coquille_re)\?count/)
             || xhr.responseURL.startsWith("https://lacalv.fr/play/exclusive")) {
             BattleLogs.Roues.parseResponse(xhr)
+        } else if (xhr.responseURL.startsWith("https://lacalv.fr/play/stopexpedition")) {
+            BattleLogs.Expedition.parseResponse(xhr)
         }
     }
 }
