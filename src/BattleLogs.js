@@ -26,6 +26,7 @@ class BattleLogs
     static Survie = BattleLogsSurvie;
     static Option = BattleLogsOption;
     static Glossary = BattleLogsGlossary;
+    static Expedition = BattleLogsExpedition;
     static Stats = BattleLogsStats;
 
     static InitSteps = class BattleLogsInitSteps
@@ -76,6 +77,7 @@ class BattleLogs
             this.Update.initialize(initStep);
             this.Wbclassement.initialize(initStep);
             this.Roues.initialize(initStep);
+            this.Expedition.initialize(initStep);
 
             // Additionnal components
             this.Csv.initialize(initStep);
