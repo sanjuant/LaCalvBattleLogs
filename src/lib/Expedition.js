@@ -127,14 +127,13 @@ class BattleLogsExpedition {
     }
 
     /**
-     * @desc Build message for roues opening
+     * @desc Build message for expedition claim
      *
-     * @param {Object} log: Log of roues
+     * @param {Object} log: Log of expedition
      *
      * @return string message
      */
     static __internal__buildExpeditionMessage(log) {
-        const groups = this.__internal__groupItemsByType(log.rewards.items);
         const fragments = [];
 
         if (log.message.includes("|")) {
@@ -172,21 +171,6 @@ class BattleLogsExpedition {
         expeditionSpan.innerHTML = fragments.join(this.__internal__joiner[BattleLogs.Message.Settings.Format]);
 
         return expeditionSpan.outerHTML;
-    }
-
-    /**
-     * @desc Group item object by type value
-     *
-     * @return object with nested objects by type
-     */
-    static __internal__groupItemsByType(items) {
-        return items.reduce((acc, item) => {
-            if (!acc[item.type]) {
-                acc[item.type] = [];
-            }
-            acc[item.type].push(item);
-            return acc;
-        }, {});
     }
 
     /**
