@@ -65,7 +65,6 @@ class BattleLogsExpedition {
      */
     static appendMessage(log) {
         if (this.__internal__expeditionsSettings["display-" + log.logType.toLowerCase()]) {
-            console.log(0)
             const message = this.__internal__buildExpeditionMessage(log);
             BattleLogs.Message.appendMessage(message, log.type, log);
         }
@@ -160,7 +159,7 @@ class BattleLogsExpedition {
         log.rewards.items.forEach(item => {
             const objectSpan = document.createElement("span");
             objectSpan.classList.add("rarity-" + item.rarity);
-            let proba = Math.round(item.proba * 1000) / 10
+            let proba = Math.round(item.proba * 100 * 1000) / 1000
             objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(`${item.name} (x${item.count}) [${proba}%]`);
             items.push(objectSpan.outerHTML)
         })
