@@ -189,7 +189,7 @@ class BattleLogsExpedition {
             let name;
             let count;
             let rarity;
-            if (isNaN(parseInt(object["value"], 10))) {
+            if (!isNaN(parseInt(object["value"], 10))) {
                 name = type === "alopiece" ? "Alopièce" : object["value"]
                 count = object["value"]
                 rarity = object["rarity"] ? object["rarity"] : 0
