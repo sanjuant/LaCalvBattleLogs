@@ -182,22 +182,23 @@ class BattleLogsExpedition {
      */
     static __internal__createRewardItemsArray(dataRewards, famRarity) {
         let items = [];
-        console.log(dataRewards)
         dataRewards.forEach(reward => {
             const type = reward[0];
             const object = reward[1];
             let proba = object["multiplier"] ? object["proba"] * (1 + famRarity * 0.05) : object["proba"];
             let name;
             let count;
+            let rarity;
             if (isNaN(parseInt(object["value"], 10))) {
                 name = type === "alopiece" ? "Alopièce" : object["value"]
                 count = object["value"]
+                rarity = object["rarity"] ? object["rarity"] : 0
             } else {
                 const objectRef = BattleLogs.Utils.getObjectByShortName(object["value"])
                 name = objectRef["name"] ? objectRef["name"] : object["value"];
                 count = object["count"] ? object["count"] : 1
+                rarity = objectRef["rarity"] ? objectRef["rarity"] : 0
             }
-            let rarity = objectRef["rarity"] ? objectRef["rarity"] : 0
             items.push({name: name, count: count, rarity: rarity, proba: proba, type: type})
         })
 
