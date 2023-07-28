@@ -203,7 +203,7 @@ class BattleLogsExpedition {
                 count = object["count"] ? object["count"] : 1
                 rarity = objectRef["rarity"] ? objectRef["rarity"] : 0
             }
-            items.push({name: name, count: count, rarity: rarity, proba: proba, type: type, isFam: !!object["multiplier"]})
+            items.push({name: name, count: count, rarity: rarity, proba: proba, type: type, isFam: !object["multiplier"]})
         })
 
         return items;
