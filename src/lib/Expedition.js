@@ -160,7 +160,11 @@ class BattleLogsExpedition {
             const objectSpan = document.createElement("span");
             objectSpan.classList.add("rarity-" + item.rarity);
             let proba = Math.round(item.proba * 100 * 1000) / 1000
-            objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(`${item.name} (x${item.count}) [${proba}%]`);
+            if (item.isFam) {
+                objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(`${item.name} (x${item.count}) [${proba}%] (F)`);
+            } else {
+                objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(`${item.name} (x${item.count}) [${proba}%]`);
+            }
             items.push(objectSpan.outerHTML)
         })
         valueSpan.innerHTML = items.join(this.__internal__joiner.items[BattleLogs.Message.Settings.Format]);
@@ -199,7 +203,7 @@ class BattleLogsExpedition {
                 count = object["count"] ? object["count"] : 1
                 rarity = objectRef["rarity"] ? objectRef["rarity"] : 0
             }
-            items.push({name: name, count: count, rarity: rarity, proba: proba, type: type})
+            items.push({name: name, count: count, rarity: rarity, proba: proba, type: type, isFam: !object["multiplier"]})
         })
 
         return items;
