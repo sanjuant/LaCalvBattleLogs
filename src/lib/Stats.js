@@ -10,6 +10,7 @@ class BattleLogsStats {
 
     static StatsPanel;
     static StatsButton;
+    static EggStatsPanel;
 
     /**
      * @desc Builds the menu, and restores previous running state if needed
@@ -27,7 +28,6 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             this.__internal__eggStats = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.EggStats);
-            
         }
     }
 
@@ -63,6 +63,7 @@ class BattleLogsStats {
                 this.__internal__eggStats[short]["itemsPerRarity"][item["rarity"]] += item["count"];
             })
             BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.EggStats, this.__internal__eggStats);
+            this.__internal__updateEggStatsOutput();
         }
 
     }
@@ -72,6 +73,12 @@ class BattleLogsStats {
      /*********************************************************************/
 
     static __internal__eggStats = null;
+    static __internal__eggTypes = [
+        {"short": "c", "name": "oeufs chevelus"},
+        {"short": "d", "name": "oeufs dégarnis"},
+        {"short": "r", "name": "oeufs rasés"},
+        {"short": "re", "name": "oeufs reluisants"}
+    ];
 
     /**
      * @desc Adds the BattleLogs panel
@@ -84,6 +91,8 @@ class BattleLogsStats {
         if (!(BattleLogs.Utils.LocalStorage.getValue(this.Settings.StatsEnable) === "true")) {
             this.StatsPanel.classList.add("hidden")
         }
+
+        // Add Stats panel to DOM
         BattleLogs.Menu.BattleLogsWrapper.appendChild(this.StatsPanel);
     }
 
@@ -119,6 +128,7 @@ class BattleLogsStats {
                 this.StatsPanel.classList.remove("hidden");
                 this.StatsButton.classList.add("selected");
                 this.StatsButton.title = "Masquer les stats";
+                this.__internal__updateEggStatsOutput();
             } else {
                 BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
@@ -145,5 +155,109 @@ class BattleLogsStats {
             "r" : {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
             "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
         });
+    }
+
+    /**
+     * @desc Build the output of egg stats
+     */
+    static __internal__BuildEggStatsOutput() {
+        if (this.StatsButton.classList.contains("selected")) {
+
+            // Build Panel for egg stats
+            this.EggStatsPanel = document.createElement("div");
+            this.EggStatsPanel.id = "Stats-1";
+
+            const title_div = document.createElement("div");
+            const title_span = document.createElement("span");
+            let created_since = BattleLogs.Utils.getDateString(this.__internal__eggStats["time"]);
+            title_span.textContent = "Stats des oeufs (depuis le {0})".format(created_since);
+            title_div.appendChild(title_span);
+            this.EggStatsPanel.appendChild(title_div);
+
+            // Update title for each type of egg
+            let eggStats_subdiv = document.createElement("div");
+            this.__internal__eggTypes.forEach( type => {
+                let eggStats_subdiv_title = document.createElement("div");
+                eggStats_subdiv_title.classList.add("eggStats-title");
+                eggStats_subdiv_title.dataset.egg = type.short;
+                let subdiv_title_span = document.createElement("span");
+
+                let name;
+                if (this.__internal__eggStats[type.short]["total"] !== 0) {
+                    name = type.name;
+                }else{
+                    name = type.name.split(" ");
+                    name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
+                }
+                subdiv_title_span.innerHTML = "{0} <em>{1}</em> - {2} alopièces dépensées".format(
+                    this.__internal__eggStats[type.short]["total"],
+                    name,
+                    this.__internal__eggStats[type.short]["cost"]
+                );
+                eggStats_subdiv_title.appendChild(subdiv_title_span);
+                eggStats_subdiv.appendChild(eggStats_subdiv_title);
+                
+                // Update percentage bar for each rarity
+                if (this.__internal__eggStats[type.short]["total"] !== 0) {
+                    let eggStats_subdiv_content = document.createElement("div");
+                    eggStats_subdiv_content.classList.add("eggStats-bar");
+                    eggStats_subdiv_content.dataset.egg = type.short;
+                    for (let i = 0; i < this.__internal__eggStats[type.short]["itemsPerRarity"].length; i++) {
+                        if (this.__internal__eggStats[type.short]["itemsPerRarity"][i] !== null) {
+                            let raritySpan = document.createElement("span");
+                            let itemsPercentage = (this.__internal__eggStats[type.short]["itemsPerRarity"][i] / this.__internal__eggStats[type.short]["total"] * 100).toFixed(2);
+                            itemsPercentage = itemsPercentage+"%";
+                            raritySpan.textContent = itemsPercentage;
+                            raritySpan.style.width = itemsPercentage;
+                            raritySpan.classList.add("span-rarity-{0}".format(i));
+                            raritySpan.dataset.rarity = i;
+                            eggStats_subdiv_content.appendChild(raritySpan);
+                        }
+                    }
+                    eggStats_subdiv.appendChild(eggStats_subdiv_content);
+                }
+            })
+            this.EggStatsPanel.appendChild(eggStats_subdiv);
+            this.StatsPanel.appendChild(this.EggStatsPanel);
+        }
+    }
+
+    /**
+     * @desc Update the output of egg stats
+     */
+    static __internal__updateEggStatsOutput() {
+        if ( document.getElementById("Stats-1") !== null) {
+            let statsTitle_divs = document.getElementsByClassName("eggStats-title");
+
+            // Update title for each type of egg
+            for ( let title_div of statsTitle_divs) {
+                let short = title_div.getAttribute("data-egg");
+
+                let name;
+                if (this.__internal__eggStats[short]["total"] !== 0) {
+                    name = this.__internal__eggTypes[short];
+                }else{
+                    name = this.__internal__eggTypes[short].split(" ");
+                    name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
+                }
+                let title_span = title_div.getElementsByTagName("span");
+                title_span[0].innerHTML = "{0} <em>{1}</em> - {2} alopièces dépensées".format(
+                    this.__internal__eggStats[short]["total"],
+                    name,
+                    this.__internal__eggStats[short]["cost"]
+                );
+                
+                // Update percentage bar for each rarity
+                let statsBar_divs = document.getElementsByClassName("eggStats-bar");
+                let statsBar_spans = statsBar_divs.getElementsByTagName("span");
+                for (bar_span of statsBar_spans) {
+                    let rarity = bar_span.getAttribute("data-rarity");
+                    bar_span.textContent = this.__internal__eggStats[short].itemsPerRarity[rarity];
+                    bar_span.style.width = this.__internal__eggStats[short].itemsPerRarity[rarity];
+                };
+            };
+        } else {
+            this.__internal__BuildEggStatsOutput();
+        }
     }
 }
