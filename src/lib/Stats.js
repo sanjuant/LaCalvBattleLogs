@@ -74,13 +74,18 @@ class BattleLogsStats {
      /*********************************************************************/
 
     static __internal__statsEgg = null;
-    static __internal__eggTypes = [
-        {"short": "c", "name": "oeufs chevelus", "rarity": 1},
-        {"short": "d", "name": "oeufs dégarnis", "rarity": 2},
-        {"short": "r", "name": "oeufs rasés", "rarity": 3},
-        {"short": "re", "name": "oeufs reluisants", "rarity": 4}
-    ];
-
+    /**static __internal__eggTypes = [
+        { "short": "c", "name": "oeufs chevelus", "rarity": 1 },
+        { "short": "d", "name": "oeufs dégarnis", "rarity": 2 },
+        { "short": "r", "name": "oeufs rasés", "rarity": 3 },
+        { "short": "re", "name": "oeufs reluisants", "rarity": 4 }
+    ];*/
+    static __internal__eggTypes = {
+        "c": {"short":"c", "name":"oeufs chevelus", "rarity": 0},
+        "d": {"short":"d", "name":"oeufs dégarnis", "rarity": 1},
+        "r": {"short":"r", "name":"oeufs rasés", "rarity": 2},
+        "re": {"short":"re", "name":"oeufs reluisants", "rarity": 3}
+    };
     /**
      * @desc Adds the BattleLogs panel
      */
@@ -181,9 +186,10 @@ class BattleLogsStats {
             title_div.appendChild(title_span);
             this.StatsEggPanel.appendChild(title_div);
 
-            // Update title for each type of egg
+            // Build title for each type of egg
             let statsEgg_subdiv = document.createElement("div");
-            this.__internal__eggTypes.forEach(type => {
+            Object.keys(this.__internal__eggTypes).forEach( (key) => {
+                let type = this.__internal__eggTypes[key];
                 let statsEgg_subdiv_title = document.createElement("div");
                 statsEgg_subdiv_title.classList.add("stats-egg-title");
                 statsEgg_subdiv_title.classList.add(`rarity-${type.rarity}`);
@@ -239,18 +245,18 @@ class BattleLogsStats {
 
                 let name;
                 if (this.__internal__statsEgg[short]["total"] !== 0) {
-                    name = this.__internal__eggTypes[short];
+                    name = this.__internal__eggTypes[short].name;
                 } else {
-                    name = this.__internal__eggTypes[short].split(" ");
+                    name = this.__internal__eggTypes[short].name.split(" ");
                     name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
                 }
                 let title_span = title_div.getElementsByTagName("span");
                 title_span[0].innerHTML = `${this.__internal__statsEgg[short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
 
                 // Update percentage bar for each rarity
-                let statsBar_spans = document.querySelectorAll(".stats-bar > span")
+                let statsBar_spans = document.querySelectorAll(".stats-bar > span");
                 for (let bar_span of statsBar_spans) {
-                    let rarity = bar_span.getAttribute("data-rarity");
+                    let rarity = Number(bar_span.getAttribute("data-rarity"));
                     bar_span.textContent = this.__internal__statsEgg[short].itemsPerRarity[rarity];
                     bar_span.style.width = this.__internal__statsEgg[short].itemsPerRarity[rarity];
                 }
