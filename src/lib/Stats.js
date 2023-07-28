@@ -243,9 +243,8 @@ class BattleLogsStats {
                 title_span[0].innerHTML = `${this.__internal__statsEgg[short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
 
                 // Update percentage bar for each rarity
-                let statsBar_divs = document.getElementsByClassName("stats-bar");
-                let statsBar_spans = statsBar_divs.getElementsByTagName("span");
-                for (bar_span of statsBar_spans) {
+                let statsBar_spans = document.querySelectorAll(".stats-bar > span")
+                for (let bar_span of statsBar_spans) {
                     let rarity = bar_span.getAttribute("data-rarity");
                     bar_span.textContent = this.__internal__statsEgg[short].itemsPerRarity[rarity];
                     bar_span.style.width = this.__internal__statsEgg[short].itemsPerRarity[rarity];
