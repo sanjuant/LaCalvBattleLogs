@@ -180,7 +180,7 @@ class BattleLogsStats {
             let statsEgg_subdiv = document.createElement("div");
             this.__internal__eggTypes.forEach(type => {
                 let statsEgg_subdiv_title = document.createElement("div");
-                statsEgg_subdiv_title.classList.add("statsEgg-title");
+                statsEgg_subdiv_title.classList.add("stats-egg-title");
                 statsEgg_subdiv_title.classList.add(`rarity-${type.rarity}`);
                 statsEgg_subdiv_title.dataset.egg = type.short;
                 let subdiv_title_span = document.createElement("span");
@@ -226,7 +226,7 @@ class BattleLogsStats {
      */
     static __internal__updateStatsEggOutput() {
         if (document.getElementById(`${this.Settings.Type}-${this.__internal__statsEgg.id}`) !== null) {
-            let statsTitle_divs = document.getElementsByClassName("statsEgg-title");
+            let statsTitle_divs = document.getElementsByClassName("stats-egg-title");
 
             // Update title for each type of egg
             for (let title_div of statsTitle_divs) {
