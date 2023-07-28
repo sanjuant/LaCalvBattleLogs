@@ -192,7 +192,7 @@ class BattleLogsStats {
                     name = type.name.split(" ");
                     name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
                 }
-                subdiv_title_span.innerHTML = `${this.__internal__statsEgg[type.short]["total"]} <span class="rarity-${type.rarity}">${name}</span> - ${this.__internal__statsEgg[type.short]["cost"]} alopièces dépensées`
+                subdiv_title_span.innerHTML = `${this.__internal__statsEgg[type.short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[type.short]["cost"]} alopièces dépensées`
                 statsEgg_subdiv_title.appendChild(subdiv_title_span);
                 statsEgg_subdiv.appendChild(statsEgg_subdiv_title);
 
@@ -240,11 +240,7 @@ class BattleLogsStats {
                     name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
                 }
                 let title_span = title_div.getElementsByTagName("span");
-                title_span[0].innerHTML = "{0} <em>{1}</em> - {2} alopièces dépensées".format(
-                    this.__internal__statsEgg[short]["total"],
-                    name,
-                    this.__internal__statsEgg[short]["cost"]
-                );
+                title_span[0].innerHTML = `${this.__internal__statsEgg[short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
 
                 // Update percentage bar for each rarity
                 let statsBar_divs = document.getElementsByClassName("stats-bar");
