@@ -13,6 +13,20 @@ class BattleLogsStats {
     static StatsButton;
     static StatsEggPanel;
 
+    static Messages = {
+        egg: {
+            title: "Stats des oeufs"
+        },
+        since: "(depuis le {0})",
+        short: "{1}:{0}",
+        list: "Tu as {2} {0} {1}.",
+        item: {
+            normal: "{0}",
+            short: "{0}",
+            list: "&nbsp;&nbsp;&nbsp;&nbsp;{0}",
+        }
+    };
+
     /**
      * @desc Builds the menu, and restores previous running state if needed
      *
@@ -29,7 +43,7 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
-            this.__internal__buildStatsEggOutput()
+            this.__internal__buildStatsEggOutput(this.__internal__statsEgg.id)
         }
     }
 
@@ -65,7 +79,7 @@ class BattleLogsStats {
                 this.__internal__statsEgg[short]["itemsPerRarity"][item["rarity"]] += item["count"];
             })
             BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsEgg, this.__internal__statsEgg);
-            this.__internal__updateStatsEggOutput();
+            this.__internal__updateStatsEggOutput(this.__internal__statsEgg.id);
         }
 
     }
@@ -149,7 +163,7 @@ class BattleLogsStats {
     /**
      * @desc Build the output of egg stats
      */
-    static __internal__buildStatsEggOutput() {
+    static __internal__buildStatsEggOutput(statType) {
         if (this.StatsButton.classList.contains("selected")) {
             // Build Panel for egg stats
             this.StatsEggPanel = document.createElement("div");
@@ -162,10 +176,10 @@ class BattleLogsStats {
             const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
             // statsTitle.textContent = ` (depuis le ${formattedDate})`;
             let statsTitleNameSpan = document.createElement("span");
-            statsTitleNameSpan.textContent = "Stats des oeufs";
+            statsTitleNameSpan.textContent = this.Messages[statType].title;
             statsTitleNameSpan.classList.add("stats-title-name");
             let statsTitleDateSpan = document.createElement("span");
-            statsTitleDateSpan.textContent = ` (depuis le ${formattedDate})`;
+            statsTitleDateSpan.textContent = this.Messages.since.format(formattedDate);
             statsTitleDateSpan.classList.add("stats-title-date");
             statsTitle.appendChild(statsTitleNameSpan);
             statsTitle.appendChild(statsTitleDateSpan);
@@ -175,9 +189,9 @@ class BattleLogsStats {
             Object.keys(this.__internal__eggTypes).forEach((key) => {
                 let type = this.__internal__eggTypes[key];
                 let eggTypeDiv = document.createElement("div");
-                eggTypeDiv.classList.add("stats-egg-block")
+                eggTypeDiv.classList.add(`stats-${statType}-block`)
                 let eggTypeTitle = document.createElement("div");
-                eggTypeTitle.classList.add("stats-egg-title");
+                eggTypeTitle.classList.add(`stats-${statType}-title`);
                 eggTypeTitle.classList.add(`rarity-${type.rarity}`);
                 eggTypeTitle.dataset.egg = type.short;
 
@@ -201,23 +215,23 @@ class BattleLogsStats {
     /**
      * @desc Update the output of egg stats
      */
-    static __internal__updateStatsEggOutput() {
+    static __internal__updateStatsEggOutput(statType) {
         if (document.getElementById(`${this.Settings.Type}-${this.__internal__statsEgg.id}`) !== null) {
             let eggTypesTitles = document.getElementsByClassName("stats-egg-title");
 
             // Update title for each type of egg
             for (let eggTypeTitle of eggTypesTitles) {
-                let short = eggTypeTitle.getAttribute("data-egg");
+                let short = eggTypeTitle.getAttribute(`data-${statType}`);
                 eggTypeTitle = this.__internal__createOrUpdateEggTitle(eggTypeTitle, short);
 
                 // Update or create percentage bar for each rarity
-                const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);
+                const statsBar = document.querySelector(`.stats-bar[data-${statType}="${short}"]`);
                 if (statsBar) {
                     this.__internal__createOrUpdateEggPercentageBar(statsBar, short);
                 }
             }
         } else {
-            this.__internal__buildStatsEggOutput();
+            this.__internal__buildStatsEggOutput(statType);
         }
     }
 
@@ -285,7 +299,7 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
-            "id": "Eggs",
+            "id": "egg",
             "time": new Date().toISOString(),
             "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
             "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
