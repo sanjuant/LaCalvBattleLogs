@@ -73,17 +73,25 @@ class BattleLogsStats {
      * @param {Number} cost: price of a roue
      *
      */
-    static updateStatsEgg(count, short, items, rouesType, cost) {
-        if (rouesType === "oeuf") {
-            this.__internal__statsEgg[short]["total"] += count;
-            this.__internal__statsEgg[short]["cost"] += count * BattleLogsRoues.Multiplier * cost;
+    static updateStats(count, short, items, rouesType, cost) {
+        function update(statsData, count, short, items, cost) {
+            statsData[short]["total"] += count;
+            statsData[short]["cost"] += cost;
             items.forEach(item => {
-                this.__internal__statsEgg[short]["itemsPerRarity"][item["rarity"]] += item["count"];
+                statsData[short]["itemsPerRarity"][item["rarity"]] += item["count"];
             })
-            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsEgg, this.__internal__statsEgg);
-            this.__internal__updateStatsEggOutput(this.__internal__statsEgg);
+            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsEgg, statsData);
+            this.__internal__updateStatsEggOutput(statsData);
         }
 
+        switch (rouesType) {
+            case "oeuf":
+                update(this.__internal__statsEgg, count, short, items, count * BattleLogsRoues.Multiplier * cost);
+                break;
+            case "coquille":
+                update(this.__internal__statsShell, count, short, items, cost);
+                break;
+        }
     }
 
     /*********************************************************************\
@@ -170,6 +178,8 @@ class BattleLogsStats {
 
     /**
      * @desc Build the output of egg stats
+     * 
+     * @param {Object} statData: data of stat
      */
     static __internal__buildStatsEggOutput(statData) {
         let statType = statData.id;
@@ -224,7 +234,7 @@ class BattleLogsStats {
     /**
      * @desc Update the output of egg stats
      *
-     * @param {string} statType: Type of stat
+     * @param {Object} statData: Data of stat
      */
     static __internal__updateStatsEggOutput(statData) {
         let statType = statData.id;
