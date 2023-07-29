@@ -189,7 +189,7 @@ class BattleLogsStats {
                 eggTypeStatBar.classList.add("stats-bar");
                 eggTypeStatBar.dataset.egg = type.short;
 
-                eggTypeStatBar = this.__internal__createOrUpdateEggPercentageBar(eggTypeStatBar, type.short);
+                eggTypeStatBar = this.__internal__createOrUpdateEggPercentageBar(this.__internal__statsEgg, eggTypeStatBar, type.short);
                 eggTypeDiv.appendChild(eggTypeStatBar);
 
                 this.StatsEggPanel.appendChild(eggTypeDiv);
@@ -213,7 +213,7 @@ class BattleLogsStats {
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);
                 if (statsBar) {
-                    this.__internal__createOrUpdateEggPercentageBar(statsBar, short);
+                    this.__internal__createOrUpdateEggPercentageBar(this.__internal__statsEgg, statsBar, short);
                 }
             }
         } else {
@@ -247,9 +247,9 @@ class BattleLogsStats {
      * @param {string} short: The abbreviation of egg type
      * @return {Element} The updated or created stats bar element
      */
-    static __internal__createOrUpdateEggPercentageBar(statsBar, short) {
-        for (let i = 0; i < this.__internal__statsEgg[short].itemsPerRarity.length; i++) {
-            if (this.__internal__statsEgg[short].itemsPerRarity[i] !== null && this.__internal__statsEgg[short].itemsPerRarity[i] > 0) {
+    static __internal__createOrUpdateEggPercentageBar(statsData, statsBar, short) {
+        for (let i = 0; i < statsData[short].itemsPerRarity.length; i++) {
+            if (statsData[short].itemsPerRarity[i] !== null && statsData[short].itemsPerRarity[i] > 0) {
                 let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
                 if (!spanRarity) {
                     spanRarity = document.createElement("span");
@@ -257,7 +257,7 @@ class BattleLogsStats {
                     spanRarity.dataset.rarity = i.toString();
                     statsBar.appendChild(spanRarity);
                 }
-                let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i);
+                let itemsPercentage = this.__internal__getItemPercentage(statsData, short, i);
                 spanRarity.textContent = `${itemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
             }
