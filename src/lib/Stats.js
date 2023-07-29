@@ -139,7 +139,7 @@ class BattleLogsStats {
                 this.StatsPanel.classList.remove("hidden");
                 this.StatsButton.classList.add("selected");
                 this.StatsButton.title = "Masquer les stats";
-                this.__internal__updateStatsEggOutput();
+                this.__internal__updateStatsEggOutput(this.__internal__statsEgg.id);
             } else {
                 BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
@@ -271,6 +271,7 @@ class BattleLogsStats {
     /**
      * @desc Creates and updates the percentage bar of egg stats
      *
+     * @param {Object} statsData: The data of stats to update
      * @param {Element} statsBar: The stats bar element to update or create
      * @param {string} short: The abbreviation of egg type
      * @return {Element} The updated or created stats bar element
