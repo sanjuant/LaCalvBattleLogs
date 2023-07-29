@@ -312,6 +312,8 @@
 .stats-egg-title {
     margin-top: .5rem;
     margin-bottom: .3rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 .stats .stats-bar {
@@ -357,6 +359,10 @@
 
 .stats .item-name {
     font-style: italic;
+}
+
+.stats .item-cost {
+    text-align: right;
 }
 
 

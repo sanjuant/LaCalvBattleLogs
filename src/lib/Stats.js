@@ -15,7 +15,9 @@ class BattleLogsStats {
 
     static Messages = {
         egg: {
-            title: "Stats des oeufs"
+            name: "Stats des oeufs",
+            title: "{0} {1}",
+            cost: "{0} alopièce{1} dépensée{2}"
         },
         since: "(depuis le {0})",
     };
@@ -169,7 +171,7 @@ class BattleLogsStats {
             const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
             // statsTitle.textContent = ` (depuis le ${formattedDate})`;
             let statsTitleNameSpan = document.createElement("span");
-            statsTitleNameSpan.textContent = this.Messages[statType].title;
+            statsTitleNameSpan.textContent = this.Messages[statType].name;
             statsTitleNameSpan.classList.add("stats-title-name");
             let statsTitleDateSpan = document.createElement("span");
             statsTitleDateSpan.textContent = this.Messages.since.format(formattedDate);
@@ -188,7 +190,7 @@ class BattleLogsStats {
                 eggTypeTitle.classList.add(`rarity-${type.rarity}`);
                 eggTypeTitle.dataset.egg = type.short;
 
-                eggTypeTitle = this.__internal__createOrUpdateEggTitle(eggTypeTitle, type.short);
+                eggTypeTitle = this.__internal__createOrUpdateEggTitle(statType, eggTypeTitle, type.short);
                 eggTypeDiv.appendChild(eggTypeTitle);
 
                 // Create percentage bar for each rarity
@@ -207,6 +209,8 @@ class BattleLogsStats {
 
     /**
      * @desc Update the output of egg stats
+     *
+     * @param {string} statType: Type of stat
      */
     static __internal__updateStatsEggOutput(statType) {
         if (document.getElementById(`${this.Settings.Type}-${this.__internal__statsEgg.id}`) !== null) {
@@ -215,7 +219,7 @@ class BattleLogsStats {
             // Update title for each type of egg
             for (let eggTypeTitle of eggTypesTitles) {
                 let short = eggTypeTitle.getAttribute(`data-${statType}`);
-                eggTypeTitle = this.__internal__createOrUpdateEggTitle(eggTypeTitle, short);
+                eggTypeTitle = this.__internal__createOrUpdateEggTitle(statType, eggTypeTitle, short);
 
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-${statType}="${short}"]`);
@@ -231,11 +235,12 @@ class BattleLogsStats {
     /**
      * @desc Creates and updates the title of egg stats
      *
+     * @param {string} statType: Type of stat
      * @param {Element} eggTypeTitle: The title element to update or create
      * @param {string} short: The abbreviation of egg type
      * @return {Element} The updated or created title element
      */
-    static __internal__createOrUpdateEggTitle(eggTypeTitle, short) {
+    static __internal__createOrUpdateEggTitle(statType, eggTypeTitle, short) {
         let name;
         if (this.__internal__statsEgg[short]["total"] !== 0) {
             name = this.__internal__eggTypes[short].name;
@@ -243,7 +248,23 @@ class BattleLogsStats {
             name = this.__internal__eggTypes[short].name.split(" ");
             name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
         }
-        eggTypeTitle.innerHTML = `${this.__internal__statsEgg[short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`;
+
+        let nameContainerSpan = document.createElement("span")
+        nameContainerSpan.textContent = `${this.__internal__statsEgg[short]["total"]} `
+        let nameSpan = document.createElement("span");
+        nameSpan.classList.add("item-name");
+        nameSpan.textContent = name;
+        nameContainerSpan.appendChild(nameSpan)
+        eggTypeTitle.appendChild(nameContainerSpan)
+
+        let cost = this.__internal__statsEgg[short]["cost"];
+        let eggCost = this.Messages[statType].cost.format(cost, cost > 0 ? 's' : '', cost > 0 ? 's' : '')
+        let costSpan = document.createElement("span");
+        costSpan.classList.add("item-cost");
+        costSpan.textContent = eggCost;
+        eggTypeTitle.appendChild(costSpan)
+
+        // eggTypeTitle.innerHTML = `${eggTitle.innerHTML} - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`;
         return eggTypeTitle;
     }
 
