@@ -189,7 +189,7 @@ class BattleLogsStats {
                     name = type.name.split(" ");
                     name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
                 }
-                eggTypeTitle.innerHTML = `${this.__internal__statsEgg[type.short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[type.short]["cost"]} alopièces dépensées`
+                eggTypeTitle.innerHTML = `${this.__internal__statsEgg[type.short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[type.short]["cost"]} alopièces dépensées`
                 eggTypeDiv.appendChild(eggTypeTitle);
 
                 // Update percentage bar for each rarity
@@ -200,7 +200,7 @@ class BattleLogsStats {
                     for (let i = 0; i < this.__internal__statsEgg[type.short]["itemsPerRarity"].length; i++) {
                         if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null) {
                             let raritySpan = document.createElement("span");
-                            let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i);
+                            let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i.toString());
                             raritySpan.textContent = `${itemsPercentage}%`;
                             raritySpan.style.width = `${itemsPercentage}%`;
                             raritySpan.classList.add(`bar-rarity-${i}`);
@@ -233,7 +233,7 @@ class BattleLogsStats {
                     name = this.__internal__eggTypes[short].name.split(" ");
                     name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
                 }
-                eggTypeTitle.innerHTML = `${this.__internal__statsEgg[short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
+                eggTypeTitle.innerHTML = `${this.__internal__statsEgg[short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
 
                 // Update percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);

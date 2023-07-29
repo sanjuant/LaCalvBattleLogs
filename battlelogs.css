@@ -329,6 +329,10 @@
     font-weight: bold;
 }
 
+.stats .item-name {
+    font-style: italic;
+}
+
 
 /********************/
 /* Format */
