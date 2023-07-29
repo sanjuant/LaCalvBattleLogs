@@ -176,36 +176,17 @@ class BattleLogsStats {
                 eggTypeTitle.classList.add(`rarity-${type.rarity}`);
                 eggTypeTitle.dataset.egg = type.short;
 
-                let name;
-                if (this.__internal__statsEgg[type.short]["total"] !== 0) {
-                    name = type.name;
-                } else {
-                    name = type.name.split(" ");
-                    name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
-                }
-                eggTypeTitle.innerHTML = `${this.__internal__statsEgg[type.short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[type.short]["cost"]} alopièces dépensées`
+                eggTypeTitle = this.__internal__createOrUpdateEggTitle(eggTypeTitle, type.short);
                 eggTypeDiv.appendChild(eggTypeTitle);
 
                 // Create percentage bar for each rarity
                 let eggTypeStatBar = document.createElement("div");
                 eggTypeStatBar.classList.add("stats-bar");
                 eggTypeStatBar.dataset.egg = type.short;
-                for (let i = 0; i < this.__internal__statsEgg[type.short]["itemsPerRarity"].length; i++) {
-                    if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null && this.__internal__statsEgg[type.short]["itemsPerRarity"][i] > 0) {
-                        let raritySpan = document.createElement("span");
-                        let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i.toString());
-                        if (itemsPercentage >= 15) {
-                            raritySpan.textContent = `${itemsPercentage}%`;
-                        } else {
-                            raritySpan.textContent = "";
-                        }
-                        raritySpan.style.width = `${itemsPercentage}%`;
-                        raritySpan.classList.add(`bar-rarity-${i}`);
-                        raritySpan.dataset.rarity = i.toString();
-                        eggTypeStatBar.appendChild(raritySpan);
-                    }
-                }
+
+                eggTypeStatBar = this.__internal__createOrUpdateEggPercentageBar(eggTypeStatBar, type.short);
                 eggTypeDiv.appendChild(eggTypeStatBar);
+
                 this.StatsEggPanel.appendChild(eggTypeDiv);
             })
             this.StatsPanel.appendChild(this.StatsEggPanel);
@@ -222,49 +203,65 @@ class BattleLogsStats {
             // Update title for each type of egg
             for (let eggTypeTitle of eggTypesTitles) {
                 let short = eggTypeTitle.getAttribute("data-egg");
-                let name;
-                if (this.__internal__statsEgg[short]["total"] !== 0) {
-                    name = this.__internal__eggTypes[short].name;
-                } else {
-                    name = this.__internal__eggTypes[short].name.split(" ");
-                    name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
-                }
-                eggTypeTitle.innerHTML = `${this.__internal__statsEgg[short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
+                eggTypeTitle = this.__internal__createOrUpdateEggTitle(eggTypeTitle, short);
 
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);
                 if (statsBar) {
-                    for (let i = 0; i < this.__internal__statsEgg[short].itemsPerRarity.length; i++) {
-                        if (this.__internal__statsEgg[short].itemsPerRarity[i] !== null && this.__internal__statsEgg[short].itemsPerRarity[i] > 0) {
-                            let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
-                            let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`)
-                            if (spanRarity) {
-                                if (itemsPercentage >= 15) {
-                                    spanRarity.textContent = `${itemsPercentage}%`;
-                                } else {
-                                    spanRarity.textContent = "";
-                                }
-                                spanRarity.style.width = `${itemsPercentage}%`;
-                            } else {
-                                let spanRarity = document.createElement("span");
-                                let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
-                                if (itemsPercentage >= 15) {
-                                    spanRarity.textContent = `${itemsPercentage}%`;
-                                } else {
-                                    spanRarity.textContent = "";
-                                }
-                                spanRarity.style.width = `${itemsPercentage}%`;
-                                spanRarity.classList.add(`bar-rarity-${i}`);
-                                spanRarity.dataset.rarity = i.toString();
-                                statsBar.appendChild(spanRarity);
-                            }
-                        }
-                    }
+                    this.__internal__createOrUpdateEggPercentageBar(statsBar, short);
                 }
             }
         } else {
             this.__internal__buildStatsEggOutput();
         }
+    }
+
+    /**
+     * @desc Creates and updates the title of egg stats
+     *
+     * @param {Element} eggTypeTitle: The title element to update or create
+     * @param {string} short: The abbreviation of egg type
+     * @return {Element} The updated or created title element
+     */
+    static __internal__createOrUpdateEggTitle(eggTypeTitle, short) {
+        let name;
+        if (this.__internal__statsEgg[short]["total"] !== 0) {
+            name = this.__internal__eggTypes[short].name;
+        } else {
+            name = this.__internal__eggTypes[short].name.split(" ");
+            name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
+        }
+        eggTypeTitle.innerHTML = `${this.__internal__statsEgg[short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`;
+        return eggTypeTitle;
+    }
+
+    /**
+     * @desc Creates and updates the percentage bar of egg stats
+     *
+     * @param {Element} statsBar: The stats bar element to update or create
+     * @param {string} short: The abbreviation of egg type
+     * @return {Element} The updated or created stats bar element
+     */
+    static __internal__createOrUpdateEggPercentageBar(statsBar, short) {
+        for (let i = 0; i < this.__internal__statsEgg[short].itemsPerRarity.length; i++) {
+            if (this.__internal__statsEgg[short].itemsPerRarity[i] !== null && this.__internal__statsEgg[short].itemsPerRarity[i] > 0) {
+                let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
+                if (!spanRarity) {
+                    spanRarity = document.createElement("span");
+                    spanRarity.classList.add(`bar-rarity-${i}`);
+                    spanRarity.dataset.rarity = i.toString();
+                    statsBar.appendChild(spanRarity);
+                }
+                let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
+                if (itemsPercentage >= 15) {
+                    spanRarity.textContent = `${itemsPercentage}%`;
+                } else {
+                    spanRarity.textContent = "";
+                }
+                spanRarity.style.width = `${itemsPercentage}%`;
+            }
+        }
+        return statsBar;
     }
 
     /**
