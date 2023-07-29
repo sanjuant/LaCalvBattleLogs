@@ -198,7 +198,7 @@ class BattleLogsStats {
                 eggTypeStatBar.classList.add("stats-bar");
                 eggTypeStatBar.dataset.egg = type.short;
 
-                eggTypeStatBar = this.__internal__createOrUpdateEggPercentageBar(this.__internal__statsEgg, eggTypeStatBar, type.short);
+                eggTypeStatBar = this.__internal__createOrUpdatePercentageBar(this.__internal__statsEgg, eggTypeStatBar, type.short);
                 eggTypeDiv.appendChild(eggTypeStatBar);
 
                 this.StatsEggPanel.appendChild(eggTypeDiv);
@@ -224,7 +224,7 @@ class BattleLogsStats {
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-${statType}="${short}"]`);
                 if (statsBar) {
-                    this.__internal__createOrUpdateEggPercentageBar(this.__internal__statsEgg, statsBar, short);
+                    this.__internal__createOrUpdatePercentageBar(this.__internal__statsEgg, statsBar, short);
                 }
             }
         } else {
@@ -241,28 +241,35 @@ class BattleLogsStats {
      * @return {Element} The updated or created title element
      */
     static __internal__createOrUpdateEggTitle(statType, eggTypeTitle, short) {
+        let total = this.__internal__statsEgg[short]["total"];
         let name;
-        if (this.__internal__statsEgg[short]["total"] !== 0) {
+        if (total !== 0) {
             name = this.__internal__eggTypes[short].name;
         } else {
             name = this.__internal__eggTypes[short].name.split(" ");
-            name = name[0].substring(0, name[0].length - 1) + " " + name[1].substring(0, name[1].length - 1)
+            name = name[0].slice(0, -1) + " " + name[1].slice(0, -1);
         }
-
-        let nameContainerSpan = document.createElement("span")
-        nameContainerSpan.textContent = `${this.__internal__statsEgg[short]["total"]} `
-        let nameSpan = document.createElement("span");
-        nameSpan.classList.add("item-name");
-        nameSpan.textContent = name;
-        nameContainerSpan.appendChild(nameSpan)
-        eggTypeTitle.appendChild(nameContainerSpan)
-
         let cost = this.__internal__statsEgg[short]["cost"];
-        let eggCost = this.Messages[statType].cost.format(cost, cost > 0 ? 's' : '', cost > 0 ? 's' : '')
-        let costSpan = document.createElement("span");
-        costSpan.classList.add("item-cost");
-        costSpan.textContent = eggCost;
-        eggTypeTitle.appendChild(costSpan)
+        let eggCost = this.Messages[statType].cost.format(cost, cost > 0 ? 's' : '', cost > 0 ? 's' : '');
+
+        if (eggTypeTitle.childElementCount !== 0) {
+            eggTypeTitle.children[0].firstChild.textContent = `${total} `;
+            eggTypeTitle.children[0].lastChild.textContent = name;
+            eggTypeTitle.children[1].textContent = eggCost;
+        }else{
+            let nameContainerSpan = document.createElement("span")
+            nameContainerSpan.textContent = `${total} `
+            let nameSpan = document.createElement("span");
+            nameSpan.classList.add("item-name");
+            nameSpan.textContent = name;
+            nameContainerSpan.appendChild(nameSpan)
+            eggTypeTitle.appendChild(nameContainerSpan)
+
+            let costSpan = document.createElement("span");
+            costSpan.classList.add("item-cost");
+            costSpan.textContent = eggCost;
+            eggTypeTitle.appendChild(costSpan);
+        }
 
         // eggTypeTitle.innerHTML = `${eggTitle.innerHTML} - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`;
         return eggTypeTitle;
@@ -276,7 +283,7 @@ class BattleLogsStats {
      * @param {string} short: The abbreviation of egg type
      * @return {Element} The updated or created stats bar element
      */
-    static __internal__createOrUpdateEggPercentageBar(statsData, statsBar, short) {
+    static __internal__createOrUpdatePercentageBar(statsData, statsBar, short) {
         for (let i = 0; i < statsData[short].itemsPerRarity.length; i++) {
             if (statsData[short].itemsPerRarity[i] !== null && statsData[short].itemsPerRarity[i] > 0) {
                 let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
