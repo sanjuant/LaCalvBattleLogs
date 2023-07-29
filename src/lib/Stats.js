@@ -171,7 +171,7 @@ class BattleLogsStats {
                 return num < 10 ? `0${num}` : num;
             }
 
-            const formattedDate = `${padZero(created_since.getDate())}/${padZero(created_since.getMonth() + 1)}/${created_since.getFullYear().toString().substr(-2)} - ${padZero(created_since.getHours())}h${padZero(created_since.getMinutes())}`;
+            const formattedDate = `${padZero(created_since.getDate())}/${padZero(created_since.getMonth() + 1)}/${created_since.getFullYear().toString().substring(-2)} - ${padZero(created_since.getHours())}h${padZero(created_since.getMinutes())}`;
             title_span.textContent = `Stats des oeufs (depuis le ${formattedDate})`;
             title_div.appendChild(title_span);
             this.StatsEggPanel.appendChild(title_div);
