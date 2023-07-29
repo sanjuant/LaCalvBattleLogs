@@ -205,10 +205,9 @@ class BattleLogsStats {
                     for (let i = 0; i < this.__internal__statsEgg[type.short]["itemsPerRarity"].length; i++) {
                         if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null) {
                             let raritySpan = document.createElement("span");
-                            let itemsPercentage = (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] / this.__internal__statsEgg[type.short]["total"] * 100).toFixed(2);
-                            itemsPercentage = itemsPercentage + "%";
-                            raritySpan.textContent = itemsPercentage;
-                            raritySpan.style.width = itemsPercentage;
+                            let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i);
+                            raritySpan.textContent = `${itemsPercentage}%`;
+                            raritySpan.style.width = `${itemsPercentage}%`;
                             raritySpan.classList.add(`bar-rarity-${i}`);
                             raritySpan.dataset.rarity = i.toString();
                             statsEgg_subdiv_content.appendChild(raritySpan);
@@ -248,7 +247,7 @@ class BattleLogsStats {
                     const spanBars = statsBar.querySelectorAll("span")
                     spanBars.forEach(bar => {
                         let rarity = bar.getAttribute("data-rarity");
-                        let itemsPercentage = (this.__internal__statsEgg[short].itemsPerRarity[rarity] / this.__internal__statsEgg[short]["total"] * 100).toFixed(2);
+                        let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, rarity);
                         bar.textContent = `${itemsPercentage}%`;
                         bar.style.width = `${itemsPercentage}%`;
                     })
@@ -257,6 +256,18 @@ class BattleLogsStats {
         } else {
             this.__internal__buildStatsEggOutput();
         }
+    }
+
+    /**
+     * @desc Calculate the percentage of items per rarity in relation to the total items
+     *
+     * @param {Object} stats: An object containing the egg stats
+     * @param {string} short: The short type name of the egg, corresponding to a key in the `stats` object
+     * @param {string} rarity: The rarity level, corresponding to a key in the `itemsPerRarity` sub-object in the `stats` object
+     * @return {string} The calculated percentage, a float with two decimal places
+     */
+    static __internal__getItemPercentage(stats, short, rarity) {
+        return (stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100).toFixed(2);
     }
 
     /**
