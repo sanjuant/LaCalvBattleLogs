@@ -158,12 +158,7 @@ class BattleLogsStats {
             const statsTitle = document.createElement("div");
             let created_since = BattleLogs.Utils.getDateObject(this.__internal__statsEgg["time"]);
 
-            // Fonction pour ajouter un zéro devant les chiffres < 10
-            function padZero(num) {
-                return num < 10 ? `0${num}` : num;
-            }
-
-            const formattedDate = `${padZero(created_since.getDate())}/${padZero(created_since.getMonth() + 1)}/${created_since.getFullYear().toString().substring(-2)} - ${padZero(created_since.getHours())}h${padZero(created_since.getMinutes())}`;
+            const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
             statsTitle.textContent = `Stats des oeufs (depuis le ${formattedDate})`;
             this.StatsEggPanel.appendChild(statsTitle);
 

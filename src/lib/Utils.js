@@ -253,5 +253,8 @@ class BattleLogsUtils {
         String.prototype.capitalize = function () {
             return this.charAt(0).toUpperCase() + this.slice(1);
         }
+        String.prototype.padZero = function() {
+            return Number(this) < 10 ? `0${this}` : `${this}`;
+        }
     }
 }
