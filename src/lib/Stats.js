@@ -18,13 +18,6 @@ class BattleLogsStats {
             title: "Stats des oeufs"
         },
         since: "(depuis le {0})",
-        short: "{1}:{0}",
-        list: "Tu as {2} {0} {1}.",
-        item: {
-            normal: "{0}",
-            short: "{0}",
-            list: "&nbsp;&nbsp;&nbsp;&nbsp;{0}",
-        }
     };
 
     /**
