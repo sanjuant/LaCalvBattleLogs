@@ -210,7 +210,7 @@ class BattleLogsStats {
      */
     static __internal__updateStatsEggOutput(statType) {
         if (document.getElementById(`${this.Settings.Type}-${this.__internal__statsEgg.id}`) !== null) {
-            let eggTypesTitles = document.getElementsByClassName("stats-egg-title");
+            let eggTypesTitles = document.getElementsByClassName(`stats-${statType}-title`);
 
             // Update title for each type of egg
             for (let eggTypeTitle of eggTypesTitles) {
