@@ -242,14 +242,35 @@ class BattleLogsStats {
                 // Update percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);
                 if (statsBar) {
-                    const spanBars = statsBar.querySelectorAll("span")
-                    spanBars.forEach(bar => {
-                        let rarity = bar.getAttribute("data-rarity");
-                        let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, rarity);
-                        bar.textContent = `${itemsPercentage}%`;
-                        bar.style.width = `${itemsPercentage}%`;
-                    })
+                    for (let i = 0; i < this.__internal__statsEgg[short].itemsPerRarity.length; i++) {
+                        if (this.__internal__statsEgg[short].itemsPerRarity[i] !== null && this.__internal__statsEgg[short].itemsPerRarity[i] > 0) {
+                            let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
+                            let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`)
+                            if (spanRarity) {
+                                if (itemsPercentage >= 15) {
+                                    spanRarity.textContent = `${itemsPercentage}%`;
+                                } else {
+                                    spanRarity.textContent = "";
+                                }
+                                spanRarity.style.width = `${itemsPercentage}%`;
+                            } else {
+                                let spanRarity = document.createElement("span");
+                                let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
+                                if (itemsPercentage >= 15) {
+                                    spanRarity.textContent = `${itemsPercentage}%`;
+                                } else {
+                                    spanRarity.textContent = "";
+                                }
+                                spanRarity.style.width = `${itemsPercentage}%`;
+                                spanRarity.classList.add(`bar-rarity-${i}`);
+                                spanRarity.dataset.rarity = i.toString();
+                                statsBar.appendChild(spanRarity);
+                            }
+                        }
+                    }
                 }
+
+
             }
         } else {
             this.__internal__buildStatsEggOutput();
