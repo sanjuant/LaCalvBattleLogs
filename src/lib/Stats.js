@@ -6,18 +6,25 @@ class BattleLogsStats {
     static Settings = {
         StatsEnable: "Stats-Enable",
         StatsEgg: "Stats-Egg",
+        StatsShell: "Stats-Shell",
         Type: "Stats"
     }
 
     static StatsPanel;
     static StatsButton;
     static StatsEggPanel;
+    static StatsShellPanel;
 
     static Messages = {
         egg: {
             name: "Stats des oeufs",
             title: "{0} {1}",
             cost: "{0} alopièce{1} dépensée{2}"
+        },
+        shell: {
+            name: "Stats des coquilles",
+            title: "{0} {1}",
+            cost: ""
         },
         since: "(depuis le {0})",
     };
@@ -89,6 +96,12 @@ class BattleLogsStats {
         "d": {"short": "d", "name": "oeufs dégarnis", "rarity": 2},
         "r": {"short": "r", "name": "oeufs rasés", "rarity": 3},
         "re": {"short": "re", "name": "oeufs reluisants", "rarity": 4}
+    };
+    static __internal__shellTypes = {
+        "coquille_c": {"short": "coquille_c", "name": "coquilles chevelues", "rarity": 1},
+        "coquille_d": {"short": "coquille_d", "name": "coquilles dégarnies", "rarity": 2},
+        "coquille_r": {"short": "coquille_r", "name": "coquilles rasées", "rarity": 3},
+        "coquille_re": {"short": "coquille_re", "name": "coquilles reluisantes", "rarity": 4}
     };
 
     /**
@@ -322,13 +335,22 @@ class BattleLogsStats {
      * @desc Sets the stats settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
+        let created_since = new Date().toISOString();
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
             "id": "egg",
-            "time": new Date().toISOString(),
+            "time": created_since,
             "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
             "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
             "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
             "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
+        });
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsShell, {
+            "id": "shell",
+            "time": created_since,
+            "coquille_c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
+            "coquille_d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
+            "coquille_r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
+            "coquille_re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
         });
     }
 }
