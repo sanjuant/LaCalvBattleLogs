@@ -301,6 +301,10 @@
     justify-content: space-between;
 }
 
+.stats-title-date {
+    text-align: right;
+}
+
 .stats-egg-block {
     padding: 0 1em;
 }
