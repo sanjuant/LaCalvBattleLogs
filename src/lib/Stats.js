@@ -75,12 +75,6 @@ class BattleLogsStats {
      /*********************************************************************/
 
     static __internal__statsEgg = null;
-    /**static __internal__eggTypes = [
-     { "short": "c", "name": "oeufs chevelus", "rarity": 1 },
-     { "short": "d", "name": "oeufs dégarnis", "rarity": 2 },
-     { "short": "r", "name": "oeufs rasés", "rarity": 3 },
-     { "short": "re", "name": "oeufs reluisants", "rarity": 4 }
-     ];*/
     static __internal__eggTypes = {
         "c": {"short": "c", "name": "oeufs chevelus", "rarity": 1},
         "d": {"short": "d", "name": "oeufs dégarnis", "rarity": 2},
@@ -192,28 +186,26 @@ class BattleLogsStats {
                 eggTypeTitle.innerHTML = `${this.__internal__statsEgg[type.short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[type.short]["cost"]} alopièces dépensées`
                 eggTypeDiv.appendChild(eggTypeTitle);
 
-                // Update percentage bar for each rarity
-                // if (this.__internal__statsEgg[type.short]["total"]) {
-                    let eggTypeStatBar = document.createElement("div");
-                    eggTypeStatBar.classList.add("stats-bar");
-                    eggTypeStatBar.dataset.egg = type.short;
-                    for (let i = 0; i < this.__internal__statsEgg[type.short]["itemsPerRarity"].length; i++) {
-                        if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null && this.__internal__statsEgg[type.short]["itemsPerRarity"][i] > 0) {
-                            let raritySpan = document.createElement("span");
-                            let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i.toString());
-                            if (itemsPercentage >= 15) {
-                                raritySpan.textContent = `${itemsPercentage}%`;
-                            } else {
-                                raritySpan.textContent = "";
-                            }
-                            raritySpan.style.width = `${itemsPercentage}%`;
-                            raritySpan.classList.add(`bar-rarity-${i}`);
-                            raritySpan.dataset.rarity = i.toString();
-                            eggTypeStatBar.appendChild(raritySpan);
+                // Create percentage bar for each rarity
+                let eggTypeStatBar = document.createElement("div");
+                eggTypeStatBar.classList.add("stats-bar");
+                eggTypeStatBar.dataset.egg = type.short;
+                for (let i = 0; i < this.__internal__statsEgg[type.short]["itemsPerRarity"].length; i++) {
+                    if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null && this.__internal__statsEgg[type.short]["itemsPerRarity"][i] > 0) {
+                        let raritySpan = document.createElement("span");
+                        let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i.toString());
+                        if (itemsPercentage >= 15) {
+                            raritySpan.textContent = `${itemsPercentage}%`;
+                        } else {
+                            raritySpan.textContent = "";
                         }
+                        raritySpan.style.width = `${itemsPercentage}%`;
+                        raritySpan.classList.add(`bar-rarity-${i}`);
+                        raritySpan.dataset.rarity = i.toString();
+                        eggTypeStatBar.appendChild(raritySpan);
                     }
-                    eggTypeDiv.appendChild(eggTypeStatBar);
-                // }
+                }
+                eggTypeDiv.appendChild(eggTypeStatBar);
                 this.StatsEggPanel.appendChild(eggTypeDiv);
             })
             this.StatsPanel.appendChild(this.StatsEggPanel);
@@ -239,7 +231,7 @@ class BattleLogsStats {
                 }
                 eggTypeTitle.innerHTML = `${this.__internal__statsEgg[short]["total"]} <span class="item-name">${name}</span> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
 
-                // Update percentage bar for each rarity
+                // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);
                 if (statsBar) {
                     for (let i = 0; i < this.__internal__statsEgg[short].itemsPerRarity.length; i++) {
@@ -269,8 +261,6 @@ class BattleLogsStats {
                         }
                     }
                 }
-
-
             }
         } else {
             this.__internal__buildStatsEggOutput();
