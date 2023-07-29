@@ -38,7 +38,7 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
-            this.__internal__buildStatsEggOutput(this.__internal__statsEgg.id)
+            this.__internal__buildStatsEggOutput(this.__internal__statsEgg);
         }
     }
 
@@ -74,7 +74,7 @@ class BattleLogsStats {
                 this.__internal__statsEgg[short]["itemsPerRarity"][item["rarity"]] += item["count"];
             })
             BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsEgg, this.__internal__statsEgg);
-            this.__internal__updateStatsEggOutput(this.__internal__statsEgg.id);
+            this.__internal__updateStatsEggOutput(this.__internal__statsEgg);
         }
 
     }
@@ -139,7 +139,7 @@ class BattleLogsStats {
                 this.StatsPanel.classList.remove("hidden");
                 this.StatsButton.classList.add("selected");
                 this.StatsButton.title = "Masquer les stats";
-                this.__internal__updateStatsEggOutput(this.__internal__statsEgg.id);
+                this.__internal__updateStatsEggOutput(this.__internal__statsEgg);
             } else {
                 BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
@@ -158,15 +158,16 @@ class BattleLogsStats {
     /**
      * @desc Build the output of egg stats
      */
-    static __internal__buildStatsEggOutput(statType) {
+    static __internal__buildStatsEggOutput(statData) {
+        let statType = statData.id;
         if (this.StatsButton.classList.contains("selected")) {
             // Build Panel for egg stats
             this.StatsEggPanel = document.createElement("div");
-            this.StatsEggPanel.id = `${this.Settings.Type}-${this.__internal__statsEgg.id}`;
+            this.StatsEggPanel.id = `${this.Settings.Type}-${statData.id}`;
 
             const statsTitle = document.createElement("div");
             statsTitle.classList.add("stats-title")
-            let created_since = BattleLogs.Utils.getDateObject(this.__internal__statsEgg["time"]);
+            let created_since = BattleLogs.Utils.getDateObject(statData["time"]);
 
             const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
             // statsTitle.textContent = ` (depuis le ${formattedDate})`;
@@ -198,7 +199,7 @@ class BattleLogsStats {
                 eggTypeStatBar.classList.add("stats-bar");
                 eggTypeStatBar.dataset.egg = type.short;
 
-                eggTypeStatBar = this.__internal__createOrUpdatePercentageBar(this.__internal__statsEgg, eggTypeStatBar, type.short);
+                eggTypeStatBar = this.__internal__createOrUpdatePercentageBar(statData, eggTypeStatBar, type.short);
                 eggTypeDiv.appendChild(eggTypeStatBar);
 
                 this.StatsEggPanel.appendChild(eggTypeDiv);
@@ -212,8 +213,9 @@ class BattleLogsStats {
      *
      * @param {string} statType: Type of stat
      */
-    static __internal__updateStatsEggOutput(statType) {
-        if (document.getElementById(`${this.Settings.Type}-${this.__internal__statsEgg.id}`) !== null) {
+    static __internal__updateStatsEggOutput(statData) {
+        let statType = statData.id;
+        if (document.getElementById(`${this.Settings.Type}-${statType}`) !== null) {
             let eggTypesTitles = document.getElementsByClassName(`stats-${statType}-title`);
 
             // Update title for each type of egg
@@ -224,11 +226,11 @@ class BattleLogsStats {
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-${statType}="${short}"]`);
                 if (statsBar) {
-                    this.__internal__createOrUpdatePercentageBar(this.__internal__statsEgg, statsBar, short);
+                    this.__internal__createOrUpdatePercentageBar(statData, statsBar, short);
                 }
             }
         } else {
-            this.__internal__buildStatsEggOutput(statType);
+            this.__internal__buildStatsEggOutput(statData);
         }
     }
 
