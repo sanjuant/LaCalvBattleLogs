@@ -290,6 +290,10 @@
 .stats .stats-bar {
     width: 100%;
     display: flex;
+    border-radius: 5px;
+    background-color: #595959;
+    overflow: hidden;
+    height: 20px;
 }
 
 .stats .stats-bar > span {
@@ -297,36 +301,29 @@
     /*   border: 1px solid black; */
     border-color: black;
     margin: 0;
-    padding: 5px;
+    padding: 3px 5px;
     text-align: center;
 }
 
-.stats .stats-bar > span:first-child {
-    border-radius: 5px 0 0 5px;
-}
-.stats .stats-bar > span:last-child {
-    border-radius: 0 5px 5px 0;
+.stats-bar > span[class^="bar-rarity-"] {
+    font-size: 12px;
+    font-family: Calibri, sans-serif;
 }
 
 .bar-rarity-0 {
     background-color: #b9b8b8;
-    font-weight: bold;
 }
 .bar-rarity-1 {
     background-color: #9be98f;
-    font-weight: bold;
 }
 .bar-rarity-2 {
     background-color: #629ce9;
-    font-weight: bold;
 }
 .bar-rarity-3 {
     background-color: #eb9ce9;
-    font-weight: bold;
 }
 .bar-rarity-4 {
     background-color: #ebdd54;
-    font-weight: bold;
 }
 
 .stats .item-name {

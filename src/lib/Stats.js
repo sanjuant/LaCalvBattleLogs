@@ -82,10 +82,10 @@ class BattleLogsStats {
      { "short": "re", "name": "oeufs reluisants", "rarity": 4 }
      ];*/
     static __internal__eggTypes = {
-        "c": {"short": "c", "name": "oeufs chevelus", "rarity": 0},
-        "d": {"short": "d", "name": "oeufs dégarnis", "rarity": 1},
-        "r": {"short": "r", "name": "oeufs rasés", "rarity": 2},
-        "re": {"short": "re", "name": "oeufs reluisants", "rarity": 3}
+        "c": {"short": "c", "name": "oeufs chevelus", "rarity": 1},
+        "d": {"short": "d", "name": "oeufs dégarnis", "rarity": 2},
+        "r": {"short": "r", "name": "oeufs rasés", "rarity": 3},
+        "re": {"short": "re", "name": "oeufs reluisants", "rarity": 4}
     };
 
     /**
@@ -193,15 +193,19 @@ class BattleLogsStats {
                 eggTypeDiv.appendChild(eggTypeTitle);
 
                 // Update percentage bar for each rarity
-                if (this.__internal__statsEgg[type.short]["total"] !== 0) {
+                // if (this.__internal__statsEgg[type.short]["total"]) {
                     let eggTypeStatBar = document.createElement("div");
                     eggTypeStatBar.classList.add("stats-bar");
                     eggTypeStatBar.dataset.egg = type.short;
                     for (let i = 0; i < this.__internal__statsEgg[type.short]["itemsPerRarity"].length; i++) {
-                        if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null) {
+                        if (this.__internal__statsEgg[type.short]["itemsPerRarity"][i] !== null && this.__internal__statsEgg[type.short]["itemsPerRarity"][i] > 0) {
                             let raritySpan = document.createElement("span");
                             let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, type.short, i.toString());
-                            raritySpan.textContent = `${itemsPercentage}%`;
+                            if (itemsPercentage >= 15) {
+                                raritySpan.textContent = `${itemsPercentage}%`;
+                            } else {
+                                raritySpan.textContent = "";
+                            }
                             raritySpan.style.width = `${itemsPercentage}%`;
                             raritySpan.classList.add(`bar-rarity-${i}`);
                             raritySpan.dataset.rarity = i.toString();
@@ -209,7 +213,7 @@ class BattleLogsStats {
                         }
                     }
                     eggTypeDiv.appendChild(eggTypeStatBar);
-                }
+                // }
                 this.StatsEggPanel.appendChild(eggTypeDiv);
             })
             this.StatsPanel.appendChild(this.StatsEggPanel);
@@ -261,7 +265,10 @@ class BattleLogsStats {
      * @return {string} The calculated percentage, a float with two decimal places
      */
     static __internal__getItemPercentage(stats, short, rarity) {
-        return (stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100).toFixed(2);
+        if (stats[short].itemsPerRarity[rarity] > 0) {
+            return (stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100).toFixed();
+        }
+        return "0";
     }
 
     /**
