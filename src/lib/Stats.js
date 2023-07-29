@@ -156,16 +156,26 @@ class BattleLogsStats {
             this.StatsEggPanel.id = `${this.Settings.Type}-${this.__internal__statsEgg.id}`;
 
             const statsTitle = document.createElement("div");
+            statsTitle.classList.add("stats-title")
             let created_since = BattleLogs.Utils.getDateObject(this.__internal__statsEgg["time"]);
 
             const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
-            statsTitle.textContent = `Stats des oeufs (depuis le ${formattedDate})`;
+            // statsTitle.textContent = ` (depuis le ${formattedDate})`;
+            let statsTitleNameSpan = document.createElement("span");
+            statsTitleNameSpan.textContent = "Stats des oeufs";
+            statsTitleNameSpan.classList.add("stats-title-name");
+            let statsTitleDateSpan = document.createElement("span");
+            statsTitleDateSpan.textContent = ` (depuis le ${formattedDate})`;
+            statsTitleDateSpan.classList.add("stats-title-date");
+            statsTitle.appendChild(statsTitleNameSpan);
+            statsTitle.appendChild(statsTitleDateSpan);
             this.StatsEggPanel.appendChild(statsTitle);
 
             // Build div for each type of egg
             Object.keys(this.__internal__eggTypes).forEach((key) => {
                 let type = this.__internal__eggTypes[key];
                 let eggTypeDiv = document.createElement("div");
+                eggTypeDiv.classList.add("stats-egg-block")
                 let eggTypeTitle = document.createElement("div");
                 eggTypeTitle.classList.add("stats-egg-title");
                 eggTypeTitle.classList.add(`rarity-${type.rarity}`);
@@ -248,11 +258,7 @@ class BattleLogsStats {
                     statsBar.appendChild(spanRarity);
                 }
                 let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
-                if (itemsPercentage >= 15) {
-                    spanRarity.textContent = `${itemsPercentage}%`;
-                } else {
-                    spanRarity.textContent = "";
-                }
+                spanRarity.textContent = `${itemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
             }
         }
