@@ -47,6 +47,9 @@ class BattleLogsUpdate {
         if (!BattleLogs.Load.hasLoaded()) {
             BattleLogs.Update.queryUrl("load", "GET")
         }
+        if (!BattleLogs.Shop.hasLoaded()) {
+            BattleLogs.Update.queryUrl("shop", "GET")
+        }
 
         if ("streaming" in data) {
             this.Streaming = data["streaming"];

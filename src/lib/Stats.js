@@ -12,8 +12,6 @@ class BattleLogsStats {
 
     static StatsPanel;
     static StatsButton;
-    static StatsEggPanel;
-    static StatsShellPanel;
 
     static Messages = {
         egg: {
@@ -24,7 +22,7 @@ class BattleLogsStats {
         shell: {
             name: "Stats des coquilles",
             title: "{0} {1}",
-            cost: ""
+            cost: "{0} coquille{1} utilisée{2}"
         },
         since: "(depuis le {0})",
     };
@@ -34,7 +32,7 @@ class BattleLogsStats {
      *
      * @param initStep: The current battle logs init step
      */
-    static initialize(initStep) {
+    static async initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             // Add CSV button
@@ -45,7 +43,16 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
-            this.__internal__buildStatsEggOutput(this.__internal__statsEgg);
+            this.__internal__statsShell = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsShell);
+        } else if (initStep === BattleLogs.InitSteps.Finalize) {
+            while (true) {
+                if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
+                    break;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
+            }
+            this.__internal__updateStatsEggOutput(this.__internal__statsEgg)
+            this.__internal__updateStatsEggOutput(this.__internal__statsShell)
         }
     }
 
@@ -91,18 +98,7 @@ class BattleLogsStats {
      /*********************************************************************/
 
     static __internal__statsEgg = null;
-    static __internal__eggTypes = {
-        "c": {"short": "c", "name": "oeufs chevelus", "rarity": 1},
-        "d": {"short": "d", "name": "oeufs dégarnis", "rarity": 2},
-        "r": {"short": "r", "name": "oeufs rasés", "rarity": 3},
-        "re": {"short": "re", "name": "oeufs reluisants", "rarity": 4}
-    };
-    static __internal__shellTypes = {
-        "coquille_c": {"short": "coquille_c", "name": "coquilles chevelues", "rarity": 1},
-        "coquille_d": {"short": "coquille_d", "name": "coquilles dégarnies", "rarity": 2},
-        "coquille_r": {"short": "coquille_r", "name": "coquilles rasées", "rarity": 3},
-        "coquille_re": {"short": "coquille_re", "name": "coquilles reluisantes", "rarity": 4}
-    };
+    static __internal__statsShell = null
 
     /**
      * @desc Adds the BattleLogs panel
@@ -152,7 +148,6 @@ class BattleLogsStats {
                 this.StatsPanel.classList.remove("hidden");
                 this.StatsButton.classList.add("selected");
                 this.StatsButton.title = "Masquer les stats";
-                this.__internal__updateStatsEggOutput(this.__internal__statsEgg);
             } else {
                 BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
@@ -173,58 +168,57 @@ class BattleLogsStats {
      */
     static __internal__buildStatsEggOutput(statData) {
         let statType = statData.id;
-        if (this.StatsButton.classList.contains("selected")) {
-            // Build Panel for egg stats
-            this.StatsEggPanel = document.createElement("div");
-            this.StatsEggPanel.id = `${this.Settings.Type}-${statData.id}`;
 
-            const statsTitle = document.createElement("div");
-            statsTitle.classList.add("stats-title")
-            let created_since = BattleLogs.Utils.getDateObject(statData["time"]);
+        // Build Panel for egg stats
+        const divPanel = document.createElement("div");
+        divPanel.id = `${this.Settings.Type}-${statData.id}`;
 
-            const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
-            // statsTitle.textContent = ` (depuis le ${formattedDate})`;
-            let statsTitleNameSpan = document.createElement("span");
-            statsTitleNameSpan.textContent = this.Messages[statType].name;
-            statsTitleNameSpan.classList.add("stats-title-name");
-            let statsTitleDateSpan = document.createElement("span");
-            statsTitleDateSpan.textContent = this.Messages.since.format(formattedDate);
-            statsTitleDateSpan.classList.add("stats-title-date");
-            statsTitle.appendChild(statsTitleNameSpan);
-            statsTitle.appendChild(statsTitleDateSpan);
-            this.StatsEggPanel.appendChild(statsTitle);
+        const statsTitle = document.createElement("div");
+        statsTitle.classList.add("stats-title")
+        let created_since = BattleLogs.Utils.getDateObject(statData["time"]);
+        const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
+        let statsTitleNameSpan = document.createElement("span");
+        statsTitleNameSpan.textContent = this.Messages[statType].name;
+        statsTitleNameSpan.classList.add("stats-title-name");
+        let statsTitleDateSpan = document.createElement("span");
+        statsTitleDateSpan.textContent = this.Messages.since.format(formattedDate);
+        statsTitleDateSpan.classList.add("stats-title-date");
+        statsTitle.appendChild(statsTitleNameSpan);
+        statsTitle.appendChild(statsTitleDateSpan);
+        divPanel.appendChild(statsTitle);
 
-            // Build div for each type of egg
-            Object.keys(this.__internal__eggTypes).forEach((key) => {
-                let type = this.__internal__eggTypes[key];
-                let eggTypeDiv = document.createElement("div");
-                eggTypeDiv.classList.add(`stats-${statType}-block`)
-                let eggTypeTitle = document.createElement("div");
-                eggTypeTitle.classList.add(`stats-${statType}-title`);
-                eggTypeTitle.classList.add(`rarity-${type.rarity}`);
-                eggTypeTitle.dataset.egg = type.short;
+        // Build div for each type of egg
+        Object.keys(statData).forEach((key) => {
+            let type = statData[key];
+            if (typeof type !== 'object') return;
+            let object = BattleLogs.Utils.getObjectByShortName(key);
+            let eggTypeDiv = document.createElement("div");
+            eggTypeDiv.classList.add(`stats-block`)
+            let eggTypeTitle = document.createElement("div");
+            eggTypeTitle.classList.add(`stats-subtitle`);
+            eggTypeTitle.classList.add(`rarity-${type.rarity}`);
+            eggTypeTitle.dataset.egg = object.short;
 
-                eggTypeTitle = this.__internal__createOrUpdateEggTitle(statType, eggTypeTitle, type.short);
-                eggTypeDiv.appendChild(eggTypeTitle);
+            eggTypeTitle = this.__internal__createOrUpdateEggTitle(statData, statType, eggTypeTitle, object);
+            eggTypeDiv.appendChild(eggTypeTitle);
 
-                // Create percentage bar for each rarity
-                let eggTypeStatBar = document.createElement("div");
-                eggTypeStatBar.classList.add("stats-bar");
-                eggTypeStatBar.dataset.egg = type.short;
+            // Create percentage bar for each rarity
+            let eggTypeStatBar = document.createElement("div");
+            eggTypeStatBar.classList.add("stats-bar");
+            eggTypeStatBar.dataset.egg = type.short;
 
-                eggTypeStatBar = this.__internal__createOrUpdatePercentageBar(statData, eggTypeStatBar, type.short);
-                eggTypeDiv.appendChild(eggTypeStatBar);
+            eggTypeStatBar = this.__internal__createOrUpdatePercentageBar(statData, eggTypeStatBar, object);
+            eggTypeDiv.appendChild(eggTypeStatBar);
 
-                this.StatsEggPanel.appendChild(eggTypeDiv);
-            })
-            this.StatsPanel.appendChild(this.StatsEggPanel);
-        }
+            divPanel.appendChild(eggTypeDiv);
+        })
+        this.StatsPanel.appendChild(divPanel);
     }
 
     /**
      * @desc Update the output of egg stats
      *
-     * @param {string} statType: Type of stat
+     * @param {Object} statData: Type of stat
      */
     static __internal__updateStatsEggOutput(statData) {
         let statType = statData.id;
@@ -234,12 +228,13 @@ class BattleLogsStats {
             // Update title for each type of egg
             for (let eggTypeTitle of eggTypesTitles) {
                 let short = eggTypeTitle.getAttribute(`data-${statType}`);
-                eggTypeTitle = this.__internal__createOrUpdateEggTitle(statType, eggTypeTitle, short);
+                let object = BattleLogs.Utils.getObjectByShortName(short);
+                eggTypeTitle = this.__internal__createOrUpdateEggTitle(statData, statType, eggTypeTitle, object);
 
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-${statType}="${short}"]`);
                 if (statsBar) {
-                    this.__internal__createOrUpdatePercentageBar(statData, statsBar, short);
+                    this.__internal__createOrUpdatePercentageBar(statData, statsBar, object);
                 }
             }
         } else {
@@ -250,21 +245,22 @@ class BattleLogsStats {
     /**
      * @desc Creates and updates the title of egg stats
      *
+     * @param {Object} statsData: The data of stats to update
      * @param {string} statType: Type of stat
      * @param {Element} eggTypeTitle: The title element to update or create
-     * @param {string} short: The abbreviation of egg type
+     * @param {Object} item: Item object
      * @return {Element} The updated or created title element
      */
-    static __internal__createOrUpdateEggTitle(statType, eggTypeTitle, short) {
-        let total = this.__internal__statsEgg[short]["total"];
+    static __internal__createOrUpdateEggTitle(statsData, statType, eggTypeTitle, item) {
+        let total = statsData[item.short]["total"];
         let name;
         if (total !== 0) {
-            name = this.__internal__eggTypes[short].name;
+            name = item.name;
         } else {
-            name = this.__internal__eggTypes[short].name.split(" ");
+            name = item.name.split(" ");
             name = name[0].slice(0, -1) + " " + name[1].slice(0, -1);
         }
-        let cost = this.__internal__statsEgg[short]["cost"];
+        let cost = statsData[item.short]["cost"];
         let eggCost = this.Messages[statType].cost.format(cost, cost > 0 ? 's' : '', cost > 0 ? 's' : '');
 
         if (eggTypeTitle.childElementCount !== 0) {
@@ -286,7 +282,6 @@ class BattleLogsStats {
             eggTypeTitle.appendChild(costSpan);
         }
 
-        // eggTypeTitle.innerHTML = `${eggTitle.innerHTML} - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`;
         return eggTypeTitle;
     }
 
@@ -295,12 +290,12 @@ class BattleLogsStats {
      *
      * @param {Object} statsData: The data of stats to update
      * @param {Element} statsBar: The stats bar element to update or create
-     * @param {string} short: The abbreviation of egg type
+     * @param {Object} item: Item object
      * @return {Element} The updated or created stats bar element
      */
-    static __internal__createOrUpdatePercentageBar(statsData, statsBar, short) {
-        for (let i = 0; i < statsData[short].itemsPerRarity.length; i++) {
-            if (statsData[short].itemsPerRarity[i] !== null && statsData[short].itemsPerRarity[i] > 0) {
+    static __internal__createOrUpdatePercentageBar(statsData, statsBar, item) {
+        for (let i = 0; i < statsData[item.short].itemsPerRarity.length; i++) {
+            if (statsData[item.short].itemsPerRarity[i] !== null && statsData[item.short].itemsPerRarity[i] > 0) {
                 let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
                 if (!spanRarity) {
                     spanRarity = document.createElement("span");
@@ -308,7 +303,7 @@ class BattleLogsStats {
                     spanRarity.dataset.rarity = i.toString();
                     statsBar.appendChild(spanRarity);
                 }
-                let itemsPercentage = this.__internal__getItemPercentage(statsData, short, i);
+                let itemsPercentage = this.__internal__getItemPercentage(statsData, item.short, i);
                 spanRarity.textContent = `${itemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
             }
@@ -339,18 +334,18 @@ class BattleLogsStats {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
             "id": "egg",
             "time": created_since,
-            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
-            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
-            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
-            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
+            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
         });
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsShell, {
             "id": "shell",
             "time": created_since,
-            "coquille_c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
-            "coquille_d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
-            "coquille_r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
-            "coquille_re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
+            "coquille_c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+            "coquille_d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+            "coquille_r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+            "coquille_re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
         });
     }
 }
