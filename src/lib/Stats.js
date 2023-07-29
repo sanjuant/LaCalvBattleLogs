@@ -29,6 +29,7 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
+            this.__internal__buildStatsEggOutput()
         }
     }
 
@@ -75,17 +76,18 @@ class BattleLogsStats {
 
     static __internal__statsEgg = null;
     /**static __internal__eggTypes = [
-        { "short": "c", "name": "oeufs chevelus", "rarity": 1 },
-        { "short": "d", "name": "oeufs dégarnis", "rarity": 2 },
-        { "short": "r", "name": "oeufs rasés", "rarity": 3 },
-        { "short": "re", "name": "oeufs reluisants", "rarity": 4 }
-    ];*/
+     { "short": "c", "name": "oeufs chevelus", "rarity": 1 },
+     { "short": "d", "name": "oeufs dégarnis", "rarity": 2 },
+     { "short": "r", "name": "oeufs rasés", "rarity": 3 },
+     { "short": "re", "name": "oeufs reluisants", "rarity": 4 }
+     ];*/
     static __internal__eggTypes = {
-        "c": {"short":"c", "name":"oeufs chevelus", "rarity": 0},
-        "d": {"short":"d", "name":"oeufs dégarnis", "rarity": 1},
-        "r": {"short":"r", "name":"oeufs rasés", "rarity": 2},
-        "re": {"short":"re", "name":"oeufs reluisants", "rarity": 3}
+        "c": {"short": "c", "name": "oeufs chevelus", "rarity": 0},
+        "d": {"short": "d", "name": "oeufs dégarnis", "rarity": 1},
+        "r": {"short": "r", "name": "oeufs rasés", "rarity": 2},
+        "re": {"short": "re", "name": "oeufs reluisants", "rarity": 3}
     };
+
     /**
      * @desc Adds the BattleLogs panel
      */
@@ -151,23 +153,9 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Sets the stats settings default values in the local storage
-     */
-    static __internal__setDefaultSettingsValues() {
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
-            "id": "Eggs",
-            "time": new Date().toISOString(),
-            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
-            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
-            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
-            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
-        });
-    }
-
-    /**
      * @desc Build the output of egg stats
      */
-    static __internal__BuildStatsEggOutput() {
+    static __internal__buildStatsEggOutput() {
         if (this.StatsButton.classList.contains("selected")) {
 
             // Build Panel for egg stats
@@ -177,10 +165,12 @@ class BattleLogsStats {
             const title_div = document.createElement("div");
             const title_span = document.createElement("span");
             let created_since = BattleLogs.Utils.getDateObject(this.__internal__statsEgg["time"]);
+
             // Fonction pour ajouter un zéro devant les chiffres < 10
             function padZero(num) {
                 return num < 10 ? `0${num}` : num;
             }
+
             const formattedDate = `${padZero(created_since.getDate())}/${padZero(created_since.getMonth() + 1)}/${created_since.getFullYear().toString().substr(-2)} - ${padZero(created_since.getHours())}h${padZero(created_since.getMinutes())}`;
             title_span.textContent = `Stats des oeufs (depuis le ${formattedDate})`;
             title_div.appendChild(title_span);
@@ -188,7 +178,7 @@ class BattleLogsStats {
 
             // Build title for each type of egg
             let statsEgg_subdiv = document.createElement("div");
-            Object.keys(this.__internal__eggTypes).forEach( (key) => {
+            Object.keys(this.__internal__eggTypes).forEach((key) => {
                 let type = this.__internal__eggTypes[key];
                 let statsEgg_subdiv_title = document.createElement("div");
                 statsEgg_subdiv_title.classList.add("stats-egg-title");
@@ -242,7 +232,6 @@ class BattleLogsStats {
             // Update title for each type of egg
             for (let title_div of statsTitle_divs) {
                 let short = title_div.getAttribute("data-egg");
-
                 let name;
                 if (this.__internal__statsEgg[short]["total"] !== 0) {
                     name = this.__internal__eggTypes[short].name;
@@ -254,15 +243,33 @@ class BattleLogsStats {
                 title_span[0].innerHTML = `${this.__internal__statsEgg[short]["total"]} <em>${name}</em> - ${this.__internal__statsEgg[short]["cost"]} alopièces dépensées`
 
                 // Update percentage bar for each rarity
-                let statsBar_spans = document.querySelectorAll(".stats-bar > span");
-                for (let bar_span of statsBar_spans) {
-                    let rarity = Number(bar_span.getAttribute("data-rarity"));
-                    bar_span.textContent = this.__internal__statsEgg[short].itemsPerRarity[rarity];
-                    bar_span.style.width = this.__internal__statsEgg[short].itemsPerRarity[rarity];
+                const statsBar = document.querySelector(`.stats-bar[data-egg="${short}"]`);
+                if (statsBar) {
+                    const spanBars = statsBar.querySelectorAll("span")
+                    spanBars.forEach(bar => {
+                        let rarity = bar.getAttribute("data-rarity");
+                        let itemsPercentage = (this.__internal__statsEgg[short].itemsPerRarity[rarity] / this.__internal__statsEgg[short]["total"] * 100).toFixed(2);
+                        bar.textContent = `${itemsPercentage}%`;
+                        bar.style.width = `${itemsPercentage}%`;
+                    })
                 }
             }
         } else {
-            this.__internal__BuildStatsEggOutput();
+            this.__internal__buildStatsEggOutput();
         }
+    }
+
+    /**
+     * @desc Sets the stats settings default values in the local storage
+     */
+    static __internal__setDefaultSettingsValues() {
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
+            "id": "Eggs",
+            "time": new Date().toISOString(),
+            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null]},
+            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
+            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0]},
+            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0]},
+        });
     }
 }
