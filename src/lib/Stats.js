@@ -257,7 +257,7 @@ class BattleLogsStats {
                     spanRarity.dataset.rarity = i.toString();
                     statsBar.appendChild(spanRarity);
                 }
-                let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i.toString());
+                let itemsPercentage = this.__internal__getItemPercentage(this.__internal__statsEgg, short, i);
                 spanRarity.textContent = `${itemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
             }
@@ -270,7 +270,7 @@ class BattleLogsStats {
      *
      * @param {Object} stats: An object containing the egg stats
      * @param {string} short: The short type name of the egg, corresponding to a key in the `stats` object
-     * @param {string} rarity: The rarity level, corresponding to a key in the `itemsPerRarity` sub-object in the `stats` object
+     * @param {Number} rarity: The rarity level, corresponding to a key in the `itemsPerRarity` sub-object in the `stats` object
      * @return {string} The calculated percentage, a float with two decimal places
      */
     static __internal__getItemPercentage(stats, short, rarity) {
