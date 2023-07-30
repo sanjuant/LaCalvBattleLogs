@@ -23,12 +23,12 @@ class BattleLogsStats {
         shell: {
             name: "Stats des coquilles",
             title: "{0} <span class='item-name'>{1}</span>",
-            cost: "{0} coquille{1} utilisée{2}"
+            cost: "{0} coquille{1} cassée{2}"
         },
         ticket: {
             name: "Stats des tickets",
             title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
-            cost: "gratuit"
+            cost: "premium"
         },
         since: "(depuis le {0})",
     };
