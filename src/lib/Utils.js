@@ -30,6 +30,34 @@ class BattleLogsUtils {
     }
 
     /**
+     * @desc Abbreviates a number with one decimal point and adds "M" or "B" suffix
+     * If the number is less than one million, it adds a space separator for thousands.
+     *
+     * @param {Number} number: The number to abbreviate
+     *
+     * @return The abbreviated number with one decimal point and "M" or "B" suffix
+     */
+    static formatNumber(number) {
+        const million = 1000000;
+        const billion = 1000000000;
+        if (number >= billion) {
+            const integerPart = Math.floor(number / billion);
+            return `${integerPart}B`;
+        } else if (number >= million) {
+            const integerPart = Math.floor(number / million);
+            const decimalPart = (number % million).toString().slice(0, 3).replace(/0+$/, '');
+            if (decimalPart.length > 0) {
+                return `${integerPart}M${decimalPart}`;
+            } else {
+                return `${integerPart}M`;
+            }
+        } else {
+            // Add space separator for thousands
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+    }
+
+    /**
      * @brief Converts the string representation of a number to its integer equivalent
      *
      * @param {string} str: The string to parse
@@ -176,10 +204,13 @@ class BattleLogsUtils {
         let foundObject = allObjects.find(item => {
             return item.short === shortName
         });
-        if (foundObject) {
+        if (foundObject !== undefined) {
             return foundObject;
         }
-        return name;
+        if (shortName === "ticket") {
+            return {short: shortName, name: shortName.capitalize(), rarity: 0, cost:0, p0: 0.8, p1: 0.13, p2: 0.04, p3: 0.025, p4: 0.005};
+        }
+        return {short: shortName, name: shortName.capitalize(), rarity: 0, cost:0};
     }
 
     static getObjectByName(name) {
@@ -192,10 +223,13 @@ class BattleLogsUtils {
         let foundObject = allObjects.find(item => {
             return item.name === name
         });
-        if (foundObject) {
+        if (foundObject !== undefined) {
             return foundObject;
         }
-        return name;
+        if (name === "ticket") {
+            return {short: name.toLowerCase(), name: name.capitalize(), rarity: 0, cost:0, p0: 0.8, p1: 0.13, p2: 0.04, p3: 0.025, p4: 0.005};
+        }
+        return {short: name.toLowerCase(), name: name.capitalize(), rarity: 0, cost:0};
     }
 
     /*********************************************************************\
@@ -252,6 +286,9 @@ class BattleLogsUtils {
         }
         String.prototype.capitalize = function () {
             return this.charAt(0).toUpperCase() + this.slice(1);
+        }
+        String.prototype.padZero = function() {
+            return Number(this) < 10 ? `0${this}` : `${this}`;
         }
     }
 }

@@ -262,7 +262,7 @@
 }
 
 /*********************/
-/* Stats Elements    */
+/* Glossary Elements    */
 /*********************/
 .glossary {
     display: flex;
@@ -273,6 +273,118 @@
 #battlelogs-glossary_panel.hidden {
     display: none;
 }
+
+/*********************/
+/* Stats Elements    */
+/*********************/
+#battlelogs-stats_panel {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 .5rem;
+}
+.stats div[id^='Stats-'] {
+    border: 1px solid black;
+    background-color: #35393b;
+    border-radius: 10px;
+    width: 100%;
+    margin: .5rem;
+    overflow: hidden;
+    padding-bottom: 1em;
+    flex: 1 0 350px;
+    max-width: 100%;
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+}
+
+.stats-title {
+    background-color: #58585c;
+    padding: .3em 1em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats-title-name {
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: 'Roboto Condensed',sans-serif;
+    margin: auto 0;
+}
+
+.stats-title-date {
+    text-transform: lowercase;
+    font-size: 11px;
+    text-align: right;
+    font-family: 'Roboto',sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stats-block {
+    padding: 0 1em;
+}
+
+.stats-subtitle {
+    margin-top: .5rem;
+    margin-bottom: .3rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stats .stats-bar {
+    width: 100%;
+    display: flex;
+    border-radius: 6px;
+    background-color: #595959;
+    overflow: hidden;
+    white-space: nowrap;
+    height: 20px;
+    border: #595959 3px solid;
+}
+
+.stats .stats-bar > span {
+    display: block;
+    border-color: black;
+    margin: auto;
+    text-align: center;
+    height: 100%;
+    overflow: hidden;
+}
+
+.stats-bar > span[class^="bar-rarity-"] {
+    font-size: 12px;
+    font-family: monospace, monaco, Consolas;
+    color: black;
+    font-weight: bold;
+    cursor: help;
+}
+
+.bar-rarity-0 {
+    background-color: #b9b8b8;
+}
+.bar-rarity-1 {
+    background-color: #9be98f;
+}
+.bar-rarity-2 {
+    background-color: #629ce9;
+}
+.bar-rarity-3 {
+    background-color: #eb9ce9;
+}
+.bar-rarity-4 {
+    background-color: #ebdd54;
+}
+
+.stats .item-name {
+    font-style: italic;
+}
+
+.stats .item-cost {
+    text-align: right;
+    font-weight: normal;
+}
+
 
 /********************/
 /* Format */
@@ -513,6 +625,18 @@ button.svg_chat {
     display: inline-block;
     width: 24px;
     height: 24px;
+}
+.svg_stats {
+    background: url('data:image/svg+xml,<svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="%23fff"><path fill="none" d="M0 0h24v24H0z"/><path d="M19 3H5A2 2 0 0 0 3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2 -2V5A2 2 0 0 0 19 3zm0 16H5V5h14v14zM9 17H7V12H9v5zm4 0H11V7h2v10zm4 0h-2V10h2v7z"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
+.svg_reset {
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" xml:space="preserve" width="16" height="16"><path fill="none" stroke="%23fff" stroke-width="1" stroke-miterlimit="10" d="M12.85 5.45A5.466 5.466 0 0 0 8 2.501C5.65 2.501 3.701 3.95 2.901 6m0.2 4.501c0.901 1.75 2.75 3 4.899 3 2.35 0 4.301 -1.45 5.101 -3.501"/><path fill="none" stroke="%23fff" stroke-width="1" stroke-miterlimit="10" d="M13 2.501v3h-3m-7 8v-3h3"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
 }
 
 /********************/

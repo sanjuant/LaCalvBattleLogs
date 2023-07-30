@@ -55,18 +55,24 @@ class BattleLogsRoues {
             const url = new URL(xhr.responseURL);
             const segments = url.pathname.split('/');
             const short = segments.pop() || segments.pop(); // Handle potential trailing slash
-            const count = new URLSearchParams(url.search).get('count') || 1;
+            let shortStats = short;
+            let count = new URLSearchParams(url.search).get('count') || 1;
             let rouesType;
+            let multiplier = 1;
             if (short.match(/^(c|d|r|re|beta)$/)) {
                 rouesType = "oeuf"
+                multiplier = count * BattleLogs.Roues.Multiplier
             } else if (short.match(/^(coquille_c|coquille_d|coquille_r|coquille_re)$/)) {
                 rouesType = "coquille"
+                shortStats = short.split('_')[1]
             } else if (short.match(/^exclusive*/)) {
                 rouesType = "ticket"
+                shortStats = rouesType
             } else {
                 return;
             }
-            this.__internal__addRouesToLog(count, short, data["new"], rouesType);
+            let rewards = this.__internal__addRouesToLog(count, short, data["new"], rouesType);
+            BattleLogsStats.updateStats(Number(count), shortStats, rewards["items"], rouesType, rewards["cost"] * multiplier);
         }
     }
 
@@ -177,17 +183,23 @@ class BattleLogsRoues {
         const isCoquille = rouesType === "coquille";
         const verb = isCoquille ? "cassé" : "ouvert";
         count = isCoquille ? count * 100 : count;
+        let cost = 0;
 
         let name;
-        if (short === "exclusive") {
+        if (rouesType === "ticket") {
             name = rouesType
             if (count > 1) {
                 name = name + "s";
             }
         } else {
-            name = BattleLogs.Utils.getObjectByShortName(short);
-            if (name["name"]) {
-                name = name["name"]
+            let object = BattleLogs.Utils.getObjectByShortName(short);
+            if (rouesType === "oeuf") {
+                cost = object["cost"];
+            } else if (rouesType === "coquille") {
+                cost = count;
+            }
+            if (object["name"]) {
+                name = object["name"]
             }
             if (count > 1) {
                 name = name.split(" ")[0] + "s " + name.split(" ")[1] + "s";
@@ -196,8 +208,9 @@ class BattleLogsRoues {
 
         const message = "{0}|{1}|{2}".format(count, name, verb);
 
-        const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray, rouesType);
+        const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray, rouesType, cost);
         BattleLogs.Notif.appendNotif(log);
+        return { "items" : itemsArray, "cost" : cost};
     }
 
     /**
@@ -295,13 +308,14 @@ class BattleLogsRoues {
     }
 
     static Log = class {
-        constructor(type, logType, message, items, roueType) {
+        constructor(type, logType, message, items, roueType, cost) {
             this.type = type;
             this.time = new Date().toISOString();
             this.message = message;
             this.rewards = {items: items};
             this.logType = logType;
             this.rouesType = roueType;
+            this.cost = cost
         }
     };
 }

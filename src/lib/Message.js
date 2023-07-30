@@ -412,6 +412,7 @@ class BattleLogsMessage {
             const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
             if (newStatus) {
                 BattleLogs.Glossary.resetSelected()
+                BattleLogs.Stats.resetSelected()
                 BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
                 this.__internal__messagesActions.classList.add("hidden");
                 this.__internal__messagesContainer.classList.add("hidden");
