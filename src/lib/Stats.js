@@ -5,8 +5,6 @@
 class BattleLogsStats {
     static Settings = {
         StatsEnable: "Stats-Enable",
-        StatsEgg: "Stats-Egg",
-        StatsShell: "Stats-Shell",
         StatsRoues: "Stats-Roues",
         Type: "Stats"
     }
@@ -48,7 +46,7 @@ class BattleLogsStats {
             // Set default settings
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
-            this.__internal__statsData = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
+            this.__internal__statsRouesData = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
                 if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
@@ -57,8 +55,8 @@ class BattleLogsStats {
                 await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
             }
 
-            for (const key in this.__internal__statsData) {
-                this.__internal__updateStatsEggOutput(this.__internal__statsData[key])
+            for (const key in this.__internal__statsRouesData) {
+                this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[key])
             }
         }
     }
@@ -88,21 +86,21 @@ class BattleLogsStats {
      *
      */
     static updateStats(count, short, items, rouesType, cost) {
-        const statsData = this.__internal__statsData[rouesType];
+        const statsData = this.__internal__statsRouesData[rouesType];
         statsData[short]["total"] += count;
         statsData[short]["cost"] += cost;
         items.forEach(item => {
             statsData[short].itemsPerRarity[item.rarity] += item.count;
         })
-        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.__internal__statsData);
-        BattleLogs.Stats.__internal__updateStatsEggOutput(statsData);
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.__internal__statsRouesData);
+        BattleLogs.Stats.__internal__updateStatsRouesOutput(statsData);
     }
 
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__statsData = null;
+    static __internal__statsRouesData = null;
 
     /**
      * @desc Adds the BattleLogs panel
@@ -173,7 +171,7 @@ class BattleLogsStats {
     /**
      * @desc Build the output of egg stats
      */
-    static __internal__buildStatsEggOutput(statsData) {
+    static __internal__buildStatsRouesOutput(statsData) {
         let statsType = statsData.id;
 
         // Build Panel for egg stats
@@ -182,14 +180,16 @@ class BattleLogsStats {
 
         const statsTitle = document.createElement("div");
         statsTitle.classList.add(`stats-title`)
-        let created_since = BattleLogs.Utils.getDateObject(statsData["time"]);
-        const formattedDate = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
+        const formattedDate = this.__internal__formatStatsDate(statsData);
         let statsTitleNameSpan = document.createElement("span");
         statsTitleNameSpan.textContent = this.Messages[statsType].name;
         statsTitleNameSpan.classList.add("stats-title-name");
         let statsTitleDateSpan = document.createElement("span");
-        statsTitleDateSpan.textContent = this.Messages.since.format(formattedDate);
         statsTitleDateSpan.classList.add("stats-title-date");
+        let sinceSpan = document.createElement("span");
+        sinceSpan.textContent = this.Messages.since.format(formattedDate);
+        statsTitleDateSpan.appendChild(sinceSpan)
+        this.__internal__addClearButton(statsData.id, statsTitleDateSpan)
         statsTitle.appendChild(statsTitleNameSpan);
         statsTitle.appendChild(statsTitleDateSpan);
         divPanel.appendChild(statsTitle);
@@ -206,7 +206,7 @@ class BattleLogsStats {
             roueTypeTitle.classList.add(`rarity-${type.rarity}`);
             roueTypeTitle.dataset[statsType] = object.short;
 
-            roueTypeTitle = this.__internal__createOrUpdateEggTitle(statsData, statsType, roueTypeTitle, object);
+            roueTypeTitle = this.__internal__createOrUpdateRouesTitle(statsData, statsType, roueTypeTitle, object);
             roueTypeDiv.appendChild(roueTypeTitle);
 
             // Create percentage bar for each rarity
@@ -222,12 +222,13 @@ class BattleLogsStats {
         this.StatsPanel.appendChild(divPanel);
     }
 
+
     /**
      * @desc Update the output of egg stats
      *
      * @param {Object} statsData: Data of stat
      */
-    static __internal__updateStatsEggOutput(statsData) {
+    static __internal__updateStatsRouesOutput(statsData) {
         let statsType = statsData.id;
         let statsDiv = document.getElementById(`${this.Settings.Type}-${statsType}`);
         if (statsDiv !== null) {
@@ -236,14 +237,14 @@ class BattleLogsStats {
             for (let roueTypeSubtitle of roueTypeSubtitles) {
                 let short = roueTypeSubtitle.getAttribute(`data-${statsType}`);
                 let object = BattleLogs.Utils.getObjectByShortName(short);
-                roueTypeSubtitle = this.__internal__createOrUpdateEggTitle(statsData, statsType, roueTypeSubtitle, object);
+                roueTypeSubtitle = this.__internal__createOrUpdateRouesTitle(statsData, statsType, roueTypeSubtitle, object);
 
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-${statsType}="${short}"]`);
                 this.__internal__createOrUpdatePercentageBar(statsData, statsBar, object);
             }
         } else {
-            this.__internal__buildStatsEggOutput(statsData);
+            this.__internal__buildStatsRouesOutput(statsData);
         }
     }
 
@@ -256,7 +257,7 @@ class BattleLogsStats {
      * @param {Object} item: Item object
      * @return {Element} The updated or created title element
      */
-    static __internal__createOrUpdateEggTitle(statsData, statsType, roueTypeTitle, item) {
+    static __internal__createOrUpdateRouesTitle(statsData, statsType, roueTypeTitle, item) {
         let total = statsData[item.short]["total"];
         let name;
         if (total > 1) {
@@ -317,8 +318,42 @@ class BattleLogsStats {
                 spanRarity.textContent = `${itemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
             }
+            else {
+                let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
+                if (spanRarity) {
+                    spanRarity.remove()
+                }
+            }
         }
         return statsBar;
+    }
+
+    /**
+     * @desc Add button to reset stats
+     *
+     * @param {string} id: The button id (that will be used for the corresponding local storage item id as well)
+     * @param {Element} containingDiv: The div element to append the button to
+     */
+    static __internal__addClearButton(id, containingDiv) {
+        const resetButton = document.createElement("button");
+        resetButton.id = id;
+        resetButton.classList.add("svg_reset");
+        resetButton.title = "Remettre à zéro les stats";
+
+        resetButton.onclick = () => {
+            const confirmed = window.confirm("Tu vas remettre à zéro les stats sélectionnées, es-tu sûr ?");
+            if (confirmed) {
+                const key = Object.keys(this.__internal__statsRouesData).find(key => this.__internal__statsRouesData[key].id === id);
+                this.__internal__statsRouesData[key] = this.__internal__defaultStatsRoues[id];
+                this.__internal__statsRouesData[key].time = new Date().toISOString();
+                this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[key]);
+                const dateSpan = document.querySelector(`#${this.Settings.Type}-${id} .stats-title-date span`)
+                dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(this.__internal__statsRouesData[key]));
+                BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsRoues, this.__internal__statsRouesData);
+            }
+        };
+
+        containingDiv.appendChild(resetButton);
     }
 
     /**
@@ -337,32 +372,46 @@ class BattleLogsStats {
     }
 
     /**
+     * @desc Return date in string format for stats
+     *
+     * @param {Object} statsData: Data of stat
+     * @return {string} Date formatted in string
+     */
+    static __internal__formatStatsDate(statsData) {
+        let created_since = BattleLogs.Utils.getDateObject(statsData["time"]);
+        return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
+    }
+
+    /**
      * @desc Sets the stats settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
-        let created_since = new Date().toISOString();
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsRoues, {
-            "oeuf": {
-                "id": "egg",
-                "time": created_since,
-                "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-                "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-                "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-                "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-            },
-            "coquille": {
-                "id": "shell",
-                "time": created_since,
-                "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-                "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-                "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-                "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-            },
-            "ticket": {
-                "id": "ticket",
-                "time": created_since,
-                "ticket": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 0},
-            },
+            "oeuf": this.__internal__defaultStatsRoues["egg"],
+            "coquille": this.__internal__defaultStatsRoues["shell"],
+            "ticket": this.__internal__defaultStatsRoues["ticket"],
         });
     }
+
+    static __internal__defaultStatsRoues = {"egg":{
+        "id": "egg",
+        "time": new Date().toISOString(),
+        "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+        "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+        "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+        "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+    },
+    "shell": {
+        "id": "shell",
+        "time": new Date().toISOString(),
+        "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+        "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+        "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+        "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+    },
+    "ticket": {
+        "id": "ticket",
+        "time": new Date().toISOString(),
+        "ticket": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 0},
+    }}
 }

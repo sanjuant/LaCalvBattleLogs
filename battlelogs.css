@@ -296,16 +296,26 @@
 .stats-title {
     background-color: #58585c;
     padding: .3em 1em;
-    text-transform: uppercase;
-    font-family: 'Roboto Condensed',sans-serif;
-    font-size: 13px;
-    font-weight: bold;
     display: flex;
     justify-content: space-between;
 }
 
+.stats-title-name {
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: 'Roboto Condensed',sans-serif;
+    margin: auto 0;
+}
+
 .stats-title-date {
+    text-transform: lowercase;
+    font-size: 11px;
     text-align: right;
+    font-family: 'Roboto',sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .stats-block {
@@ -614,6 +624,12 @@ button.svg_chat {
     display: inline-block;
     width: 24px;
     height: 24px;
+}
+.svg_reset {
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" xml:space="preserve" width="16" height="16"><path fill="none" stroke="%23fff" stroke-width="1" stroke-miterlimit="10" d="M12.85 5.45A5.466 5.466 0 0 0 8 2.501C5.65 2.501 3.701 3.95 2.901 6m0.2 4.501c0.901 1.75 2.75 3 4.899 3 2.35 0 4.301 -1.45 5.101 -3.501"/><path fill="none" stroke="%23fff" stroke-width="1" stroke-miterlimit="10" d="M13 2.501v3h-3m-7 8v-3h3"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
 }
 
 /********************/
