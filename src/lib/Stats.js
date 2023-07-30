@@ -286,6 +286,7 @@ class BattleLogsStats {
             name = item.name;
         }
         let cost = statsData[item.short].cost;
+        let costFormatted = BattleLogs.Utils.formatNumber(cost);
         // let eggCost;
         // switch (statType) {
         //     case "egg":
@@ -295,7 +296,7 @@ class BattleLogsStats {
         //         eggCost = this.Messages[statType].cost.format('', '', '');
         //         break;
         // }
-        let eggCost = this.Messages[statType].cost.format(cost, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
+        let eggCost = this.Messages[statType].cost.format(costFormatted, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
 
         if (eggTypeTitle.childElementCount !== 0) {
             eggTypeTitle.children[0].firstChild.textContent = `${total} `;

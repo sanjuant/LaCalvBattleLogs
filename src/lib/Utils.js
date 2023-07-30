@@ -30,6 +30,28 @@ class BattleLogsUtils {
     }
 
     /**
+     * @desc Abbreviates a number with one decimal point and adds "M" or "B" suffix
+     * If the number is less than one million, it adds a space separator for thousands.
+     *
+     * @param {Number} number: The number to abbreviate
+     *
+     * @return The abbreviated number with one decimal point and "M" or "B" suffix
+     */
+    static formatNumber(number) {
+        const million = 1000000;
+        const billion = 1000000000;
+
+        if (number >= billion) {
+            return `${(number / billion).toFixed(1)}B`;
+        } else if (number >= million) {
+            return `${(number / million).toFixed(1)}M`;
+        } else {
+            // Add space separator for thousands
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+    }
+
+    /**
      * @brief Converts the string representation of a number to its integer equivalent
      *
      * @param {string} str: The string to parse
