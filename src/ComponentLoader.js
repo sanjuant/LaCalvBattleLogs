@@ -25,7 +25,7 @@ class BattleLogsComponentLoader
         if (locationHref !== "https://lacalv.fr" && locationHref !== "https://lacalv.fr/m" && locationHref !== "https://lacalv.fr/soon") return;
 
         this.__baseUrl = baseUrl;
-
+        
         // From the least dependant, to the most dependent
         this.__addScript("src/lib/Utils/LocalStorage.js");
 
