@@ -279,6 +279,7 @@
 /*********************/
 #battlelogs-stats_panel {
     display: flex;
+    flex-wrap: wrap;
 }
 .stats div[id^='Stats-'] {
     border: 1px solid black;
@@ -288,6 +289,8 @@
     margin: 1em;
     overflow: hidden;
     padding-bottom: 1em;
+    flex: 1 0 350px;
+    max-width: 100%;
 }
 
 .stats-title {
