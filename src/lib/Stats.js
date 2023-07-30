@@ -13,12 +13,12 @@ class BattleLogsStats {
     static StatsButton;
 
     static Messages = {
-        egg: {
+        oeuf: {
             name: "Stats des oeufs",
             title: "{0} <span class='item-name'>{1}</span>",
             cost: "{0} alopièce{1} dépensée{2}"
         },
-        shell: {
+        coquille: {
             name: "Stats des coquilles",
             title: "{0} <span class='item-name'>{1}</span>",
             cost: "{0} coquille{1} cassée{2}"
@@ -76,7 +76,7 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Update eggs stats
+     * @desc Update roues stats
      *
      * @param {Number} count: Count of roue
      * @param {string} short: Short name of roue
@@ -169,12 +169,12 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Build the output of egg stats
+     * @desc Build the output of roue stats
      */
     static __internal__buildStatsRouesOutput(statsData) {
         let statsType = statsData.id;
 
-        // Build Panel for egg stats
+        // Build Panel for roue stats
         const divPanel = document.createElement("div");
         divPanel.id = `${this.Settings.Type}-${statsType}`;
 
@@ -194,7 +194,7 @@ class BattleLogsStats {
         statsTitle.appendChild(statsTitleDateSpan);
         divPanel.appendChild(statsTitle);
 
-        // Build div for each type of egg
+        // Build div for each type of roue
         Object.keys(statsData).forEach((key) => {
             let type = statsData[key];
             if (typeof type !== 'object') return;
@@ -224,7 +224,7 @@ class BattleLogsStats {
 
 
     /**
-     * @desc Update the output of egg stats
+     * @desc Update the output of roue stats
      *
      * @param {Object} statsData: Data of stat
      */
@@ -233,7 +233,7 @@ class BattleLogsStats {
         let statsDiv = document.getElementById(`${this.Settings.Type}-${statsType}`);
         if (statsDiv !== null) {
             let roueTypeSubtitles = statsDiv.getElementsByClassName(`stats-subtitle`);
-            // Update title for each type of egg
+            // Update title for each type of roue
             for (let roueTypeSubtitle of roueTypeSubtitles) {
                 let short = roueTypeSubtitle.getAttribute(`data-${statsType}`);
                 let object = BattleLogs.Utils.getObjectByShortName(short);
@@ -249,7 +249,7 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Creates and updates the title of egg stats
+     * @desc Creates and updates the title of roue stats
      *
      * @param {Object} statsData: The data of stats to update
      * @param {string} statsType: Type of stat
@@ -297,7 +297,7 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Creates and updates the percentage bar of egg stats
+     * @desc Creates and updates the percentage bar of roue stats
      *
      * @param {Object} statsData: The data of stats to update
      * @param {Element} statsBar: The stats bar element to update or create
@@ -343,12 +343,11 @@ class BattleLogsStats {
         resetButton.onclick = () => {
             const confirmed = window.confirm("Tu vas remettre à zéro les stats sélectionnées, es-tu sûr ?");
             if (confirmed) {
-                const key = Object.keys(this.__internal__statsRouesData).find(key => this.__internal__statsRouesData[key].id === id);
-                this.__internal__statsRouesData[key] = this.__internal__defaultStatsRoues[id];
-                this.__internal__statsRouesData[key].time = new Date().toISOString();
-                this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[key]);
+                this.__internal__statsRouesData[id] = this.__internal__defaultStatsRoues[id];
+                this.__internal__statsRouesData[id].time = new Date().toISOString();
+                this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[id]);
                 const dateSpan = document.querySelector(`#${this.Settings.Type}-${id} .stats-title-date span`)
-                dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(this.__internal__statsRouesData[key]));
+                dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(this.__internal__statsRouesData[id]));
                 BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsRoues, this.__internal__statsRouesData);
             }
         };
@@ -359,8 +358,8 @@ class BattleLogsStats {
     /**
      * @desc Calculate the percentage of items per rarity in relation to the total items
      *
-     * @param {Object} stats: An object containing the egg stats
-     * @param {string} short: The short type name of the egg, corresponding to a key in the `stats` object
+     * @param {Object} stats: An object containing the roue stats
+     * @param {string} short: The short type name of the roue, corresponding to a key in the `stats` object
      * @param {Number} rarity: The rarity level, corresponding to a key in the `itemsPerRarity` sub-object in the `stats` object
      * @return {string} The calculated percentage, a float with two decimal places
      */
@@ -387,22 +386,22 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsRoues, {
-            "oeuf": this.__internal__defaultStatsRoues["egg"],
-            "coquille": this.__internal__defaultStatsRoues["shell"],
+            "oeuf": this.__internal__defaultStatsRoues["oeuf"],
+            "coquille": this.__internal__defaultStatsRoues["coquille"],
             "ticket": this.__internal__defaultStatsRoues["ticket"],
         });
     }
 
-    static __internal__defaultStatsRoues = {"egg":{
-        "id": "egg",
+    static __internal__defaultStatsRoues = {"oeuf":{
+        "id": "oeuf",
         "time": new Date().toISOString(),
         "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
         "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
         "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
         "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
     },
-    "shell": {
-        "id": "shell",
+    "coquille": {
+        "id": "coquille",
         "time": new Date().toISOString(),
         "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
         "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
