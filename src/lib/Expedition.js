@@ -143,7 +143,6 @@ class BattleLogsExpedition {
         } else {
             fragments.push(log.message);
         }
-
         const expeditionSpan = document.createElement("span");
 
         const expdedtionSpanFragments = [];
