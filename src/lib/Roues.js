@@ -55,6 +55,7 @@ class BattleLogsRoues {
             const url = new URL(xhr.responseURL);
             const segments = url.pathname.split('/');
             const short = segments.pop() || segments.pop(); // Handle potential trailing slash
+            let shortStats = short;
             let count = new URLSearchParams(url.search).get('count') || 1;
             let rouesType;
             let multiplier = 1;
@@ -63,13 +64,14 @@ class BattleLogsRoues {
                 multiplier = count * BattleLogs.Roues.Multiplier
             } else if (short.match(/^(coquille_c|coquille_d|coquille_r|coquille_re)$/)) {
                 rouesType = "coquille"
+                shortStats = short.split('_')[1]
             } else if (short.match(/^exclusive*/)) {
                 rouesType = "ticket"
             } else {
                 return;
             }
             let rewards = this.__internal__addRouesToLog(count, short, data["new"], rouesType);
-            BattleLogsStats.updateStats(Number(count), short, rewards["items"], rouesType, rewards["cost"] * multiplier);
+            BattleLogsStats.updateStats(Number(count), shortStats, rewards["items"], rouesType, rewards["cost"] * multiplier);
         }
     }
 
