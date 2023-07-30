@@ -6,6 +6,7 @@ class BattleLogsStats {
     static Settings = {
         StatsEnable: "Stats-Enable",
         StatsRoues: "Stats-Roues",
+        StatsStuffs: "Stats-Stuffs",
         Type: "Stats"
     }
 
@@ -28,6 +29,11 @@ class BattleLogsStats {
             title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
             cost: "premium"
         },
+        stuffs: {
+            name: "Stats des stuffs",
+            title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
+            cost: "premium"
+        },
         since: "(depuis le {0})",
     };
 
@@ -47,6 +53,7 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
             this.__internal__statsRouesData = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
+            this.__internal__statsStuffsData = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
                 if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
@@ -58,6 +65,7 @@ class BattleLogsStats {
             for (const key in this.__internal__statsRouesData) {
                 this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[key])
             }
+            this.__internal__updateStatsStuffsOutput(this.__internal__statsStuffsData)
         }
     }
 
@@ -101,6 +109,7 @@ class BattleLogsStats {
      /*********************************************************************/
 
     static __internal__statsRouesData = null;
+    static __internal__statsStuffsData = null;
 
     /**
      * @desc Adds the BattleLogs panel
@@ -171,6 +180,7 @@ class BattleLogsStats {
      * @desc Build the output of roue stats
      */
     static __internal__buildStatsRouesOutput(statsData) {
+        console.log(statsData)
         let statsType = statsData.id;
 
         // Build Panel for roue stats
@@ -221,6 +231,120 @@ class BattleLogsStats {
         this.StatsPanel.appendChild(divPanel);
     }
 
+    /**
+     * @desc Build the output of roue stats
+     */
+    static __internal__buildStatsStuffsOutput(stuffsData) {
+        let statsType = stuffsData.id;
+
+        // Build Panel for roue stats
+        const divPanel = document.createElement("div");
+        divPanel.id = `${this.Settings.Type}-${statsType}`;
+
+        const statsTitle = document.createElement("div");
+        statsTitle.classList.add(`stats-title`)
+        const formattedDate = this.__internal__formatStatsDate(stuffsData);
+        let statsTitleNameSpan = document.createElement("span");
+        statsTitleNameSpan.textContent = this.Messages[statsType].name;
+        statsTitleNameSpan.classList.add("stats-title-name");
+        let statsTitleDateSpan = document.createElement("span");
+        statsTitleDateSpan.classList.add("stats-title-date");
+        let sinceSpan = document.createElement("span");
+        sinceSpan.textContent = this.Messages.since.format(formattedDate);
+        statsTitleDateSpan.appendChild(sinceSpan)
+        this.__internal__addClearButton(stuffsData.id, statsTitleDateSpan)
+        statsTitle.appendChild(statsTitleNameSpan);
+        statsTitle.appendChild(statsTitleDateSpan);
+        divPanel.appendChild(statsTitle);
+        const statsStuffsContainer = document.createElement("div");
+        statsStuffsContainer.classList.add("stats-stuffs-container")
+        divPanel.appendChild(statsStuffsContainer);
+
+        // Build div for each stuff
+        Object.keys(stuffsData.stuffs).forEach((key) => {
+            const stuffData = stuffsData.stuffs[key]
+            this.__internal__createOrUpdateStuff(stuffData, statsStuffsContainer)
+        })
+        this.StatsPanel.appendChild(divPanel);
+    }
+
+    /**
+     * @desc Creates and updates the stuff element
+     *
+     * @param {Object} stuffData: The data of stuff to update
+     * @param {Element} stuffsElement: The title element to update or create
+     * @return {Element} The updated or created title element
+     */
+    static __internal__createOrUpdateStuff(stuffData, stuffsElement) {
+        // Create container
+        const stuffContainerDiv = document.createElement("div");
+        stuffContainerDiv.classList.add("stats-stuff");
+
+        // Create header
+        const stuffHeader = document.createElement("div");
+        stuffHeader.classList.add("stats-stuff-header");
+
+        // Create div for left elements
+        const headerLeft = document.createElement("div");
+        const headerTitleSpan = document.createElement("span");
+        headerTitleSpan.textContent = stuffData.name;
+        headerLeft.appendChild(headerTitleSpan);
+        const headerTitleButton = document.createElement("button");
+        headerTitleButton.textContent = "Éditer";
+        headerLeft.appendChild(headerTitleButton);
+        stuffHeader.appendChild(headerLeft);
+
+        // Create div for right elements
+        const headerRight = document.createElement("div");
+        const headerDate = document.createElement("span");
+        headerDate.textContent = this.__internal__formatStatsDate(stuffData);
+        headerRight.appendChild(headerDate);
+        const headerAction = document.createElement("button");
+        headerAction.textContent = "Supprimer";
+        headerRight.appendChild(headerAction);
+        stuffHeader.appendChild(headerRight);
+
+        // Append header to container
+        stuffContainerDiv.appendChild(stuffHeader);
+
+        // Create body
+        const stuffBody = document.createElement("div");
+        stuffBody.classList.add("stats-stuff-body");
+        // Create loadout container
+        const loadoutContainer = document.createElement("div");
+        loadoutContainer.classList.add("stats-stuff-loadout");
+        for (const key in stuffData.loadout) {
+            const object = stuffData.loadout[key];
+            this.__internal__addObjectToLoadout(object, key, loadoutContainer);
+        }
+        stuffBody.appendChild(loadoutContainer)
+
+        // Append body to container
+        stuffContainerDiv.appendChild(stuffBody);
+        stuffsElement.appendChild(stuffContainerDiv);
+    }
+
+    static __internal__addObjectToLoadout(object, key, loadoutContainer) {
+        const container = document.createElement("div")
+        container.dataset["key"] = key
+        container.classList.add("loadout")
+        if (Array.isArray(object)) {
+            for (let item of object) {
+                this.__internal__addObjectToLoadout(item, key, loadoutContainer)
+            }
+        } else {
+            const label = document.createElement("span");
+            label.textContent = key.capitalize();
+            label.classList.add("loadout-label")
+            const name = document.createElement("span");
+            name.textContent = object;
+            name.classList.add("loadout-name")
+
+            container.appendChild(label)
+            container.appendChild(name)
+            loadoutContainer.appendChild(container)
+        }
+    }
 
     /**
      * @desc Update the output of roue stats
@@ -244,6 +368,31 @@ class BattleLogsStats {
             }
         } else {
             this.__internal__buildStatsRouesOutput(statsData);
+        }
+    }
+
+    /**
+     * @desc Update the output of roue stats
+     *
+     * @param {Object} statsData: Data of stat
+     */
+    static __internal__updateStatsStuffsOutput(statsData) {
+        let statsType = statsData.id;
+        let statsDiv = document.getElementById(`${this.Settings.Type}-${statsType}`);
+        if (statsDiv !== null) {
+            let roueTypeSubtitles = statsDiv.getElementsByClassName(`stats-subtitle`);
+            // Update title for each type of roue
+            for (let roueTypeSubtitle of roueTypeSubtitles) {
+                let short = roueTypeSubtitle.getAttribute(`data-${statsType}`);
+                let object = BattleLogs.Utils.getObjectByShortName(short);
+                roueTypeSubtitle = this.__internal__createOrUpdateRouesTitle(statsData, statsType, roueTypeSubtitle, object);
+
+                // Update or create percentage bar for each rarity
+                const statsBar = document.querySelector(`.stats-bar[data-${statsType}="${short}"]`);
+                this.__internal__createOrUpdatePercentageBar(statsData, statsBar, object);
+            }
+        } else {
+            this.__internal__buildStatsStuffsOutput(statsData);
         }
     }
 
@@ -318,8 +467,7 @@ class BattleLogsStats {
                 spanRarity.style.width = `${itemsPercentage}%`;
                 let dropChance = item[`p${i}`] * 100
                 spanRarity.title = `Chance d'obtention: ${dropChance}%, Obtenu: ${itemsPercentage}%, Items: ${statsData[item.short].itemsPerRarity[i]}`
-            }
-            else {
+            } else {
                 let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
                 if (spanRarity) {
                     spanRarity.remove()
@@ -382,6 +530,21 @@ class BattleLogsStats {
         return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
     }
 
+    static __internal__createStuffHash(stuff) {
+        // sort the "items" array
+        stuff.items.sort();
+        // concatenate the elements of the "items" array with the other attributes
+        let concatenatedItems = stuff.arme + stuff.calv + stuff.items.join('') + stuff.famAtk + stuff.famDef;
+
+        return this.__internal__createHash(concatenatedItems)
+    }
+
+    static __internal__createHash(string) {
+        let hash = btoa(string);
+        // reduce the size of the output
+        return hash.substring(0, 8);
+    }
+
     /**
      * @desc Sets the stats settings default values in the local storage
      */
@@ -391,27 +554,66 @@ class BattleLogsStats {
             "coquille": this.__internal__defaultStatsRoues["coquille"],
             "ticket": this.__internal__defaultStatsRoues["ticket"],
         });
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsStuffs, this.__internal__defaultStatsStuffs);
     }
 
-    static __internal__defaultStatsRoues = {"oeuf":{
-        "id": "oeuf",
+    static __internal__defaultStatsRoues = {
+        "oeuf": {
+            "id": "oeuf",
+            "time": new Date().toISOString(),
+            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+        },
+        "coquille": {
+            "id": "coquille",
+            "time": new Date().toISOString(),
+            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+        },
+        "ticket": {
+            "id": "ticket",
+            "time": new Date().toISOString(),
+            "ticket": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 0},
+        }
+    }
+
+    static __internal__defaultStatsStuffs = {
+        "id": "stuffs",
         "time": new Date().toISOString(),
-        "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-        "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-        "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-        "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-    },
-    "coquille": {
-        "id": "coquille",
-        "time": new Date().toISOString(),
-        "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-        "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-        "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-        "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-    },
-    "ticket": {
-        "id": "ticket",
-        "time": new Date().toISOString(),
-        "ticket": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 0},
-    }}
+        "stuffs": {
+            "dG90b2xh": {
+                "time": new Date().toISOString(),
+                "slot": 0,
+                "name": "Test",
+                "loadout": {
+                    "arme": "Éplucheur kamain",
+                    "calv": "La Clownesque",
+                    "items": ["Ecran éclipsé", "Fragment de beau lavabo", "Planche de wengé", "Ecrou serti", "Coquetier en cocotier"],
+                    "famAtk": "egbere",
+                    "famDef": "homut"
+                },
+                "wb": {
+                    "Rm9udHly": {
+                        "name": "Fontyran le cuirassé",
+                        "dmgMax": 7000,
+                        "dmgMin": 2000,
+                        "dmgAverage": 3250,
+                        "totalDamage": 325000,
+                        "battleCount": 100
+                    }
+                },
+                "battle": {
+                    "dmgMax": 7000,
+                    "dmgMin": 2000,
+                    "dmgAverage": 3250,
+                    "totalDamage": 325000,
+                    "battleCount": 100
+                },
+            }
+        }
+    }
 }
