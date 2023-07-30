@@ -56,7 +56,6 @@ class BattleLogsStats {
             }
             // this.__internal__updateStatsEggOutput(this.__internal__statsEgg)
             // this.__internal__updateStatsEggOutput(this.__internal__statsShell)
-            console.log(this.__internal__statsData)
             for (const key in this.__internal__statsData) {
                 this.__internal__updateStatsEggOutput(this.__internal__statsData[key])
             }
