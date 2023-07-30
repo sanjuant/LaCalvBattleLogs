@@ -113,7 +113,6 @@ class BattleLogsStats {
         if (!(BattleLogs.Utils.LocalStorage.getValue(this.Settings.StatsEnable) === "true")) {
             this.StatsPanel.classList.add("hidden")
         }
-
         // Add Stats panel to DOM
         BattleLogs.Menu.BattleLogsWrapper.appendChild(this.StatsPanel);
     }
