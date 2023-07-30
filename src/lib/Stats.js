@@ -23,7 +23,6 @@ class BattleLogsStats {
         shell: {
             name: "Stats des coquilles",
             title: "{0} <span class='item-name'>{1}</span>",
-            // cost: "gratuit"
             cost: "{0} coquille{1} utilisée{2}"
         },
         ticket: {
@@ -49,8 +48,6 @@ class BattleLogsStats {
             // Set default settings
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
-            // this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
-            // this.__internal__statsShell = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsShell);
             this.__internal__statsData = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
@@ -59,8 +56,7 @@ class BattleLogsStats {
                 }
                 await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
             }
-            // this.__internal__updateStatsEggOutput(this.__internal__statsEgg)
-            // this.__internal__updateStatsEggOutput(this.__internal__statsShell)
+
             for (const key in this.__internal__statsData) {
                 this.__internal__updateStatsEggOutput(this.__internal__statsData[key])
             }
@@ -100,33 +96,12 @@ class BattleLogsStats {
         })
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.__internal__statsData);
         BattleLogs.Stats.__internal__updateStatsEggOutput(statsData);
-
-        // function update(statsData, LS_key, count, short, items, cost) {
-        //     statsData[short]["total"] += count;
-        //     statsData[short]["cost"] += cost;
-        //     items.forEach(item => {
-        //         statsData[short]["itemsPerRarity"][item["rarity"]] += item["count"];
-        //     })
-        //     BattleLogs.Utils.LocalStorage.setComplexValue(LS_key, statsData);
-        //     BattleLogs.Stats.__internal__updateStatsEggOutput(statsData);
-        // }
-        //
-        // switch (rouesType) {
-        //     case "oeuf":
-        //         update(this.__internal__statsEgg, BattleLogs.Stats.Settings.StatsEgg, count, short, items, count * BattleLogs.Roues.Multiplier * cost);
-        //         break;
-        //     case "coquille":
-        //         update(this.__internal__statsShell, BattleLogs.Stats.Settings.StatsShell, count, short, items, cost);
-        //         break;
-        // }
     }
 
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    // static __internal__statsEgg = null;
-    // static __internal__statsShell = null
     static __internal__statsData = null;
 
     /**
@@ -224,25 +199,25 @@ class BattleLogsStats {
             let type = statsData[key];
             if (typeof type !== 'object') return;
             let object = BattleLogs.Utils.getObjectByShortName(key);
-            let eggTypeDiv = document.createElement("div");
-            eggTypeDiv.classList.add(`stats-block`)
-            let eggTypeTitle = document.createElement("div");
-            eggTypeTitle.classList.add(`stats-subtitle`);
-            eggTypeTitle.classList.add(`rarity-${type.rarity}`);
-            eggTypeTitle.dataset[statsType] = object.short;
+            let roueTypeDiv = document.createElement("div");
+            roueTypeDiv.classList.add(`stats-block`)
+            let roueTypeTitle = document.createElement("div");
+            roueTypeTitle.classList.add(`stats-subtitle`);
+            roueTypeTitle.classList.add(`rarity-${type.rarity}`);
+            roueTypeTitle.dataset[statsType] = object.short;
 
-            eggTypeTitle = this.__internal__createOrUpdateEggTitle(statsData, statsType, eggTypeTitle, object);
-            eggTypeDiv.appendChild(eggTypeTitle);
+            roueTypeTitle = this.__internal__createOrUpdateEggTitle(statsData, statsType, roueTypeTitle, object);
+            roueTypeDiv.appendChild(roueTypeTitle);
 
             // Create percentage bar for each rarity
-            let eggTypeStatBar = document.createElement("div");
-            eggTypeStatBar.classList.add("stats-bar");
-            eggTypeStatBar.dataset[statsType] = object.short;
+            let roueTypeStatBar = document.createElement("div");
+            roueTypeStatBar.classList.add("stats-bar");
+            roueTypeStatBar.dataset[statsType] = object.short;
 
-            eggTypeStatBar = this.__internal__createOrUpdatePercentageBar(statsData, eggTypeStatBar, object);
-            eggTypeDiv.appendChild(eggTypeStatBar);
+            roueTypeStatBar = this.__internal__createOrUpdatePercentageBar(statsData, roueTypeStatBar, object);
+            roueTypeDiv.appendChild(roueTypeStatBar);
 
-            divPanel.appendChild(eggTypeDiv);
+            divPanel.appendChild(roueTypeDiv);
         })
         this.StatsPanel.appendChild(divPanel);
     }
@@ -256,12 +231,12 @@ class BattleLogsStats {
         let statsType = statsData.id;
         let statsDiv = document.getElementById(`${this.Settings.Type}-${statsType}`);
         if (statsDiv !== null) {
-            let eggTypesTitles = statsDiv.getElementsByClassName(`stats-subtitle`);
+            let roueTypeSubtitles = statsDiv.getElementsByClassName(`stats-subtitle`);
             // Update title for each type of egg
-            for (let eggTypeTitle of eggTypesTitles) {
-                let short = eggTypeTitle.getAttribute(`data-${statsType}`);
+            for (let roueTypeSubtitle of roueTypeSubtitles) {
+                let short = roueTypeSubtitle.getAttribute(`data-${statsType}`);
                 let object = BattleLogs.Utils.getObjectByShortName(short);
-                eggTypeTitle = this.__internal__createOrUpdateEggTitle(statsData, statsType, eggTypeTitle, object);
+                roueTypeSubtitle = this.__internal__createOrUpdateEggTitle(statsData, statsType, roueTypeSubtitle, object);
 
                 // Update or create percentage bar for each rarity
                 const statsBar = document.querySelector(`.stats-bar[data-${statsType}="${short}"]`);
@@ -276,12 +251,12 @@ class BattleLogsStats {
      * @desc Creates and updates the title of egg stats
      *
      * @param {Object} statsData: The data of stats to update
-     * @param {string} statType: Type of stat
-     * @param {Element} eggTypeTitle: The title element to update or create
+     * @param {string} statsType: Type of stat
+     * @param {Element} roueTypeTitle: The title element to update or create
      * @param {Object} item: Item object
      * @return {Element} The updated or created title element
      */
-    static __internal__createOrUpdateEggTitle(statsData, statType, eggTypeTitle, item) {
+    static __internal__createOrUpdateEggTitle(statsData, statsType, roueTypeTitle, item) {
         let total = statsData[item.short]["total"];
         let name;
         if (total > 1) {
@@ -296,37 +271,28 @@ class BattleLogsStats {
         }
         let cost = statsData[item.short].cost;
         let costFormatted = BattleLogs.Utils.formatNumber(cost);
-        // let eggCost;
-        // switch (statType) {
-        //     case "egg":
-        //         eggCost = this.Messages[statType].cost.format(cost, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
-        //         break;
-        //     case "shell":
-        //         eggCost = this.Messages[statType].cost.format('', '', '');
-        //         break;
-        // }
-        let eggCost = this.Messages[statType].cost.format(costFormatted, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
+        let roueCost = this.Messages[statsType].cost.format(costFormatted, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
 
-        if (eggTypeTitle.childElementCount !== 0) {
-            eggTypeTitle.children[0].firstChild.textContent = `${total} `;
-            eggTypeTitle.children[0].querySelector("span").textContent = name;
-            const lastChild = eggTypeTitle.children[0].lastChild
+        if (roueTypeTitle.childElementCount !== 0) {
+            roueTypeTitle.children[0].firstChild.textContent = `${total} `;
+            roueTypeTitle.children[0].querySelector("span").textContent = name;
+            const lastChild = roueTypeTitle.children[0].lastChild
             if (lastChild.textContent.startsWith(' ') && total > 1) {
                 lastChild.textContent = lastChild.textContent + 's';
             }
-            eggTypeTitle.children[1].textContent = eggCost;
+            roueTypeTitle.children[1].textContent = roueCost;
         } else {
             const subTitleSpan = document.createElement("span")
-            subTitleSpan.innerHTML = this.Messages[statType].title.format(total, name, total > 1 ? 's' : '')
-            eggTypeTitle.appendChild(subTitleSpan)
+            subTitleSpan.innerHTML = this.Messages[statsType].title.format(total, name, total > 1 ? 's' : '')
+            roueTypeTitle.appendChild(subTitleSpan)
 
             let costSpan = document.createElement("span");
             costSpan.classList.add("item-cost");
-            costSpan.textContent = eggCost;
-            eggTypeTitle.appendChild(costSpan);
+            costSpan.textContent = roueCost;
+            roueTypeTitle.appendChild(costSpan);
         }
 
-        return eggTypeTitle;
+        return roueTypeTitle;
     }
 
     /**
@@ -375,22 +341,6 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         let created_since = new Date().toISOString();
-        // BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
-        //     "id": "egg",
-        //     "time": created_since,
-        //     "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-        //     "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-        //     "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-        //     "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-        // });
-        // BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsShell, {
-        //     "id": "shell",
-        //     "time": created_since,
-        //     "coquille_c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-        //     "coquille_d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-        //     "coquille_r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-        //     "coquille_re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-        // });
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsRoues, {
             "oeuf": {
                 "id": "egg",
