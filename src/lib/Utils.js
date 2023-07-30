@@ -204,10 +204,10 @@ class BattleLogsUtils {
         let foundObject = allObjects.find(item => {
             return item.short === shortName
         });
-        if (foundObject !== "") {
+        if (foundObject !== undefined) {
             return foundObject;
         }
-        return name;
+        return {short: shortName, name: shortName.capitalize(), rarity: 0, cost:0};
     }
 
     static getObjectByName(name) {
@@ -220,10 +220,10 @@ class BattleLogsUtils {
         let foundObject = allObjects.find(item => {
             return item.name === name
         });
-        if (foundObject !== "") {
+        if (foundObject !== undefined) {
             return foundObject;
         }
-        return name;
+        return {short: name.toLowerCase(), name: name.capitalize(), rarity: 0, cost:0};
     }
 
     /*********************************************************************\

@@ -17,14 +17,19 @@ class BattleLogsStats {
     static Messages = {
         egg: {
             name: "Stats des oeufs",
-            title: "{0} {1}",
+            title: "{0} <span class='item-name'>{1}</span>",
             cost: "{0} alopièce{1} dépensée{2}"
         },
         shell: {
             name: "Stats des coquilles",
-            title: "{0} {1}",
+            title: "{0} <span class='item-name'>{1}</span>",
             // cost: "gratuit"
             cost: "{0} coquille{1} utilisée{2}"
+        },
+        ticket: {
+            name: "Stats des tickets",
+            title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
+            cost: "gratuit"
         },
         since: "(depuis le {0})",
     };
@@ -281,7 +286,11 @@ class BattleLogsStats {
         let name;
         if (total > 1) {
             name = item.name.split(" ");
-            name = name[0] + "s " + name[1] + "s";
+            if (name.length > 1) {
+                name = name[0] + "s " + name[1] + "s";
+            } else {
+                name = name[0] + "s"
+            }
         } else {
             name = item.name;
         }
@@ -300,16 +309,16 @@ class BattleLogsStats {
 
         if (eggTypeTitle.childElementCount !== 0) {
             eggTypeTitle.children[0].firstChild.textContent = `${total} `;
-            eggTypeTitle.children[0].lastChild.textContent = name;
+            eggTypeTitle.children[0].querySelector("span").textContent = name;
+            const lastChild = eggTypeTitle.children[0].lastChild
+            if (lastChild.textContent.startsWith(' ') && total > 1) {
+                lastChild.textContent = lastChild.textContent + 's';
+            }
             eggTypeTitle.children[1].textContent = eggCost;
         } else {
-            let nameContainerSpan = document.createElement("span")
-            nameContainerSpan.textContent = `${total} `
-            let nameSpan = document.createElement("span");
-            nameSpan.classList.add("item-name");
-            nameSpan.textContent = name;
-            nameContainerSpan.appendChild(nameSpan)
-            eggTypeTitle.appendChild(nameContainerSpan)
+            const subTitleSpan = document.createElement("span")
+            subTitleSpan.innerHTML = this.Messages[statType].title.format(total, name, total > 1 ? 's' : '')
+            eggTypeTitle.appendChild(subTitleSpan)
 
             let costSpan = document.createElement("span");
             costSpan.classList.add("item-cost");
@@ -398,6 +407,11 @@ class BattleLogsStats {
                 "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
                 "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
                 "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+            },
+            "ticket": {
+                "id": "ticket",
+                "time": created_since,
+                "ticket": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 0},
             },
         });
     }

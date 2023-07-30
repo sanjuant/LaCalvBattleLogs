@@ -67,6 +67,7 @@ class BattleLogsRoues {
                 shortStats = short.split('_')[1]
             } else if (short.match(/^exclusive*/)) {
                 rouesType = "ticket"
+                shortStats = rouesType
             } else {
                 return;
             }
