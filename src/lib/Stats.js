@@ -7,6 +7,7 @@ class BattleLogsStats {
         StatsEnable: "Stats-Enable",
         StatsEgg: "Stats-Egg",
         StatsShell: "Stats-Shell",
+        StatsRoues: "Stats-Roues",
         Type: "Stats"
     }
 
@@ -42,8 +43,9 @@ class BattleLogsStats {
             // Set default settings
             this.__internal__setDefaultSettingsValues()
             // Restore previous session state
-            this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
-            this.__internal__statsShell = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsShell);
+            // this.__internal__statsEgg = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsEgg);
+            // this.__internal__statsShell = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsShell);
+            this.__internal__statsData = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
                 if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
@@ -51,8 +53,12 @@ class BattleLogsStats {
                 }
                 await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
             }
-            this.__internal__updateStatsEggOutput(this.__internal__statsEgg)
-            this.__internal__updateStatsEggOutput(this.__internal__statsShell)
+            // this.__internal__updateStatsEggOutput(this.__internal__statsEgg)
+            // this.__internal__updateStatsEggOutput(this.__internal__statsShell)
+            console.log(this.__internal__statsData)
+            for (const key in this.__internal__statsData) {
+                this.__internal__updateStatsEggOutput(this.__internal__statsData[key])
+            }
         }
     }
 
@@ -81,32 +87,42 @@ class BattleLogsStats {
      *
      */
     static updateStats(count, short, items, rouesType, cost) {
-        function update(statsData, LS_key, count, short, items, cost) {
-            statsData[short]["total"] += count;
-            statsData[short]["cost"] += cost;
-            items.forEach(item => {
-                statsData[short]["itemsPerRarity"][item["rarity"]] += item["count"];
-            })
-            BattleLogs.Utils.LocalStorage.setComplexValue(LS_key, statsData);
-            BattleLogs.Stats.__internal__updateStatsEggOutput(statsData);
-        }
+        const statsData = this.__internal__statsData[rouesType];
+        statsData[short]["total"] += count;
+        statsData[short]["cost"] += cost;
+        items.forEach(item => {
+            statsData[short].itemsPerRarity[item.rarity] += item.count;
+        })
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.__internal__statsData);
+        BattleLogs.Stats.__internal__updateStatsEggOutput(statsData);
 
-        switch (rouesType) {
-            case "oeuf":
-                update(this.__internal__statsEgg, BattleLogs.Stats.Settings.StatsEgg, count, short, items, count * BattleLogs.Roues.Multiplier * cost);
-                break;
-            case "coquille":
-                update(this.__internal__statsShell, BattleLogs.Stats.Settings.StatsShell, count, short, items, cost);
-                break;
-        }
+        // function update(statsData, LS_key, count, short, items, cost) {
+        //     statsData[short]["total"] += count;
+        //     statsData[short]["cost"] += cost;
+        //     items.forEach(item => {
+        //         statsData[short]["itemsPerRarity"][item["rarity"]] += item["count"];
+        //     })
+        //     BattleLogs.Utils.LocalStorage.setComplexValue(LS_key, statsData);
+        //     BattleLogs.Stats.__internal__updateStatsEggOutput(statsData);
+        // }
+        //
+        // switch (rouesType) {
+        //     case "oeuf":
+        //         update(this.__internal__statsEgg, BattleLogs.Stats.Settings.StatsEgg, count, short, items, count * BattleLogs.Roues.Multiplier * cost);
+        //         break;
+        //     case "coquille":
+        //         update(this.__internal__statsShell, BattleLogs.Stats.Settings.StatsShell, count, short, items, cost);
+        //         break;
+        // }
     }
 
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__statsEgg = null;
-    static __internal__statsShell = null
+    // static __internal__statsEgg = null;
+    // static __internal__statsShell = null
+    static __internal__statsData = null;
 
     /**
      * @desc Adds the BattleLogs panel
@@ -156,8 +172,9 @@ class BattleLogsStats {
                 this.StatsPanel.classList.remove("hidden");
                 this.StatsButton.classList.add("selected");
                 this.StatsButton.title = "Masquer les stats";
-                this.__internal__updateStatsEggOutput(this.__internal__statsEgg);
-                this.__internal__updateStatsEggOutput(this.__internal__statsShell);
+                // for (const key in this.__internal__statsData) {
+                //     this.__internal__updateStatsEggOutput(this.__internal__statsData[key])
+                // }
             } else {
                 BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
@@ -268,22 +285,23 @@ class BattleLogsStats {
         } else {
             name = item.name;
         }
-        let cost = statsData[item.short]["cost"];
-        let eggCost;
-        switch(statType) {
-            case "egg":
-                eggCost = this.Messages[statType].cost.format(cost, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
-                break;
-            case "shell":
-                eggCost = this.Messages[statType].cost;
-                break;
-        }
+        let cost = statsData[item.short].cost;
+        // let eggCost;
+        // switch (statType) {
+        //     case "egg":
+        //         eggCost = this.Messages[statType].cost.format(cost, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
+        //         break;
+        //     case "shell":
+        //         eggCost = this.Messages[statType].cost.format('', '', '');
+        //         break;
+        // }
+        let eggCost = this.Messages[statType].cost.format(cost, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
 
         if (eggTypeTitle.childElementCount !== 0) {
             eggTypeTitle.children[0].firstChild.textContent = `${total} `;
             eggTypeTitle.children[0].lastChild.textContent = name;
             eggTypeTitle.children[1].textContent = eggCost;
-        }else{
+        } else {
             let nameContainerSpan = document.createElement("span")
             nameContainerSpan.textContent = `${total} `
             let nameSpan = document.createElement("span");
@@ -347,21 +365,39 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         let created_since = new Date().toISOString();
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
-            "id": "egg",
-            "time": created_since,
-            "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-            "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-            "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-            "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
-        });
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsShell, {
-            "id": "shell",
-            "time": created_since,
-            "coquille_c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
-            "coquille_d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
-            "coquille_r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
-            "coquille_re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+        // BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsEgg, {
+        //     "id": "egg",
+        //     "time": created_since,
+        //     "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+        //     "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+        //     "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+        //     "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+        // });
+        // BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsShell, {
+        //     "id": "shell",
+        //     "time": created_since,
+        //     "coquille_c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+        //     "coquille_d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+        //     "coquille_r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+        //     "coquille_re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+        // });
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsRoues, {
+            "oeuf": {
+                "id": "egg",
+                "time": created_since,
+                "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+                "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+                "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+                "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+            },
+            "coquille": {
+                "id": "shell",
+                "time": created_since,
+                "c": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, null], "rarity": 1},
+                "d": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 2},
+                "r": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 3},
+                "re": {"total": 0, "cost": 0, "itemsPerRarity": [null, null, 0, 0, 0], "rarity": 4},
+            },
         });
     }
 }
