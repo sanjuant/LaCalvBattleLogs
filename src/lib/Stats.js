@@ -23,7 +23,8 @@ class BattleLogsStats {
         shell: {
             name: "Stats des coquilles",
             title: "{0} {1}",
-            cost: "gratuit"
+            // cost: "gratuit"
+            cost: "{0} coquille{1} utilisée{2}"
         },
         since: "(depuis le {0})",
     };
