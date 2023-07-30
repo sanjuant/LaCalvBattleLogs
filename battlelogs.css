@@ -354,7 +354,10 @@
 
 .stats-bar > span[class^="bar-rarity-"] {
     font-size: 12px;
-    font-family: Calibri, sans-serif;
+    font-family: monospace, monaco, Consolas;
+    color: black;
+    font-weight: bold;
+    cursor: help;
 }
 
 .bar-rarity-0 {

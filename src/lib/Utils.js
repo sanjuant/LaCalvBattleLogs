@@ -207,6 +207,9 @@ class BattleLogsUtils {
         if (foundObject !== undefined) {
             return foundObject;
         }
+        if (shortName === "ticket") {
+            return {short: shortName, name: shortName.capitalize(), rarity: 0, cost:0, p0: 0.8, p1: 0.13, p2: 0.04, p3: 0.025, p4: 0.005};
+        }
         return {short: shortName, name: shortName.capitalize(), rarity: 0, cost:0};
     }
 
@@ -222,6 +225,9 @@ class BattleLogsUtils {
         });
         if (foundObject !== undefined) {
             return foundObject;
+        }
+        if (name === "ticket") {
+            return {short: name.toLowerCase(), name: name.capitalize(), rarity: 0, cost:0, p0: 0.8, p1: 0.13, p2: 0.04, p3: 0.025, p4: 0.005};
         }
         return {short: name.toLowerCase(), name: name.capitalize(), rarity: 0, cost:0};
     }

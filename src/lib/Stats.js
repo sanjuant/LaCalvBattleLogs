@@ -317,6 +317,9 @@ class BattleLogsStats {
                 let itemsPercentage = this.__internal__getItemPercentage(statsData, item.short, i);
                 spanRarity.textContent = `${itemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
+                console.log(item)
+                let dropChance = item[`p${i}`] * 100
+                spanRarity.title = `Chance d'obtention: ${dropChance}%, Obtenu: ${itemsPercentage}%, Items: ${statsData[item.short].itemsPerRarity[i]}`
             }
             else {
                 let spanRarity = statsBar.querySelector(`span[data-rarity="${i.toString()}"]`);
