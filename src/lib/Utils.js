@@ -40,11 +40,17 @@ class BattleLogsUtils {
     static formatNumber(number) {
         const million = 1000000;
         const billion = 1000000000;
-
         if (number >= billion) {
-            return `${(number / billion).toFixed(1)}B`;
+            const integerPart = Math.floor(number / billion);
+            return `${integerPart}B`;
         } else if (number >= million) {
-            return `${(number / million).toFixed(1)}M`;
+            const integerPart = Math.floor(number / million);
+            const decimalPart = (number % million).toString().slice(0, 3).replace(/0+$/, '');
+            if (decimalPart.length > 0) {
+                return `${integerPart}M${decimalPart}`;
+            } else {
+                return `${integerPart}M`;
+            }
         } else {
             // Add space separator for thousands
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
