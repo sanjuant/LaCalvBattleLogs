@@ -196,7 +196,7 @@ class BattleLogsExpedition {
             if (!isNaN(parseInt(object["value"], 10))) {
                 name = type === "alopiece" ? "Alopièce" : object["value"]
                 count = object["value"]
-                rarity = object["rarity"] ? object["rarity"] : 0
+                rarity = object["rarity"] ? object["rarity"] : 4
             } else {
                 const objectRef = BattleLogs.Utils.getObjectByShortName(object["value"])
                 name = objectRef["name"] ? objectRef["name"] : object["value"];
