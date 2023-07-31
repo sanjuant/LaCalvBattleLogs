@@ -51,7 +51,8 @@ class BattleLogsLoad {
         const internalArrays = [
             this.__internal__items,
             this.__internal__armes,
-            this.__internal__calvs
+            this.__internal__calvs,
+            this.__internal__familiers
         ];
         return [].concat(...internalArrays)
     }
