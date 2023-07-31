@@ -997,8 +997,10 @@ class BattleLogsBattle {
             stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
         }
 
-        stuff.famAtk = stuffs[stuffAtk - 1].famAtk.capitalize()
-        stuff.famDef = stuffs[stuffAtk - 1].famDef.capitalize()
+        let objectFamAtk = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famAtk);
+        stuff.famAtk = objectFamAtk === '_' ? objectFamAtk : {name: objectFamAtk["name"], rarity: objectFamAtk["rarity"]};
+        let objectFamDef = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famDef);
+        stuff.famDef = objectFamDef === '_' ? objectFamDef : {name: objectFamDef["name"], rarity: objectFamDef["rarity"]};
     }
 
     /**
