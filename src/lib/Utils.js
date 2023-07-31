@@ -30,6 +30,18 @@ class BattleLogsUtils {
     }
 
     /**
+     * @desc Round numbers to 2 decimals
+     *
+     * @param {Number} number: Number to round
+     * @param {Number} accuracy: Number of decimals
+     * @return float rounded to accurate decimals
+     */
+    static roundToAny(number, accuracy) {
+        return +(Math.round(number + `e+${accuracy}`)  + `e-${accuracy}`);
+    }
+
+
+    /**
      * @desc Abbreviates a number with one decimal point and adds "M" or "B" suffix
      * If the number is less than one million, it adds a space separator for thousands.
      *
