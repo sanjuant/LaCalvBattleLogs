@@ -214,7 +214,7 @@ class BattleLogsUtils {
         ];
         const allObjects = [].concat(...internalArrays);
         let foundObject = allObjects.find(item => {
-            return item.short === shortName
+            return item.short.toLowerCase() === shortName.toLowerCase()
         });
         if (foundObject !== undefined) {
             return foundObject;
@@ -233,7 +233,7 @@ class BattleLogsUtils {
         ];
         const allObjects = [].concat(...internalArrays);
         let foundObject = allObjects.find(item => {
-            return item.name === name
+            return item.name.toLowerCase() === name.toLowerCase()
         });
         if (foundObject !== undefined) {
             return foundObject;
