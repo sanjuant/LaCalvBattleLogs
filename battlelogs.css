@@ -405,38 +405,60 @@
     background-color: #0c0c0d;
 }
 .stats-stuff-body {
-    display: flex;
-    justify-content: space-between;
-    padding: .5rem;
-}
-.stats-stuff-loadout {
+    /*padding: .5rem;*/
     display: flex;
     flex-wrap: wrap;
-    gap: .1rem;
 }
-
-.loadout {
+div[class^='stuff-body-'] {
     display: flex;
-    flex-direction: column;
+
+}
+.stuff-body-loadout {
+    gap: .3rem;
+    flex: 1 1 100% !important;
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+.stuff-body-loadout > div {
+    background-color: #595959;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-grow: 1;
     align-items: center;
+    height: 1.5rem;
+}
+.stuff-body-battle {
+    margin: 1rem;
+    gap: .1rem;
+    flex: 1 0 350px;
+    flex-flow: column wrap;
+}
+.stuff-body-battle > div {
     background-color: indianred;
     border-radius: 5px;
     overflow: hidden;
 }
 
-.loadout-label {
-    width: 100%;
+.stats-stuff .key {
+    height: 100%;
+    padding: 0 1rem;
     background-color: #232327;
-    padding: .5rem 1rem;
     text-transform: uppercase;
     font-size: 11px;
 }
 
-.loadout-name {
+.stats-stuff .value {
     width: 100%;
+    height: 100%;
+    padding: 0 1rem;
     background-color: #35393b;
-    padding: .5rem 1rem;
+}
+
+.stuff-body-loadout .key, .stuff-body-loadout .value {
+    display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 

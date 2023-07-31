@@ -371,40 +371,52 @@ class BattleLogsStats {
         stuffBody.classList.add("stats-stuff-body");
         // Create loadout container
         const loadoutContainer = document.createElement("div");
-        loadoutContainer.classList.add("stats-stuff-loadout");
-        for (const key in stuffData.loadout) {
-            const object = stuffData.loadout[key];
-            this.__internal__addObjectToLoadout(object, key, loadoutContainer);
-        }
+        loadoutContainer.classList.add("stuff-body-loadout");
+        this.__internal__appendStuffData(stuffData.loadout, loadoutContainer)
         stuffBody.appendChild(loadoutContainer)
+
+        // Create battle stats container
+        const battleContainer = document.createElement("div");
+        battleContainer.classList.add("stuff-body-battle");
+        this.__internal__appendStuffData(stuffData.battle, battleContainer)
+        stuffBody.appendChild(battleContainer)
 
         // Append body to container
         stuffContainerDiv.appendChild(stuffBody);
         stuffsElement.appendChild(stuffContainerDiv);
     }
 
-    static __internal__addObjectToLoadout(object, key, loadoutContainer) {
-        const container = document.createElement("div")
-        container.dataset["key"] = key
-        container.classList.add("loadout")
+    static __internal__appendStuffData(data, container) {
+        for (const key in data) {
+            const object = data[key];
+            this.__internal__appendAttributes(object, key, container);
+        }
+    }
+
+    static __internal__appendAttributes(object, key, container) {
+        const attrContainer = document.createElement("div")
+        attrContainer.classList.add(`loadout-${key}`)
+        attrContainer.dataset["key"] = key
         if (Array.isArray(object)) {
             for (let item of object) {
-                this.__internal__addObjectToLoadout(item, key, loadoutContainer)
+                this.__internal__appendAttributes(item, key, container)
             }
         } else {
             const label = document.createElement("span");
+            label.classList.add("key")
             label.textContent = key.capitalize();
-            label.classList.add("loadout-label")
             const name = document.createElement("span");
-            name.textContent = object.name;
-            name.classList.add("loadout-name")
-            if (object.rarity) {
-                name.classList.add(`rarity-${object.rarity}`)
+            name.classList.add("value")
+            if (typeof object === 'object') {
+                name.textContent = object.name;
+                name.classList.add(`rarity-${object.rarity}`);
+            } else {
+                name.textContent = object;
             }
 
-            container.appendChild(label)
-            container.appendChild(name)
-            loadoutContainer.appendChild(container)
+            attrContainer.appendChild(label)
+            attrContainer.appendChild(name)
+            container.appendChild(attrContainer)
         }
     }
 
