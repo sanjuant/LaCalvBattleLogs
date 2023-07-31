@@ -109,8 +109,8 @@ class BattleLogsStats {
         let stuffData = this.__internal__statsStuffsData.stuffs[stuffHash]
         if (!stuffData) {
             stuffData = {
-                "created_at": new Date().toISOString(),
-                "updated_at": new Date().toISOString(),
+                "time": new Date().toISOString(),
+                "update": new Date().toISOString(),
                 "slot": stuff.slot,
                 "name": stuff.name,
                 "loadout": {
@@ -639,36 +639,6 @@ class BattleLogsStats {
     static __internal__defaultStatsStuffs = {
         "id": "stuffs",
         "time": new Date().toISOString(),
-        "stuffs": {
-            "dG90b2xh": {
-                "time": new Date().toISOString(),
-                "slot": 0,
-                "name": "Test",
-                "loadout": {
-                    "arme": "Éplucheur kamain",
-                    "calv": "La Clownesque",
-                    "items": ["Ecran éclipsé", "Fragment de beau lavabo", "Planche de wengé", "Ecrou serti", "Coquetier en cocotier"],
-                    "famAtk": "egbere",
-                    "famDef": "homut"
-                },
-                "wb": {
-                    "Rm9udHly": {
-                        "name": "Fontyran le cuirassé",
-                        "dmgMax": 7000,
-                        "dmgMin": 2000,
-                        "dmgAverage": 3250,
-                        "totalDamage": 325000,
-                        "battleCount": 100
-                    }
-                },
-                "battle": {
-                    "dmgMax": 7000,
-                    "dmgMin": 2000,
-                    "dmgAverage": 3250,
-                    "totalDamage": 325000,
-                    "battleCount": 100
-                },
-            }
-        }
+        "stuffs": {}
     }
 }
