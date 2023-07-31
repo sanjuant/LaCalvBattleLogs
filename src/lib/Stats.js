@@ -277,7 +277,7 @@ class BattleLogsStats {
             roueTypeTitle.children[0].firstChild.textContent = `${total} `;
             roueTypeTitle.children[0].querySelector("span").textContent = name;
             const lastChild = roueTypeTitle.children[0].lastChild
-            if (total > 1 && lastChild.textContent.startsWith(' ') && !lastChild.textContent.endsWith('s')) {
+            if (total > 1 && !lastChild.textContent.endsWith('s')) {
                 lastChild.textContent = lastChild.textContent + 's';
             }
             roueTypeTitle.children[1].textContent = roueCost;
