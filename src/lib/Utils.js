@@ -290,5 +290,14 @@ class BattleLogsUtils {
         String.prototype.padZero = function() {
             return Number(this) < 10 ? `0${this}` : `${this}`;
         }
+        String.prototype.hashCode = function() {
+            let i, l, hval = 0x811c9dc5;
+
+            for (i = 0, l = this.length; i < l; i++) {
+                hval ^= this.charCodeAt(i);
+                hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
+            }
+            return ("0000000" + (hval >>> 0).toString(16)).substring(7);
+        }
     }
 }

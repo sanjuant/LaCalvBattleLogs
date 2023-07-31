@@ -104,9 +104,68 @@ class BattleLogsStats {
         BattleLogs.Stats.__internal__updateStatsRouesOutput(statsData);
     }
 
+    static updateStatsStuffs(stuff, user, opponent=null) {
+        const stuffHash = this.__internal__createStuffHash(stuff)
+        let stuffData = this.__internal__statsStuffsData.stuffs[stuffHash]
+        if (!stuffData) {
+            stuffData = {
+                "created_at": new Date().toISOString(),
+                "updated_at": new Date().toISOString(),
+                "slot": stuff.slot,
+                "name": stuff.name,
+                "loadout": {
+                    "arme": stuff.arme,
+                    "calv": stuff.calv,
+                    "items": stuff.items,
+                    "famAtk": stuff.famAtk,
+                    "famDef": stuff.famDef
+                },
+                "wb": {},
+                "battle": {
+                    "dmgMax": user.dmgTotal,
+                    "dmgMin": user.dmgTotal,
+                    "dmgTotal": 0,
+                    "dmgAverage": 0,
+                    "battleCount": 0
+                },
+            }
+            this.__internal__statsStuffsData.stuffs[stuffHash] = stuffData;
+        }
+        if (opponent) {
+            const wbHash = opponent.name.hashCode();
+            let wbData = stuffData.wb[wbHash];
+            if (!wbData) {
+                wbData = {
+                    "name": opponent.name,
+                    "dmgMax": user.dmgTotal,
+                    "dmgMin": user.dmgTotal,
+                    "dmgTotal": 0,
+                    "dmgAverage": 0,
+                    "battleCount": 0
+                }
+                stuffData.wb[wbHash] = wbData;
+            }
+            wbData.dmgMax = wbData.dmgMax > user.dmgTotal ? wbData.dmgMax : user.dmgTotal;
+            wbData.dmgMin = wbData.dmgMin < user.dmgTotal ? wbData.dmgMin : user.dmgTotal;
+            wbData.battleCount += 1;
+            wbData.dmgTotal += user.dmgTotal;
+            wbData.dmgAverage += Math.round(wbData.dmgTotal / wbData.battleCount);
+        }
+        stuffData.updated_at = new Date().toISOString();
+        stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
+        stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
+        stuffData.battle.battleCount += 1;
+        stuffData.battle.dmgTotal += user.dmgTotal;
+        stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.__internal__statsStuffsData);
+    }
+
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
+        // TODO: Supprimer les stuffs qui ont un total de combats inférieur à 10 depuis +24h
+        // TODO: Afficher les 50 premiers stuffs
+        // TODO: Limiter le nombre de stuffs à 100 (marge de 50 pour la période de 24h) en supprimant les stuffs qui ont le moins de combats et qui sont les plus vieux
 
     static __internal__statsRouesData = null;
     static __internal__statsStuffsData = null;
@@ -339,6 +398,7 @@ class BattleLogsStats {
             const name = document.createElement("span");
             name.textContent = object;
             name.classList.add("loadout-name")
+            name.classList.add(".rarity-{}")
 
             container.appendChild(label)
             container.appendChild(name)
@@ -535,14 +595,7 @@ class BattleLogsStats {
         stuff.items.sort();
         // concatenate the elements of the "items" array with the other attributes
         let concatenatedItems = stuff.arme + stuff.calv + stuff.items.join('') + stuff.famAtk + stuff.famDef;
-
-        return this.__internal__createHash(concatenatedItems)
-    }
-
-    static __internal__createHash(string) {
-        let hash = btoa(string);
-        // reduce the size of the output
-        return hash.substring(0, 8);
+        return concatenatedItems.hashCode()
     }
 
     /**
