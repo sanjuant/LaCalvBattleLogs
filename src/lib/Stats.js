@@ -396,9 +396,11 @@ class BattleLogsStats {
             label.textContent = key.capitalize();
             label.classList.add("loadout-label")
             const name = document.createElement("span");
-            name.textContent = object;
+            name.textContent = object.name;
             name.classList.add("loadout-name")
-            name.classList.add(".rarity-{}")
+            if (object.rarity) {
+                name.classList.add(`rarity-${object.rarity}`)
+            }
 
             container.appendChild(label)
             container.appendChild(name)
