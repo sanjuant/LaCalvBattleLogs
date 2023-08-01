@@ -96,7 +96,7 @@ class BattleLogsStats {
     static updateStats(count, short, items, rouesType, cost) {
         const statsData = this.__internal__statsRouesData[rouesType];
         statsData[short]["total"] += count;
-        statsData[short]["cost"] += cost;
+        statsData[short]["cost"] = BattleLogs.Utils.roundToAny(statsData[short]["cost"] + cost, 2);
         items.forEach(item => {
             statsData[short].itemsPerRarity[item.rarity] += item.count;
         })
@@ -526,7 +526,7 @@ class BattleLogsStats {
         } else {
             name = item.name;
         }
-        let cost = statsData[item.short].cost;
+        let cost = Math.round(statsData[item.short].cost);
         let costFormatted = BattleLogs.Utils.formatNumber(cost);
         let roueCost = this.Messages[statsType].cost.format(costFormatted, cost > 1 ? 's' : '', cost > 1 ? 's' : '');
 
@@ -534,7 +534,7 @@ class BattleLogsStats {
             roueTypeTitle.children[0].firstChild.textContent = `${total} `;
             roueTypeTitle.children[0].querySelector("span").textContent = name;
             const lastChild = roueTypeTitle.children[0].lastChild
-            if (lastChild.textContent.startsWith(' ') && total > 1) {
+            if (total > 1 && lastChild.textContent.startsWith(' ') && !lastChild.textContent.endsWith('s')) {
                 lastChild.textContent = lastChild.textContent + 's';
             }
             roueTypeTitle.children[1].textContent = roueCost;
@@ -570,8 +570,9 @@ class BattleLogsStats {
                     spanRarity.dataset.rarity = i.toString();
                     statsBar.appendChild(spanRarity);
                 }
-                let itemsPercentage = this.__internal__getItemPercentage(statsData, item.short, i);
-                spanRarity.textContent = `${itemsPercentage}%`;
+                let itemsPercentage = this.__internal__getItemPercentage(statsData, item.short, i, 2);
+                let visibleItemsPercentage = itemsPercentage > 0 ? Math.round(BattleLogs.Utils.roundToAny(itemsPercentage, 1)) : 0;
+                spanRarity.textContent = `${visibleItemsPercentage}%`;
                 spanRarity.style.width = `${itemsPercentage}%`;
                 let dropChance = item[`p${i}`] * 100
                 spanRarity.title = `Chance d'obtention: ${dropChance}%, Obtenu: ${itemsPercentage}%, Items: ${statsData[item.short].itemsPerRarity[i]}`
@@ -618,13 +619,14 @@ class BattleLogsStats {
      * @param {Object} stats: An object containing the roue stats
      * @param {string} short: The short type name of the roue, corresponding to a key in the `stats` object
      * @param {Number} rarity: The rarity level, corresponding to a key in the `itemsPerRarity` sub-object in the `stats` object
-     * @return {string} The calculated percentage, a float with two decimal places
+     * @param {Number} fixation: Number of decimals expected (between 0-100)
+     * @return {Number} The calculated percentage, a float with 2 decimals places
      */
-    static __internal__getItemPercentage(stats, short, rarity) {
+    static __internal__getItemPercentage(stats, short, rarity, fixation) {
         if (stats[short].itemsPerRarity[rarity] > 0) {
-            return (stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100).toFixed();
+            return BattleLogs.Utils.roundToAny(stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100, 2);
         }
-        return "0";
+        return 0;
     }
 
     /**

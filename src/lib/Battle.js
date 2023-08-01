@@ -1243,11 +1243,11 @@ class BattleLogsBattle {
             }
         } else if (action["defender"]["name"] === user.famName) {
             if ("renvoi" in action["defender"]["computed"]) {
-                user.famRenvoi = action["defender"]["computed"]["renvoi"]["value"];
+                user.famRenvoi += action["defender"]["computed"]["renvoi"]["value"];
             }
         } else if (action["defender"]["name"] === opponent.famName) {
             if ("renvoi" in action["defender"]["computed"]) {
-                opponent.famRenvoi = action["defender"]["computed"]["renvoi"]["value"];
+                opponent.famRenvoi += action["defender"]["computed"]["renvoi"]["value"];
             }
         }
     }
