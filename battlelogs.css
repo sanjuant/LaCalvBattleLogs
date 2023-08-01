@@ -1,4 +1,25 @@
 /********************/
+/* Custom color  */
+/********************/
+body{
+    --rarity-none: rgba(65,65,65,255);
+    --rarity-0: rgba(170,170,170,255);
+    --rarity-1: rgba(146,193,105,255);
+    --rarity-2: rgba(116,146,214,255);
+    --rarity-3: rgba(216,167,255,255);
+    --rarity-4: rgba(255,241,88,255);
+    --rarity-5: rgba(255,95,88,255);
+    --rarity-6: rgba(63,214,226,255);
+    --banal:rgba(170,170,170,255);
+    --aqua:rgba(116,146,214,255);
+    --pyro:rgba(255,95,88,255);
+    --terra:rgba(129,229,90,255);
+    --électro:rgba(255,241,88,255);
+    --chaos:rgba(216,167,255,,255);
+    --céleste:rgba(63,214,226,255);
+}
+
+/********************/
 /* Console Element  */
 /********************/
 .console {
@@ -361,19 +382,19 @@
 }
 
 .bar-rarity-0 {
-    background-color: #b9b8b8;
+    background-color: var(--rarity-0);
 }
 .bar-rarity-1 {
-    background-color: #9be98f;
+    background-color: var(--rarity-1);
 }
 .bar-rarity-2 {
-    background-color: #629ce9;
+    background-color: var(--rarity-2);
 }
 .bar-rarity-3 {
-    background-color: #eb9ce9;
+    background-color: var(--rarity-3);
 }
 .bar-rarity-4 {
-    background-color: #ebdd54;
+    background-color: var(--rarity-4);
 }
 
 .stats .item-name {
@@ -486,31 +507,31 @@ button.selected {
 /* Objects colors   */
 /********************/
 .rarity-0 {
-    color: #b9b8b8;
+    color: var(--rarity-0);
     font-weight: bold;
 }
 .rarity-1 {
-    color: #9be98f;
+    color: var(--rarity-1);
     font-weight: bold;
 }
 .rarity-2 {
-    color: #629ce9;
+    color: var(--rarity-2);
     font-weight: bold;
 }
 .rarity-3 {
-    color: #eb9ce9;
+    color: var(--rarity-3);
     font-weight: bold;
 }
 .rarity-4 {
-    color: #ebdd54;
+    color: var(--rarity-4);
     font-weight: bold;
 }
 .rarity-5 {
-    color: #ea5a54;
+    color: var(--rarity-5);
     font-weight: bold;
 }
 .rarity-6 {
-    color: #3fc4cf;
+    color: var(--rarity-6);
     font-weight: bold;
 }
 
