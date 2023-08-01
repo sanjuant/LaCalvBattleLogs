@@ -439,6 +439,7 @@ body{
 }
 .values-loadout {
     flex-direction: row;
+    padding: 0 !important;
 }
 .stuff-body-block {
     display: flex;
@@ -446,13 +447,14 @@ body{
     border: 1px solid #232327;
     border-radius: 5px;
     overflow: hidden;
-    margin-bottom: .5rem;
     background-color: #35393b;
     flex-basis: 45%;
     flex-grow: 1;
 }
 .stuff-body-block[data-key="loadout"] {
     flex-basis: 100%;
+    border: none;
+    background-color: transparent;
 }
 .values-loadout > div {
     display: flex;
@@ -461,6 +463,7 @@ body{
     flex-grow: 1;
     gap: .5rem;
 }
+
 .stuff-body-block-title, .stuff-body-block-values {
     padding: .5rem;
 }
@@ -477,6 +480,7 @@ body{
     min-height: 1.5rem;
 }
 .stats-stuff .key {
+    width: 100%;
     height: 100%;
     background-color: #232327;
     text-transform: uppercase;
@@ -493,6 +497,12 @@ body{
     justify-content: flex-start;
     text-align: left;
     padding: .3rem 5px;
+}
+.values-loadout .key {
+    width: inherit;
+}
+.values-loadout .value {
+    background-color: #35393b;
 }
 .key, .value {
     display: flex;

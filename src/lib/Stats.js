@@ -389,13 +389,10 @@ class BattleLogsStats {
         const blockContainer = document.createElement("div");
         blockContainer.classList.add("stuff-body-block");
         blockContainer.dataset["key"] = key;
-        const blockLabel = document.createElement("div");
-        blockLabel.classList.add("stuff-body-block-title");
-        blockLabel.textContent = key.capitalize()
-        const blockValues = document.createElement("div");
-        blockValues.classList.add("stuff-body-block-values")
-        blockValues.classList.add(`values-${key}`)
         if (key === "loadout") {
+            const blockValues = document.createElement("div");
+            blockValues.classList.add("stuff-body-block-values")
+            blockValues.classList.add(`values-${key}`)
             const objectToGroup = {"arme_calv": ["arme", "calv"], "items": ["items"], "fams": ["famAtk", "famDef"]}
             Object.keys(objectToGroup).forEach((objectGroupKey) => {
                 let group = objectToGroup[objectGroupKey];
@@ -405,14 +402,20 @@ class BattleLogsStats {
                 }
                 blockValues.appendChild(stuffBodyGroup);
             })
+            blockContainer.appendChild(blockValues);
         }
         else {
+            const blockLabel = document.createElement("div");
+            blockLabel.classList.add("stuff-body-block-title");
+            blockLabel.textContent = key.capitalize()
+            const blockValues = document.createElement("div");
+            blockValues.classList.add("stuff-body-block-values")
+            blockValues.classList.add(`values-${key}`)
             this.__internal__appendStuffData(stuffData[key], blockValues)
+            blockContainer.appendChild(blockLabel);
+            blockContainer.appendChild(blockValues);
         }
 
-
-        blockContainer.appendChild(blockLabel);
-        blockContainer.appendChild(blockValues);
         stuffBody.appendChild(blockContainer)
     }
 
@@ -638,9 +641,9 @@ class BattleLogsStats {
      * @param {Number} fixation: Number of decimals expected (between 0-100)
      * @return {Number} The calculated percentage, a float with 2 decimals places
      */
-    static __internal__getItemPercentage(stats, short, rarity, fixation) {
+    static __internal__getItemPercentage(stats, short, rarity, fixation= 2) {
         if (stats[short].itemsPerRarity[rarity] > 0) {
-            return BattleLogs.Utils.roundToAny(stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100, 2);
+            return BattleLogs.Utils.roundToAny(stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100, fixation);
         }
         return 0;
     }
