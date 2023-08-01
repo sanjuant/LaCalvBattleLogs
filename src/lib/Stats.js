@@ -106,6 +106,7 @@ class BattleLogsStats {
 
     static updateStatsStuffs(stuff, user, opponent=null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
+        console.log(stuffHash)
         let stuffData = this.__internal__statsStuffsData.stuffs[stuffHash]
         if (!stuffData) {
             stuffData = {
@@ -113,6 +114,7 @@ class BattleLogsStats {
                 "update": new Date().toISOString(),
                 "slot": stuff.slot,
                 "name": stuff.name,
+                "element": stuff.element,
                 "loadout": {
                     "arme": stuff.arme,
                     "calv": stuff.calv,
@@ -342,6 +344,7 @@ class BattleLogsStats {
         // Create header
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
+        stuffHeader.classList.add(stuffData.element.toLocaleLowerCase());
 
         // Create div for left elements
         const headerLeft = document.createElement("div");
@@ -366,28 +369,59 @@ class BattleLogsStats {
         // Append header to container
         stuffContainerDiv.appendChild(stuffHeader);
 
+
         // Create body
         const stuffBody = document.createElement("div");
         stuffBody.classList.add("stats-stuff-body");
-        // Create loadout container
-        const loadoutContainer = document.createElement("div");
-        loadoutContainer.classList.add("stuff-body-loadout");
-        this.__internal__appendStuffData(stuffData.loadout, loadoutContainer)
-        stuffBody.appendChild(loadoutContainer)
-
-        // Create battle stats container
-        const battleContainer = document.createElement("div");
-        battleContainer.classList.add("stuff-body-battle");
-        this.__internal__appendStuffData(stuffData.battle, battleContainer)
-        stuffBody.appendChild(battleContainer)
+        this.addStuffDataToBody("loadout", stuffData, stuffBody);
+        this.addStuffDataToBody("battle", stuffData, stuffBody);
+        console.log(stuffData.wb)
+        Object.keys(stuffData.wb).forEach((key) => {
+            this.addStuffWbDataToBody(key, stuffData.wb, stuffBody);
+        })
 
         // Append body to container
         stuffContainerDiv.appendChild(stuffBody);
         stuffsElement.appendChild(stuffContainerDiv);
     }
 
+    static addStuffDataToBody(key, stuffData, stuffBody) {
+        // Create loadout container
+        const blockContainer = document.createElement("div");
+        blockContainer.classList.add("stuff-body-block");
+        blockContainer.dataset["key"] = key;
+        const blockLabel = document.createElement("div");
+        blockLabel.classList.add("stuff-body-block-title");
+        blockLabel.textContent = key.capitalize()
+        const blockValues = document.createElement("div");
+        blockValues.classList.add("stuff-body-block-values")
+        blockValues.classList.add(`values-${key}`)
+        this.__internal__appendStuffData(stuffData[key], blockValues)
+        blockContainer.appendChild(blockLabel);
+        blockContainer.appendChild(blockValues);
+        stuffBody.appendChild(blockContainer)
+    }
+
+    static addStuffWbDataToBody(key, stuffData, stuffBody) {
+        // Create loadout container
+        const blockContainer = document.createElement("div");
+        blockContainer.classList.add("stuff-body-block");
+        blockContainer.dataset["key"] = key;
+        const blockLabel = document.createElement("div");
+        blockLabel.classList.add("stuff-body-block-title");
+        blockLabel.textContent = stuffData[key].name.capitalize()
+        const blockValues = document.createElement("div");
+        blockValues.classList.add("stuff-body-block-values")
+        blockValues.classList.add("values-wb")
+        this.__internal__appendStuffData(stuffData[key], blockValues)
+        blockContainer.appendChild(blockLabel);
+        blockContainer.appendChild(blockValues);
+        stuffBody.appendChild(blockContainer)
+    }
+
     static __internal__appendStuffData(data, container) {
         for (const key in data) {
+            if (key === "name") continue
             const object = data[key];
             this.__internal__appendAttributes(object, key, container);
         }
@@ -606,9 +640,10 @@ class BattleLogsStats {
 
     static __internal__createStuffHash(stuff) {
         // sort the "items" array
-        stuff.items.sort();
+        const itemsArray = stuff.items.sort().map(item => item.name);
         // concatenate the elements of the "items" array with the other attributes
-        let concatenatedItems = stuff.arme + stuff.calv + stuff.items.join('') + stuff.famAtk + stuff.famDef;
+        let concatenatedItems = stuff.arme.name + stuff.calv.name + itemsArray.join('') + stuff.famAtk.name + stuff.famDef.name;
+        console.log(concatenatedItems)
         return concatenatedItems.hashCode()
     }
 

@@ -987,9 +987,10 @@ class BattleLogsBattle {
         stuff.slot = stuffAtk
         stuff.name = stuffs[stuffAtk - 1].name;
         let objectCalv = BattleLogs.Utils.getObjectByName(stuffs[stuffAtk - 1].calv);
-        stuff.calv = objectCalv === '_' ? objectCalv : {name: objectCalv["name"], rarity: objectCalv["rarity"]};
+        stuff.calv = objectCalv.short === '_' ? objectCalv : {name: objectCalv["name"], rarity: objectCalv["rarity"]};
         let objectArme = BattleLogs.Utils.getObjectByName(stuffs[stuffAtk - 1].arme);
-        stuff.arme = objectArme === '_' ? objectArme : {name: objectArme["name"], rarity: objectArme["rarity"]};
+        stuff.arme = objectArme.short === '_' ? objectArme : {name: objectArme["name"], rarity: objectArme["rarity"]};
+        stuff.element = objectArme.short === '_' ? "Banal" : objectArme["element"];
 
         stuff.items = [];
         for (const item of stuffs[stuffAtk - 1].items) {
@@ -1511,6 +1512,7 @@ class BattleLogsBattle {
     static __internal__createStuff(type = "stuff") {
         const stuff = new this.Stuff(type);
         stuff.slot = 0;
+        stuff.element = null;
         stuff.name = null;
         stuff.calv = null;
         stuff.arme = null;
