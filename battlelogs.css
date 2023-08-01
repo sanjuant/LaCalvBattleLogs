@@ -454,13 +454,20 @@ body{
 .stuff-body-block[data-key="loadout"] {
     flex-basis: 100%;
 }
+.values-loadout > div {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: .5rem;
+}
 .stuff-body-block-title, .stuff-body-block-values {
     padding: .5rem;
 }
 .stuff-body-block-title {
     background-color: #232327;
 }
-.stuff-body-block-values > div {
+.stuff-body-block-values div[data-key] {
     border-radius: 5px;
     overflow: hidden;
     display: flex;

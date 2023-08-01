@@ -375,7 +375,6 @@ class BattleLogsStats {
         stuffBody.classList.add("stats-stuff-body");
         this.addStuffDataToBody("loadout", stuffData, stuffBody);
         this.addStuffDataToBody("battle", stuffData, stuffBody);
-        console.log(stuffData.wb)
         Object.keys(stuffData.wb).forEach((key) => {
             this.addStuffWbDataToBody(key, stuffData.wb, stuffBody);
         })
@@ -396,7 +395,22 @@ class BattleLogsStats {
         const blockValues = document.createElement("div");
         blockValues.classList.add("stuff-body-block-values")
         blockValues.classList.add(`values-${key}`)
-        this.__internal__appendStuffData(stuffData[key], blockValues)
+        if (key === "loadout") {
+            const objectToGroup = {"arme_calv": ["arme", "calv"], "items": ["items"], "fams": ["famAtk", "famDef"]}
+            Object.keys(objectToGroup).forEach((objectGroupKey) => {
+                let group = objectToGroup[objectGroupKey];
+                const stuffBodyGroup = document.createElement("div");
+                for (const subKey of group) {
+                    this.__internal__appendAttributes(stuffData[key][subKey], subKey, stuffBodyGroup);
+                }
+                blockValues.appendChild(stuffBodyGroup);
+            })
+        }
+        else {
+            this.__internal__appendStuffData(stuffData[key], blockValues)
+        }
+
+
         blockContainer.appendChild(blockLabel);
         blockContainer.appendChild(blockValues);
         stuffBody.appendChild(blockContainer)
@@ -428,6 +442,7 @@ class BattleLogsStats {
     }
 
     static __internal__appendAttributes(object, key, container) {
+        console.log(object)
         const attrContainer = document.createElement("div")
         attrContainer.classList.add(`loadout-${key}`)
         attrContainer.dataset["key"] = key
@@ -441,6 +456,7 @@ class BattleLogsStats {
             label.textContent = key.capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
+            console.log(object.name)
             if (typeof object === 'object') {
                 name.textContent = object.name;
                 name.classList.add(`rarity-${object.rarity}`);
