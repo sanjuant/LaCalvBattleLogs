@@ -259,7 +259,13 @@ class BattleLogsStats {
         let sinceSpan = document.createElement("span");
         sinceSpan.textContent = this.Messages.since.format(formattedDate);
         statsTitleDateSpan.appendChild(sinceSpan)
-        this.__internal__addClearButton(this.__internal__statsRouesData, statsData.id, statsTitleDateSpan, this.__internal__updateStatsRouesOutput.bind(this))
+        this.__internal__addClearButton(
+            this.__internal__statsRouesData, 
+            this.Settings.StatsRoues, 
+            statsData.id, 
+            statsTitleDateSpan, 
+            this.__internal__updateStatsRouesOutput.bind(this)
+        )
         statsTitle.appendChild(statsTitleNameSpan);
         statsTitle.appendChild(statsTitleDateSpan);
         divPanel.appendChild(statsTitle);
@@ -313,7 +319,13 @@ class BattleLogsStats {
         let sinceSpan = document.createElement("span");
         sinceSpan.textContent = this.Messages.since.format(formattedDate);
         statsTitleDateSpan.appendChild(sinceSpan)
-        this.__internal__addClearButton(this.__internal__statsStuffsData, stuffsData.id, statsTitleDateSpan, this.__internal__updateStatsStuffsOutput.bind(this))
+        this.__internal__addClearButton(
+            this.__internal__statsStuffsData, 
+            this.Settings.StatsStuffs, 
+            stuffsData.id, 
+            statsTitleDateSpan, 
+            this.__internal__updateStatsStuffsOutput.bind(this)
+        )
         statsTitle.appendChild(statsTitleNameSpan);
         statsTitle.appendChild(statsTitleDateSpan);
         divPanel.appendChild(statsTitle);
@@ -610,10 +622,11 @@ class BattleLogsStats {
      *
      * @param {Object} statsData: Data of stats
      * @param {string} id: The button id (that will be used for the corresponding local storage item id as well)
+     * @param {string} LS_key: Local Storage key to reset
      * @param {Element} containingDiv: The div element to append the button to
      * @param {Function} update_output: internal method to call to update output 
      */
-    static __internal__addClearButton(statsData, id, containingDiv, update_output) {
+    static __internal__addClearButton(statsData, LS_key, id, containingDiv, update_output) {
         const resetButton = document.createElement("button");
         resetButton.id = id;
         resetButton.classList.add("svg_reset");
@@ -627,11 +640,7 @@ class BattleLogsStats {
                 update_output(statsData[id]);
                 const dateSpan = document.querySelector(`#${this.Settings.Type}-${id} .stats-title-date span`)
                 dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(statsData[id]));
-                if(id.capitalize === this.Settings.StatsStuffs.split('-')[1]) {
-                    BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsStuffs, statsData);
-                } else {
-                    //BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsRoues, statsData);
-                }
+                BattleLogs.Utils.LocalStorage.setComplexValue(LS_key, statsData);
             }
         };
 
