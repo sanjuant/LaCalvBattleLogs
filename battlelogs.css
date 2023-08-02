@@ -447,7 +447,7 @@ body{
     border: 1px solid #232327;
     border-radius: 5px;
     overflow: hidden;
-    flex-basis: 45%;
+    /*flex-basis: 45%;*/
     flex-grow: 1;
 }
 .stuff-body-block[data-key="loadout"] {
