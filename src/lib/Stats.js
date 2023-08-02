@@ -702,7 +702,9 @@ class BattleLogsStats {
             "coquille": this.__internal__defaultStats["coquille"],
             "ticket": this.__internal__defaultStats["ticket"],
         });
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsStuffs, this.__internal__defaultStats["stuffs"]);
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsStuffs, {
+            "stuffs": this.__internal__defaultStats["stuffs"]
+        });
     }
 
     static __internal__defaultStats = {
