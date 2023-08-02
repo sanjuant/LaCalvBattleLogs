@@ -684,12 +684,17 @@ class BattleLogsStats {
         return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
     }
 
+    /**
+     * @desc Creates a unique hash based on equipment data.
+     *
+     * @param {Object} stuff - Equipment data object.
+     * @return {number} Unique hash based on the equipment data.
+     */
     static __internal__createStuffHash(stuff) {
         // sort the "items" array
         const itemsArray = stuff.items.sort().map(item => item.name);
         // concatenate the elements of the "items" array with the other attributes
         let concatenatedItems = stuff.arme.name + stuff.calv.name + itemsArray.join('') + stuff.famAtk.name + stuff.famDef.name;
-        console.log(concatenatedItems)
         return concatenatedItems.hashCode()
     }
 
@@ -735,10 +740,4 @@ class BattleLogsStats {
             "stuffs": {}
         }
     }
-
-    // static __internal__defaultStatsStuffs = {
-    //     "id": "stuffs",
-    //     "time": new Date().toISOString(),
-    //     "stuffs": {}
-    // }
 }
