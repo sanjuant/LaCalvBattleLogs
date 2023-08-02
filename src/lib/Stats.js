@@ -736,9 +736,9 @@ class BattleLogsStats {
         }
     }
 
-    static __internal__defaultStatsStuffs = {
-        "id": "stuffs",
-        "time": new Date().toISOString(),
-        "stuffs": {}
-    }
+    // static __internal__defaultStatsStuffs = {
+    //     "id": "stuffs",
+    //     "time": new Date().toISOString(),
+    //     "stuffs": {}
+    // }
 }
