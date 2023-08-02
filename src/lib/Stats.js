@@ -324,7 +324,7 @@ class BattleLogsStats {
             this.Settings.StatsStuffs, 
             stuffsData.id, 
             statsTitleDateSpan, 
-            this.__internal__updateStatsStuffsOutput.bind(this)
+            this.__internal__clearStatsOutput.bind(this)
         )
         statsTitle.appendChild(statsTitleNameSpan);
         statsTitle.appendChild(statsTitleDateSpan);
@@ -511,7 +511,17 @@ class BattleLogsStats {
     }
 
     /**
-     * @desc Update the output of roue stats
+     * @desc Clear the output of all stats of a specific type
+     *
+     * @param {Object} statsData: Data of stat
+     */
+    static __internal__clearStatsOutput(statsData) {
+            const statsDiv = document.getElementById(`${this.Settings.Type}-${statsData.id}`);
+            statsDiv.lastChild.remove();
+    }
+
+    /**
+     * @desc Update the output of stuffs stats
      *
      * @param {Object} statsData: Data of stat
      */
