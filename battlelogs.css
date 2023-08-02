@@ -416,9 +416,11 @@ body{
     background-color: #595959;
     border-radius: 10px;
     overflow: hidden;
-    flex-basis: 350px;
+    flex-basis: 265px;
     flex-grow: 1;
+    max-width: 530px;
 }
+
 .stats-stuff-header {
     display: flex;
     justify-content: space-between;
