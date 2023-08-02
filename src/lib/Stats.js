@@ -65,7 +65,7 @@ class BattleLogsStats {
             for (const key in this.__internal__statsRouesData) {
                 this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[key])
             }
-            this.__internal__updateStatsStuffsOutput(this.__internal__statsStuffsData)
+            this.__internal__updateStatsStuffsOutput(this.__internal__statsStuffsData["stuffs"])
         }
     }
 
@@ -107,7 +107,7 @@ class BattleLogsStats {
     static updateStatsStuffs(stuff, user, opponent=null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
         console.log(stuffHash)
-        let stuffData = this.__internal__statsStuffsData.stuffs[stuffHash]
+        let stuffData = this.__internal__statsStuffsData["stuffs"].stuffs[stuffHash]
         if (!stuffData) {
             stuffData = {
                 "time": new Date().toISOString(),
@@ -131,7 +131,7 @@ class BattleLogsStats {
                     "battleCount": 0
                 },
             }
-            this.__internal__statsStuffsData.stuffs[stuffHash] = stuffData;
+            this.__internal__statsStuffsData["stuffs"].stuffs[stuffHash] = stuffData;
         }
         if (opponent) {
             const wbHash = opponent.name.hashCode();
@@ -259,7 +259,7 @@ class BattleLogsStats {
         let sinceSpan = document.createElement("span");
         sinceSpan.textContent = this.Messages.since.format(formattedDate);
         statsTitleDateSpan.appendChild(sinceSpan)
-        this.__internal__addClearButton(statsData.id, statsTitleDateSpan)
+        this.__internal__addClearButton(this.__internal__statsRouesData, statsData.id, statsTitleDateSpan, this.__internal__updateStatsRouesOutput.bind(this))
         statsTitle.appendChild(statsTitleNameSpan);
         statsTitle.appendChild(statsTitleDateSpan);
         divPanel.appendChild(statsTitle);
@@ -313,7 +313,7 @@ class BattleLogsStats {
         let sinceSpan = document.createElement("span");
         sinceSpan.textContent = this.Messages.since.format(formattedDate);
         statsTitleDateSpan.appendChild(sinceSpan)
-        this.__internal__addClearButton(stuffsData.id, statsTitleDateSpan)
+        this.__internal__addClearButton(this.__internal__statsStuffsData, stuffsData.id, statsTitleDateSpan, this.__internal__updateStatsStuffsOutput.bind(this))
         statsTitle.appendChild(statsTitleNameSpan);
         statsTitle.appendChild(statsTitleDateSpan);
         divPanel.appendChild(statsTitle);
@@ -608,10 +608,12 @@ class BattleLogsStats {
     /**
      * @desc Add button to reset stats
      *
+     * @param {Object} statsData: Data of stats
      * @param {string} id: The button id (that will be used for the corresponding local storage item id as well)
      * @param {Element} containingDiv: The div element to append the button to
+     * @param {Function} update_output: internal method to call to update output 
      */
-    static __internal__addClearButton(id, containingDiv) {
+    static __internal__addClearButton(statsData, id, containingDiv, update_output) {
         const resetButton = document.createElement("button");
         resetButton.id = id;
         resetButton.classList.add("svg_reset");
@@ -620,12 +622,16 @@ class BattleLogsStats {
         resetButton.onclick = () => {
             const confirmed = window.confirm("Tu vas remettre à zéro les stats sélectionnées, es-tu sûr ?");
             if (confirmed) {
-                this.__internal__statsRouesData[id] = this.__internal__defaultStatsRoues[id];
-                this.__internal__statsRouesData[id].time = new Date().toISOString();
-                this.__internal__updateStatsRouesOutput(this.__internal__statsRouesData[id]);
+                statsData[id] = this.__internal__defaultStats[id];
+                statsData[id].time = new Date().toISOString();
+                update_output(statsData[id]);
                 const dateSpan = document.querySelector(`#${this.Settings.Type}-${id} .stats-title-date span`)
-                dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(this.__internal__statsRouesData[id]));
-                BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsRoues, this.__internal__statsRouesData);
+                dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(statsData[id]));
+                if(id.capitalize === this.Settings.StatsStuffs.split('-')[1]) {
+                    BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsStuffs, statsData);
+                } else {
+                    //BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsRoues, statsData);
+                }
             }
         };
 
@@ -673,14 +679,14 @@ class BattleLogsStats {
      */
     static __internal__setDefaultSettingsValues() {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsRoues, {
-            "oeuf": this.__internal__defaultStatsRoues["oeuf"],
-            "coquille": this.__internal__defaultStatsRoues["coquille"],
-            "ticket": this.__internal__defaultStatsRoues["ticket"],
+            "oeuf": this.__internal__defaultStats["oeuf"],
+            "coquille": this.__internal__defaultStats["coquille"],
+            "ticket": this.__internal__defaultStats["ticket"],
         });
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsStuffs, this.__internal__defaultStatsStuffs);
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsStuffs, this.__internal__defaultStats["stuffs"]);
     }
 
-    static __internal__defaultStatsRoues = {
+    static __internal__defaultStats = {
         "oeuf": {
             "id": "oeuf",
             "time": new Date().toISOString(),
@@ -701,6 +707,11 @@ class BattleLogsStats {
             "id": "ticket",
             "time": new Date().toISOString(),
             "ticket": {"total": 0, "cost": 0, "itemsPerRarity": [0, 0, 0, 0, 0], "rarity": 0},
+        },
+        "stuffs": {
+            "id": "stuffs",
+            "time": new Date().toISOString(),
+            "stuffs": {}
         }
     }
 
