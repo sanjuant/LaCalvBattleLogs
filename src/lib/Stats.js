@@ -106,7 +106,6 @@ class BattleLogsStats {
 
     static updateStatsStuffs(stuff, user, opponent=null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
-        console.log(stuffHash)
         let stuffData = this.__internal__statsStuffsData["stuffs"].stuffs[stuffHash]
         if (!stuffData) {
             stuffData = {
@@ -151,7 +150,7 @@ class BattleLogsStats {
             wbData.dmgMin = wbData.dmgMin < user.dmgTotal ? wbData.dmgMin : user.dmgTotal;
             wbData.battleCount += 1;
             wbData.dmgTotal += user.dmgTotal;
-            wbData.dmgAverage += Math.round(wbData.dmgTotal / wbData.battleCount);
+            wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
         }
         stuffData.updated_at = new Date().toISOString();
         stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
@@ -160,6 +159,7 @@ class BattleLogsStats {
         stuffData.battle.dmgTotal += user.dmgTotal;
         stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.__internal__statsStuffsData);
+        this.__internal__createOrUpdateStuff(stuffData, stuffHash)
     }
 
     /*********************************************************************\
@@ -241,7 +241,6 @@ class BattleLogsStats {
      * @desc Build the output of roue stats
      */
     static __internal__buildStatsRouesOutput(statsData) {
-        console.log(statsData)
         let statsType = statsData.id;
 
         // Build Panel for roue stats
@@ -336,7 +335,7 @@ class BattleLogsStats {
         // Build div for each stuff
         Object.keys(stuffsData.stuffs).forEach((key) => {
             const stuffData = stuffsData.stuffs[key]
-            this.__internal__createOrUpdateStuff(stuffData, statsStuffsContainer)
+            this.__internal__createOrUpdateStuff(stuffData, key, statsStuffsContainer)
         })
         this.StatsPanel.appendChild(divPanel);
     }
@@ -345,55 +344,66 @@ class BattleLogsStats {
      * @desc Creates and updates the stuff element
      *
      * @param {Object} stuffData: The data of stuff to update
+     * @param {string} key: Key of data
      * @param {Element} stuffsElement: The title element to update or create
      * @return {Element} The updated or created title element
      */
-    static __internal__createOrUpdateStuff(stuffData, stuffsElement) {
-        // Create container
-        const stuffContainerDiv = document.createElement("div");
-        stuffContainerDiv.classList.add("stats-stuff");
+    static __internal__createOrUpdateStuff(stuffData, key, stuffsElement=null) {
+        if (stuffsElement === null) {
+            stuffsElement = document.querySelector(".stats-stuffs-container");
+        }
+        let stuffContainerDiv = document.querySelector(`.stats-stuff[data-key='${key}']`)
+        if (stuffContainerDiv !== null) {
+            this.__internal__updateStuffValues(stuffData, stuffContainerDiv)
+        } else {
+            // Create container
+            stuffContainerDiv = document.createElement("div");
+            stuffContainerDiv.classList.add("stats-stuff");
+            stuffContainerDiv.dataset["key"] = key;
 
-        // Create header
-        const stuffHeader = document.createElement("div");
-        stuffHeader.classList.add("stats-stuff-header");
-        stuffHeader.classList.add(stuffData.element.toLocaleLowerCase());
+            // Create header
+            const stuffHeader = document.createElement("div");
+            stuffHeader.classList.add("stats-stuff-header");
+            stuffHeader.classList.add(stuffData.element.toLocaleLowerCase());
 
-        // Create div for left elements
-        const headerLeft = document.createElement("div");
-        const headerTitleSpan = document.createElement("span");
-        headerTitleSpan.textContent = stuffData.name;
-        headerLeft.appendChild(headerTitleSpan);
-        const headerTitleButton = document.createElement("button");
-        headerTitleButton.textContent = "Éditer";
-        headerLeft.appendChild(headerTitleButton);
-        stuffHeader.appendChild(headerLeft);
+            // Create div for left elements
+            const headerLeft = document.createElement("div");
+            const headerTitleSpan = document.createElement("span");
+            headerTitleSpan.textContent = stuffData.name;
+            headerLeft.appendChild(headerTitleSpan);
+            const headerTitleButton = document.createElement("button");
+            headerTitleButton.textContent = "Éditer";
+            headerLeft.appendChild(headerTitleButton);
+            stuffHeader.appendChild(headerLeft);
 
-        // Create div for right elements
-        const headerRight = document.createElement("div");
-        const headerDate = document.createElement("span");
-        headerDate.textContent = this.__internal__formatStatsDate(stuffData);
-        headerRight.appendChild(headerDate);
-        const headerAction = document.createElement("button");
-        headerAction.textContent = "Supprimer";
-        headerRight.appendChild(headerAction);
-        stuffHeader.appendChild(headerRight);
+            // Create div for right elements
+            const headerRight = document.createElement("div");
+            const headerDate = document.createElement("span");
+            headerDate.textContent = this.__internal__formatStatsDate(stuffData);
+            headerRight.appendChild(headerDate);
+            const headerAction = document.createElement("button");
+            headerAction.textContent = "Supprimer";
+            headerRight.appendChild(headerAction);
+            stuffHeader.appendChild(headerRight);
 
-        // Append header to container
-        stuffContainerDiv.appendChild(stuffHeader);
+            // Append header to container
+            stuffContainerDiv.appendChild(stuffHeader);
 
 
-        // Create body
-        const stuffBody = document.createElement("div");
-        stuffBody.classList.add("stats-stuff-body");
-        this.addStuffDataToBody("loadout", stuffData, stuffBody);
-        this.addStuffDataToBody("battle", stuffData, stuffBody);
-        Object.keys(stuffData.wb).forEach((key) => {
-            this.addStuffWbDataToBody(key, stuffData.wb, stuffBody);
-        })
+            // Create body
+            const stuffBody = document.createElement("div");
+            stuffBody.classList.add("stats-stuff-body");
+            this.addStuffDataToBody("loadout", stuffData, stuffBody);
+            this.addStuffDataToBody("battle", stuffData, stuffBody);
+            Object.keys(stuffData.wb).forEach((key) => {
+                this.addStuffWbDataToBody(key, stuffData.wb, stuffBody);
+            })
 
-        // Append body to container
-        stuffContainerDiv.appendChild(stuffBody);
-        stuffsElement.appendChild(stuffContainerDiv);
+            // Append body to container
+            stuffContainerDiv.appendChild(stuffBody);
+            stuffsElement.appendChild(stuffContainerDiv);
+        }
+
     }
 
     static addStuffDataToBody(key, stuffData, stuffBody) {
@@ -410,7 +420,7 @@ class BattleLogsStats {
                 let group = objectToGroup[objectGroupKey];
                 const stuffBodyGroup = document.createElement("div");
                 for (const subKey of group) {
-                    this.__internal__appendAttributes(stuffData[key][subKey], subKey, stuffBodyGroup);
+                    this.__internal__appendAttributes(stuffData[key][subKey], subKey, stuffBodyGroup, key);
                 }
                 blockValues.appendChild(stuffBodyGroup);
             })
@@ -423,7 +433,7 @@ class BattleLogsStats {
             const blockValues = document.createElement("div");
             blockValues.classList.add("stuff-body-block-values")
             blockValues.classList.add(`values-${key}`)
-            this.__internal__appendStuffData(stuffData[key], blockValues)
+            this.__internal__appendStuffData(stuffData, key, blockValues)
             blockContainer.appendChild(blockLabel);
             blockContainer.appendChild(blockValues);
         }
@@ -442,36 +452,83 @@ class BattleLogsStats {
         const blockValues = document.createElement("div");
         blockValues.classList.add("stuff-body-block-values")
         blockValues.classList.add("values-wb")
-        this.__internal__appendStuffData(stuffData[key], blockValues)
+        this.__internal__appendStuffData(stuffData, key, blockValues)
         blockContainer.appendChild(blockLabel);
         blockContainer.appendChild(blockValues);
         stuffBody.appendChild(blockContainer)
     }
 
-    static __internal__appendStuffData(data, container) {
-        for (const key in data) {
-            if (key === "name") continue
-            const object = data[key];
-            this.__internal__appendAttributes(object, key, container);
+    static __internal__updateStuffValues(stuffData, stuffContainerDiv) {
+        Object.keys(stuffData).forEach((key) => {
+            if (key === "wb") {
+                Object.keys(stuffData.wb).forEach((wbKey) => {
+                    const keyContainer = stuffContainerDiv.querySelector(`[data-key=${wbKey}]`)
+                    if (keyContainer) {
+                        Object.keys(stuffData.wb[wbKey]).forEach((subkey) => {
+                            this.__internal__updateAttributes(stuffData.wb, subkey, keyContainer, wbKey)
+                            // const subkeyContainer = keyContainer.querySelector(`[data-key=${subkey}]`)
+                            // if (subkeyContainer) {
+                            // }
+                        })
+                    }
+                })
+            } else {
+                const keyContainer = stuffContainerDiv.querySelector(`[data-key=${key}]`)
+                if (keyContainer) {
+                    Object.keys(stuffData[key]).forEach((subkey) => {
+                        this.__internal__updateAttributes(stuffData, subkey, keyContainer, key)
+                        // const subkeyContainer = keyContainer.querySelector(`[data-key=${subkey}]`)
+                        // if (subkeyContainer) {
+                        // }
+                    })
+                }
+            }
+
+        })
+
+    }
+
+    static __internal__updateAttributes(stuffData, subkey, container, key, id=null) {
+        const object = stuffData[key][subkey];
+        const subkeyContainer = container.querySelector(`[data-key=${id !== null ? subkey + id : subkey}]`)
+        if (subkeyContainer === null) return;
+        if (Array.isArray(object)) {
+             object.forEach((item, i) => {
+                this.__internal__appendAttributes(item, subkey, subkeyContainer, key, i)
+            })
+        } else {
+            const value = subkeyContainer.querySelector(".value");
+            if (typeof object === 'object') {
+                value.textContent = object.name;
+                value.classList.add(`rarity-${object.rarity}`);
+            } else {
+                value.textContent = object;
+            }
         }
     }
 
-    static __internal__appendAttributes(object, key, container) {
-        console.log(object)
+    static __internal__appendStuffData(data, key, container) {
+        for (const subkey in data[key]) {
+            if (subkey === "name") continue
+            const object = data[key][subkey];
+            this.__internal__appendAttributes(object, subkey, container, key);
+        }
+    }
+
+    static __internal__appendAttributes(object, subkey, container, key, id=null) {
         const attrContainer = document.createElement("div")
-        attrContainer.classList.add(`loadout-${key}`)
-        attrContainer.dataset["key"] = key
+        attrContainer.classList.add(key)
+        attrContainer.dataset["key"] = id !== null ? subkey + id : subkey
         if (Array.isArray(object)) {
-            for (let item of object) {
-                this.__internal__appendAttributes(item, key, container)
-            }
+            object.forEach((item, i) => {
+                this.__internal__appendAttributes(item, subkey, container, key, i)
+            })
         } else {
             const label = document.createElement("span");
             label.classList.add("key")
-            label.textContent = key.capitalize();
+            label.textContent = subkey.capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
-            console.log(object.name)
             if (typeof object === 'object') {
                 name.textContent = object.name;
                 name.classList.add(`rarity-${object.rarity}`);
@@ -518,6 +575,11 @@ class BattleLogsStats {
     static __internal__clearStatsOutput(statsData) {
             const statsDiv = document.getElementById(`${this.Settings.Type}-${statsData.id}`);
             statsDiv.lastChild.remove();
+            if (statsData.id === "stuffs") {
+                const statsStuffsContainer = document.createElement("div");
+                statsStuffsContainer.classList.add("stats-stuffs-container")
+                statsDiv.appendChild(statsStuffsContainer);
+            }
     }
 
     /**
@@ -528,9 +590,8 @@ class BattleLogsStats {
     static __internal__updateStatsStuffsOutput(statsData) {
         let statsType = statsData.id;
         let statsDiv = document.getElementById(`${this.Settings.Type}-${statsType}`);
+        console.log(statsDiv)
         if (statsDiv !== null) {
-            let roueTypeSubtitles = statsDiv.getElementsByClassName(`stats-subtitle`);
-            // Update title for each type of roue
             for (let roueTypeSubtitle of roueTypeSubtitles) {
                 let short = roueTypeSubtitle.getAttribute(`data-${statsType}`);
                 let object = BattleLogs.Utils.getObjectByShortName(short);
@@ -541,6 +602,7 @@ class BattleLogsStats {
                 this.__internal__createOrUpdatePercentageBar(statsData, statsBar, object);
             }
         } else {
+            console.log("tata")
             this.__internal__buildStatsStuffsOutput(statsData);
         }
     }
@@ -683,18 +745,22 @@ class BattleLogsStats {
         let created_since = BattleLogs.Utils.getDateObject(statsData["time"]);
         return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
     }
-
+    static FRED = null
     /**
      * @desc Creates a unique hash based on equipment data.
      *
      * @param {Object} stuff - Equipment data object.
-     * @return {number} Unique hash based on the equipment data.
+     * @return {string} Unique hash based on the equipment data.
      */
     static __internal__createStuffHash(stuff) {
         // sort the "items" array
-        const itemsArray = stuff.items.sort().map(item => item.name);
+        this.FRED = stuff
+        console.log(this.FRED)
+        const itemsArray = stuff.items.map(item => item.name).sort();
         // concatenate the elements of the "items" array with the other attributes
         let concatenatedItems = stuff.arme.name + stuff.calv.name + itemsArray.join('') + stuff.famAtk.name + stuff.famDef.name;
+        console.log(concatenatedItems)
+        console.log(concatenatedItems.hashCode())
         return concatenatedItems.hashCode()
     }
 
