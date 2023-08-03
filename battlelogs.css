@@ -416,9 +416,18 @@ body{
     background-color: #595959;
     border-radius: 10px;
     overflow: hidden;
-    flex-basis: 265px;
-    flex-grow: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    /*justify-content: space-between;*/
+    /*flex-basis: 265px;
     max-width: 530px;
+    flex-grow: 1;
+    align-items: stretch;
+    align-content: stretch;
+    justify-content: space-evenly;*/
+    flex: 1 1 345px;
+    min-width: 230px;
+    max-width: 345px;
 }
 
 .stats-stuff-header {
@@ -430,9 +439,35 @@ body{
 .stats-stuff-body {
     padding: .5rem;
     display: flex;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
+    align-content: space-between;
+    justify-items: stretch;
+    /*flex-direction: column;
+    flex-grow: 1;*/
+    flex: 1 1 auto;
+    /*justify-content: space-between;*/
     gap: .5rem;
 }
+
+.stuff-body-block {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #232327;
+    border-radius: 5px;
+    overflow: hidden;
+    flex: 1 1 auto;
+    gap: .5rem;
+}
+.stuff-body-block[data-key="loadout"] {
+    flex-grow: 0;
+    border: none;
+    background-color: transparent;
+}
+
+.stuff-body-block[data-key="battle"] {
+    /*gap: .5rem;*/
+}
+
 .stuff-body-block-values {
     display: flex;
     flex-wrap: wrap;
@@ -443,20 +478,7 @@ body{
     flex-direction: row;
     padding: 0 !important;
 }
-.stuff-body-block {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #232327;
-    border-radius: 5px;
-    overflow: hidden;
-    /*flex-basis: 45%;*/
-    flex-grow: 1;
-}
-.stuff-body-block[data-key="loadout"] {
-    flex-basis: 100%;
-    border: none;
-    background-color: transparent;
-}
+
 .values-loadout > div {
     display: flex;
     flex-wrap: wrap;
