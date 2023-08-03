@@ -410,6 +410,7 @@ body{
     padding: .7rem;
     display: flex;
     flex-wrap: wrap;
+    align-items:flex-start;
     gap: 1rem;
 }
 .stats-stuff {
@@ -468,11 +469,16 @@ body{
     /*gap: .5rem;*/
 }
 
+.stuff-body-block-title, .stuff-body-block-values {
+    padding: .5rem;
+}
+
 .stuff-body-block-values {
     display: flex;
     flex-wrap: wrap;
     gap: .5rem;
     flex-direction: column;
+    padding-top: 0;
 }
 .values-loadout {
     flex-direction: row;
@@ -487,9 +493,6 @@ body{
     gap: .5rem;
 }
 
-.stuff-body-block-title, .stuff-body-block-values {
-    padding: .5rem;
-}
 .stuff-body-block-values .key {
     height: 100%;
     background-color: #232327;
