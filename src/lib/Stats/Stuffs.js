@@ -174,7 +174,20 @@ class BattleLogsStatsStuffs {
     static __internal__buildStatPane(statsData, container) {
         const stuffsContainer = document.createElement("div")
         stuffsContainer.classList.add("stats-stuffs-container")
-        // Build div for each type of roue
+        const statPaneTitleDate = container.querySelector(".stats-title-date")
+
+        // Create filter button
+        const filterInput = document.createElement('input');
+        filterInput.classList.add("stuffs-filter");
+        filterInput.type = 'text';
+        filterInput.id = 'filterInput';
+        filterInput.placeholder = 'Recherchez un stuff...';
+        filterInput.addEventListener('input', (event) => {
+            this.__internal__filterStuffs(event, container);
+        });
+        statPaneTitleDate.insertBefore(filterInput, statPaneTitleDate.firstChild);
+
+        // Build div for each type of stuff
         Object.keys(statsData).forEach((key) => {
             if (!BattleLogs.Stats.NotUpdateAttributes.includes(key)) {
                 this.__internal__createStatPaneBlock(statsData, key, stuffsContainer);
@@ -298,6 +311,7 @@ class BattleLogsStatsStuffs {
         stuffContainerDiv.appendChild(stuffBody);
         container.appendChild(stuffContainerDiv);
     }
+
 
     /**
      * @desc Append stats and loadout of stuff in stuff body block
@@ -432,56 +446,70 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Creates a default object for each new stuff
+     * @desc Filters the stuffs in the container based on the given word.
      *
-     * @param {Object} stuff: Equipment data object.
-     * @param {Object} user: User data object.
-     * @return {Object} return a stuff data object with default values
+     * @param {Event} event: Event object containing the value to filter by.
+     * @param {Element} container: HTML element representing the container to filter.
      */
-    static __internal__createDefaultStuffDataObject(stuff, user) {
-        return {
-            "time": new Date().toISOString(),
-            "update": new Date().toISOString(),
-            "slot": stuff.slot,
-            "name": stuff.name,
-            "customName": null,
-            "element": stuff.element,
-            "loadout": {
-                "arme": stuff.arme,
-                "calv": stuff.calv,
-                "items": stuff.items,
-                "famAtk": stuff.famAtk,
-                "famDef": stuff.famDef
-            },
-            "battle": {
-                "dmgMax": user.dmgTotal,
-                "dmgMin": user.dmgTotal,
-                "dmgTotal": 0,
-                "dmgAverage": 0,
-                "battleCount": 0
-            },
-            "wb": {},
-        }
+    static __internal__filterStuffs(event, container) {
+        const word = event.target.value; // Récupérer le mot saisi
+        // Obtenir tous les éléments "stuff" dans le conteneur
+        const stuffs = container.querySelectorAll('.stats-stuff');
+
+        // Parcourir tous les "stuffs" et appliquer la logique de filtrage
+        stuffs.forEach(stuff => {
+            // Récupérer la clé ou d'autres données à partir de l'élément "stuff"
+            const stuffKey = stuff.dataset["key"];
+            const stuffData = this.Data.stuffs.stuffs[stuffKey];
+            // Appliquer une logique de filtrage en fonction de la clé ou d'autres critères
+            // Par exemple, si vous avez un critère de filtrage en fonction de la clé, vous pouvez faire quelque chose comme ceci:
+            if (this.__internal__findWordInObject(word, stuffData)) { // ou utilisez une autre condition de comparaison
+                stuff.style.display = 'block'; // afficher l'élément qui correspond au filtre
+            } else {
+                stuff.style.display = 'none'; // masquer les autres éléments
+            }
+        });
     }
 
     /**
-     * @desc Creates a default object for each new stuff
+     * @desc Finds a word within an object, performing the search case-insensitively.
      *
-     * @param {Object} user: User data object.
-     * @param {Object} opponent: Opponent data object.
-     * @return {Object} return a stuff wb data object with default values
+     * @param {string} word: The word to search for.
+     * @param {Object} obj: The object to search within.
+     * @return {boolean} Returns true if the word is found, otherwise false.
      */
-    static __internal__createDefaultStuffWbDataObject(user, opponent) {
-        return {
-            "name": opponent.name,
-            "dmgMax": user.dmgTotal,
-            "dmgMin": user.dmgTotal,
-            "dmgTotal": 0,
-            "dmgAverage": 0,
-            "battleCount": 0
+    static __internal__findWordInObject(word, obj) {
+        const lowercaseWord = word.toLowerCase();
+        for (const key in obj) {
+            if (typeof obj[key] === 'string' && obj[key].toLowerCase().includes(lowercaseWord)) {
+                return true;
+            }
+            if (typeof obj[key] === 'object') {
+                if (this.__internal__findWordInObject(lowercaseWord, obj[key])) {
+                    return true;
+                }
+            }
+            if (Array.isArray(obj[key])) {
+                for (const item of obj[key]) {
+                    if (this.__internal__findWordInObject(lowercaseWord, item)) {
+                        return true;
+                    }
+                }
+            }
         }
+        return false;
     }
 
+    /**
+     * @desc Shows a prompt for renaming a given stuff. The prompt includes an input field
+     * pre-filled with the stuff's current name, and buttons for submitting the change
+     * or closing the prompt. The function handles all interactions with the prompt,
+     * including updating the stuff's name in the relevant places in the DOM and
+     * the application's data structures.
+     *
+     * @param {Object} stuff: The stuff object containing the current name and other details.
+     * @param {string} key: The key used to identify the specific stuff in the application's data structures.
+     */
     static __internal__showPrompt(stuff, key) {
         let defaultValue = stuff.name;
 
@@ -576,6 +604,58 @@ class BattleLogsStatsStuffs {
 
         document.body.appendChild(promptContainer);
     }
+
+    /**
+     * @desc Creates a default object for each new stuff
+     *
+     * @param {Object} stuff: Equipment data object.
+     * @param {Object} user: User data object.
+     * @return {Object} return a stuff data object with default values
+     */
+    static __internal__createDefaultStuffDataObject(stuff, user) {
+        return {
+            "time": new Date().toISOString(),
+            "update": new Date().toISOString(),
+            "slot": stuff.slot,
+            "name": stuff.name,
+            "customName": null,
+            "element": stuff.element,
+            "loadout": {
+                "arme": stuff.arme,
+                "calv": stuff.calv,
+                "items": stuff.items,
+                "famAtk": stuff.famAtk,
+                "famDef": stuff.famDef
+            },
+            "battle": {
+                "dmgMax": user.dmgTotal,
+                "dmgMin": user.dmgTotal,
+                "dmgTotal": 0,
+                "dmgAverage": 0,
+                "battleCount": 0
+            },
+            "wb": {},
+        }
+    }
+
+    /**
+     * @desc Creates a default object for each new stuff
+     *
+     * @param {Object} user: User data object.
+     * @param {Object} opponent: Opponent data object.
+     * @return {Object} return a stuff wb data object with default values
+     */
+    static __internal__createDefaultStuffWbDataObject(user, opponent) {
+        return {
+            "name": opponent.name,
+            "dmgMax": user.dmgTotal,
+            "dmgMin": user.dmgTotal,
+            "dmgTotal": 0,
+            "dmgAverage": 0,
+            "battleCount": 0
+        }
+    }
+
 
     /**
      * @desc Default statistical values for stuffs

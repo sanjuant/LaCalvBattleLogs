@@ -540,6 +540,17 @@ body{
 .stats-stuff-header button {
     border-radius: 5px;
 }
+.stuffs-filter {
+    background-color: #35393b;
+    color: white;
+    border-radius: 5px;
+    padding: 2px 4px;
+    border: 1px solid #1c1e1f;
+    margin-right: .5rem;
+}
+.stuffs-filter:focus {
+    outline:none;
+}
 
 
 /********************/
