@@ -47,7 +47,7 @@ class BattleLogsStatsStuffs {
      * @param {Object} user: user object for battle stats
      * @param {Object} opponent: opponent object for battle wb stats
      */
-    static updateStats(stuff, user, opponent= null) {
+    static updateStats(stuff, user, opponent = null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
         let stuffData = this.Data["stuffs"].stuffs[stuffHash]
         if (!stuffData) {
@@ -67,6 +67,7 @@ class BattleLogsStatsStuffs {
             wbData.dmgTotal += user.dmgTotal;
             wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
         }
+        stuffData.name = stuff.name
         stuffData.updated_at = new Date().toISOString();
         stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
         stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
@@ -145,7 +146,7 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the stuff block.
      * @param {Number} id: Represent number of iteration for array
      */
-    static __internal__updateAttributes(stuffData, key, subkey, container,  id= null) {
+    static __internal__updateAttributes(stuffData, key, subkey, container, id = null) {
         const object = stuffData[key][subkey];
         const subkeyContainer = container.querySelector(`[data-key=${id !== null ? subkey + id : subkey}]`)
         if (subkeyContainer === null) return;
@@ -206,7 +207,7 @@ class BattleLogsStatsStuffs {
      * @param {Element} stuffsElement: The title element to update or create
      * @return {Element} The updated or created title element
      */
-    static __internal__createOrUpdateStuff(stuffData, key, stuffsElement=null) {
+    static __internal__createOrUpdateStuff(stuffData, key, stuffsElement = null) {
         if (stuffsElement === null) {
             stuffsElement = document.querySelector(".stats-stuffs-container");
         }
@@ -220,10 +221,9 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Creates a block within the stats pane for a specific wheel type.
-     *       This block contains elements such as the title, percentage bar, and details related to different rarities.
+     * @desc Creates a block within the stats pane for a specific stuff.
      *
-     * @param {Object} statsData: Statistical data for the specific wheel type.
+     * @param {Object} statsData: Statistical data for the specific stuff.
      * @param {string} key: Key of wheel.
      * @param {Element} container: HTML element representing the block within the stats pane.
      */
@@ -240,21 +240,38 @@ class BattleLogsStatsStuffs {
 
         // Create div for left elements
         const headerLeft = document.createElement("div");
+        headerLeft.classList.add("stuff-title")
         const headerTitleSpan = document.createElement("span");
-        headerTitleSpan.textContent = statsData.name;
+        headerTitleSpan.textContent = statsData.customName ? statsData.customName : statsData.name;
         headerLeft.appendChild(headerTitleSpan);
         const headerTitleButton = document.createElement("button");
-        headerTitleButton.textContent = "Éditer";
+        headerTitleButton.title = "Éditer";
+        headerTitleButton.classList.add("svg_edit-dark");
+        headerTitleButton.dataset["key"] = key
+        headerTitleButton.onclick = () => {
+            this.__internal__showPrompt(statsData, key)
+            return false;
+        };
         headerLeft.appendChild(headerTitleButton);
         stuffHeader.appendChild(headerLeft);
 
         // Create div for right elements
         const headerRight = document.createElement("div");
+        headerRight.classList.add("stuff-date")
         const headerDate = document.createElement("span");
         headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData);
         headerRight.appendChild(headerDate);
         const headerAction = document.createElement("button");
-        headerAction.textContent = "Supprimer";
+        headerAction.title = "Supprimer";
+        headerAction.classList.add("svg_trash-dark");
+        headerAction.onclick = () => {
+            const confirmed = window.confirm("Tu vas supprimer le stuff, es-tu sûr ?");
+            if (confirmed) {
+                delete BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key];
+                stuffContainerDiv.remove();
+                BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
+            }
+        };
         headerRight.appendChild(headerAction);
         stuffHeader.appendChild(headerRight);
 
@@ -307,8 +324,7 @@ class BattleLogsStatsStuffs {
                 blockValues.appendChild(stuffBodyGroup);
             })
             blockContainer.appendChild(blockValues);
-        }
-        else {
+        } else {
             const blockLabel = document.createElement("div");
             blockLabel.classList.add("stuff-body-block-title");
             blockLabel.textContent = key.capitalize()
@@ -373,7 +389,7 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the stuff block.
      * @param {Number} id: Represent number of iteration for array
      */
-    static __internal__appendAttributes(object, key, subkey, container,id=null) {
+    static __internal__appendAttributes(object, key, subkey, container, id = null) {
         const attrContainer = document.createElement("div")
         attrContainer.classList.add(key)
         attrContainer.dataset["key"] = id !== null ? subkey + id : subkey
@@ -427,6 +443,7 @@ class BattleLogsStatsStuffs {
             "update": new Date().toISOString(),
             "slot": stuff.slot,
             "name": stuff.name,
+            "customName": null,
             "element": stuff.element,
             "loadout": {
                 "arme": stuff.arme,
@@ -462,6 +479,101 @@ class BattleLogsStatsStuffs {
             "dmgAverage": 0,
             "battleCount": 0
         }
+    }
+
+    static __internal__showPrompt(stuff, key) {
+        let defaultValue = stuff.name;
+
+        let promptContainer = document.createElement("div");
+        promptContainer.classList.add("prompt");
+
+        let label = document.createElement("label");
+        label.textContent = "Veuillez saisir le nom du stuff :";
+        promptContainer.appendChild(label);
+
+        let input = document.createElement("input");
+        input.type = "text";
+        input.value = defaultValue;
+        input.placeholder = defaultValue;
+
+        input.addEventListener("focus", function () {
+            if (input.value === defaultValue) {
+                input.value = "";
+            }
+        });
+
+        input.addEventListener("blur", function () {
+            if (input.value === "") {
+                input.value = defaultValue;
+            }
+        });
+
+        promptContainer.appendChild(input);
+
+        let buttonContainer = document.createElement("div");
+        buttonContainer.classList.add("button-container");
+
+        let button = document.createElement("button");
+        button.textContent = "Valider";
+        button.classList.add("primary")
+        button.style.marginRight = "10px"
+
+        function updateStuffName(e) {
+            e.preventDefault()
+            document.querySelector(`.stats-stuff[data-key=${key}] .stuff-title > span`).textContent = input.value;
+            BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key].customName = input.value;
+            BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, BattleLogs.Stats.Stuffs.Data);
+            promptContainer.remove();
+            removeEventListeners();
+        }
+
+        button.addEventListener("click", function (e) {
+            updateStuffName(e);
+        });
+
+        buttonContainer.appendChild(button);
+
+        let closeButton = document.createElement("button");
+        closeButton.textContent = "Fermer";
+        closeButton.classList.add("danger")
+        closeButton.addEventListener("click", function () {
+            promptContainer.remove();
+            removeEventListeners();
+        });
+
+        buttonContainer.appendChild(closeButton);
+
+        promptContainer.appendChild(buttonContainer);
+
+        document.addEventListener("click", function (event) {
+            if (!promptContainer.contains(event.target) && document.querySelector(".prompt") && !document.querySelector(`button[data-key=${key}]`).contains(event.target)) {
+                promptContainer.remove();
+                removeEventListeners();
+            }
+        });
+
+        let removeEventListeners = function () {
+            document.removeEventListener("keydown", keydownListener);
+            document.removeEventListener("keyup", keyupListener);
+        };
+
+        let keydownListener = function (event) {
+            if (event.key === "Enter") {
+                updateStuffName(event);
+            } else if (event.key === "Escape") {
+                promptContainer.remove();
+                removeEventListeners();
+            }
+        };
+
+        let keyupListener = function (event) {
+            // Gérer l'événement keyup si nécessaire
+        };
+
+        document.addEventListener("keydown", keydownListener);
+        document.addEventListener("keyup", keyupListener);
+
+        document.body.appendChild(promptContainer);
     }
 
     /**
