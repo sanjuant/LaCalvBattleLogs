@@ -521,7 +521,7 @@ class BattleLogsStatsStuffs {
 
         function updateStuffName(e) {
             e.preventDefault()
-            document.querySelector(`.stats-stuff[data-key=${key}] .stuff-title > span`).textContent = input.value;
+            document.querySelector(`.stats-stuff[data-key="${key}"] .stuff-title > span`).textContent = input.value;
             BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key].customName = input.value;
             BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, BattleLogs.Stats.Stuffs.Data);
             promptContainer.remove();
@@ -547,7 +547,7 @@ class BattleLogsStatsStuffs {
         promptContainer.appendChild(buttonContainer);
 
         document.addEventListener("click", function (event) {
-            if (!promptContainer.contains(event.target) && document.querySelector(".prompt") && !document.querySelector(`button[data-key=${key}]`).contains(event.target)) {
+            if (!promptContainer.contains(event.target) && document.querySelector(".prompt") && !document.querySelector(`button[data-key="${key}"]`).contains(event.target)) {
                 promptContainer.remove();
                 removeEventListeners();
             }
