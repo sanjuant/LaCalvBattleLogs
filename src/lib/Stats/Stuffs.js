@@ -89,7 +89,7 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Sets the stats roues settings default values in the local storage
+     * @desc Sets the stats stuffs settings default values in the local storage
      */
     static setDefaultSettingsValues(key) {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(key, {
@@ -107,7 +107,7 @@ class BattleLogsStatsStuffs {
      * @desc Update stuff values
      *
      * @param {Object} stuffData: stuff data to update
-     * @param {Element} container: HTML element representing the stuffs container.
+     * @param {Element} stuffContainerDiv: HTML element representing the stuffs container.
      */
     static __internal__updateStuffValues(stuffData, stuffContainerDiv) {
         Object.keys(stuffData).forEach((key) => {
@@ -119,6 +119,9 @@ class BattleLogsStatsStuffs {
                             Object.keys(stuffData.wb[wbKey]).forEach((subkey) => {
                                 this.__internal__updateAttributes(stuffData.wb, wbKey, subkey, keyContainer)
                             })
+                        } else {
+                            const container = stuffContainerDiv.querySelector(".stats-stuff-body")
+                            this.__internal__appendStuffStatsWb(stuffData.wb, wbKey, container);
                         }
                     })
                 } else {
@@ -432,7 +435,6 @@ class BattleLogsStatsStuffs {
                 "famAtk": stuff.famAtk,
                 "famDef": stuff.famDef
             },
-            "wb": {},
             "battle": {
                 "dmgMax": user.dmgTotal,
                 "dmgMin": user.dmgTotal,
@@ -440,6 +442,7 @@ class BattleLogsStatsStuffs {
                 "dmgAverage": 0,
                 "battleCount": 0
             },
+            "wb": {},
         }
     }
 
