@@ -138,11 +138,18 @@ class BattleLogsStats {
      * @desc Return date in string format for stats
      *
      * @param {Object} objectData: Data of stat
+     * @param {boolean} includeTime: Whether to include the time in the returned string
      * @return {string} Date formatted in string
      */
-    static formatStatsDate(objectData) {
+    static formatStatsDate(objectData, includeTime = true) {
         let created_since = BattleLogs.Utils.getDateObject(objectData["time"]);
-        return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
+        let dateString = `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)}`;
+
+        if (includeTime) {
+            dateString += ` - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
+        }
+
+        return dateString;
     }
 
     /*********************************************************************\

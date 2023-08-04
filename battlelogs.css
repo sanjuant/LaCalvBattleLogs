@@ -668,13 +668,13 @@ button.selected {
     color: var(--rarity-6);
     font-weight: bold;
 }
-.banal { background-color: #AAAAAA; }
-.aqua { background-color: #7492D6; }
-.pyro { background-color: #FF5F58; color: black;}
-.terra { background-color: #81E55A; color: black;}
-.électro { background-color: #FFF158; color: black;}
-.chaos { background-color: #D8A7FF; }
-.céleste { background-color: #3FD6E2; }
+.banal { background-color: var(--banal);  color: black;}
+.aqua { background-color: var(--aqua); color: black;}
+.pyro { background-color: var(--pyro); color: black;}
+.terra { background-color: var(--terra); color: black;}
+.électro { background-color: var(--électro); color: black;}
+.chaos { background-color: var(--chaos); color: black;}
+.céleste { background-color: var(--céleste); color: black;}
 
 
 

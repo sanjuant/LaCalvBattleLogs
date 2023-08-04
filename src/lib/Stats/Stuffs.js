@@ -259,7 +259,7 @@ class BattleLogsStatsStuffs {
         const headerRight = document.createElement("div");
         headerRight.classList.add("stuff-date")
         const headerDate = document.createElement("span");
-        headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData);
+        headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData, false);
         headerRight.appendChild(headerDate);
         const headerAction = document.createElement("button");
         headerAction.title = "Supprimer";
