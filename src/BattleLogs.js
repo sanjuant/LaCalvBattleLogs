@@ -27,6 +27,7 @@ class BattleLogs
     static Option = BattleLogsOption;
     static Glossary = BattleLogsGlossary;
     static Expedition = BattleLogsExpedition;
+    // static StatsOld = BattleLogsStatsOld;
     static Stats = BattleLogsStats;
 
     static InitSteps = class BattleLogsInitSteps

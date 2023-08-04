@@ -102,7 +102,7 @@ class BattleLogsGlossary {
                 "true");
             if (newStatus) {
                 BattleLogs.Message.resetSelectedSettings()
-                BattleLogs.Stats.resetSelected()
+                // BattleLogs.StatsOld.resetSelected()
                 BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
                 this.GlossaryPanel.classList.remove("hidden");

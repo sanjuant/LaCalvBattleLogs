@@ -72,7 +72,7 @@ class BattleLogsRoues {
                 return;
             }
             let rewards = this.__internal__addRouesToLog(count, short, data["new"], rouesType);
-            BattleLogs.Stats.updateStats(Number(count), shortStats, rewards["items"], rouesType, rewards["cost"] * multiplier);
+            BattleLogs.Stats.Roues.updateStats(Number(count), shortStats, rewards["items"], rouesType, rewards["cost"] * multiplier);
         }
     }
 
