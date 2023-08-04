@@ -419,16 +419,9 @@ body{
     overflow: hidden;
     display: flex;
     flex-flow: column nowrap;
-    /*justify-content: space-between;*/
-    /*flex-basis: 265px;
-    max-width: 530px;
-    flex-grow: 1;
-    align-items: stretch;
-    align-content: stretch;
-    justify-content: space-evenly;*/
-    flex: 1 1 345px;
+    flex: 1 1 338px;
     min-width: 230px;
-    max-width: 345px;
+    max-width: 676px;
 }
 
 .stats-stuff-header {
@@ -443,10 +436,7 @@ body{
     flex-flow: row wrap;
     align-content: space-between;
     justify-items: stretch;
-    /*flex-direction: column;
-    flex-grow: 1;*/
     flex: 1 1 auto;
-    /*justify-content: space-between;*/
     gap: .5rem;
 }
 
@@ -463,10 +453,6 @@ body{
     flex-grow: 0;
     border: none;
     background-color: transparent;
-}
-
-.stuff-body-block[data-key="battle"] {
-    /*gap: .5rem;*/
 }
 
 .stuff-body-block-title, .stuff-body-block-values {
