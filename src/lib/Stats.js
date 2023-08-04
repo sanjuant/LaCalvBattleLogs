@@ -15,11 +15,6 @@ class BattleLogsStats {
     }
 
     static Messages = {
-        stuffs: {
-            name: "Stats des stuffs",
-            title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
-            cost: "premium"
-        },
         since: "(depuis le {0})",
     };
 

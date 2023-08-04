@@ -225,9 +225,6 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the block within the stats pane.
      */
     static __internal__createStuffPane(statsData, key, container) {
-        console.log(statsData)
-        console.log(key)
-
         // Create container
         const stuffContainerDiv = document.createElement("div");
         stuffContainerDiv.classList.add("stats-stuff");
@@ -384,9 +381,6 @@ class BattleLogsStatsStuffs {
         } else {
             const label = document.createElement("span");
             label.classList.add("key")
-            console.log(object)
-            console.log(key)
-            console.log(subkey)
             label.textContent = subkey.capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
@@ -414,8 +408,6 @@ class BattleLogsStatsStuffs {
         const itemsArray = stuff.items.map(item => item.name).sort();
         // concatenate the elements of the "items" array with the other attributes
         let concatenatedItems = stuff.arme.name + stuff.calv.name + itemsArray.join('') + stuff.famAtk.name + stuff.famDef.name;
-        console.log(concatenatedItems)
-        console.log(concatenatedItems.hashCode())
         return concatenatedItems.hashCode()
     }
 
