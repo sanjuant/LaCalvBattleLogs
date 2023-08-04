@@ -128,9 +128,6 @@ class BattleLogsMessage {
         this.__internal__messagesContainer.appendChild(pElem);
 
         // Scroll wrapper to bottom
-        /*if (!(BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Message.Settings.MessageSettingsOpen) === "true")) {
-            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-        }*/
         if (!this.__internal__messagesContainer.classList.contains("hidden")) {
             BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
         }
