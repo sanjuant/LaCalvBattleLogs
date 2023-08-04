@@ -98,7 +98,7 @@ class BattleLogsBoss {
                 BattleLogs.Summarize.Settings.x100.Type
             );
         }
-        BattleLogs.StatsOld.updateStatsStuffs(stuff, user, opponent);
+        BattleLogs.Stats.Stuffs.updateStats(stuff, user, opponent);
     }
 
     /**

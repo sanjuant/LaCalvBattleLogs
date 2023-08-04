@@ -45,9 +45,9 @@ class BattleLogsStatsStuffs {
      *
      * @param {Object} stuff: stuff to update.
      * @param {Object} user: user object for battle stats
-     * @param {Object} opponent: opponent object for battle stats
+     * @param {Object} opponent: opponent object for battle wb stats
      */
-    static updateStats(stuff, user, opponent) {
+    static updateStats(stuff, user, opponent= null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
         let stuffData = this.Data["stuffs"].stuffs[stuffHash]
         if (!stuffData) {
@@ -190,7 +190,7 @@ class BattleLogsStatsStuffs {
     static __internal__createStatPaneBlock(statsData, key, container) {
         Object.keys(statsData[key]).forEach((stuffKey) => {
             if (!BattleLogs.Stats.NotUpdateAttributes.includes(key)) {
-                this.__internal__createStuffPane(statsData[key], stuffKey, container);
+                this.__internal__createStuffPane(statsData[key][stuffKey], stuffKey, container);
             }
         })
     }
@@ -225,6 +225,9 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the block within the stats pane.
      */
     static __internal__createStuffPane(statsData, key, container) {
+        console.log(statsData)
+        console.log(key)
+
         // Create container
         const stuffContainerDiv = document.createElement("div");
         stuffContainerDiv.classList.add("stats-stuff");
@@ -233,12 +236,12 @@ class BattleLogsStatsStuffs {
         // Create header
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
-        stuffHeader.classList.add(statsData[key].element.toLocaleLowerCase());
+        stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
 
         // Create div for left elements
         const headerLeft = document.createElement("div");
         const headerTitleSpan = document.createElement("span");
-        headerTitleSpan.textContent = statsData[key].name;
+        headerTitleSpan.textContent = statsData.name;
         headerLeft.appendChild(headerTitleSpan);
         const headerTitleButton = document.createElement("button");
         headerTitleButton.textContent = "Éditer";
@@ -248,7 +251,7 @@ class BattleLogsStatsStuffs {
         // Create div for right elements
         const headerRight = document.createElement("div");
         const headerDate = document.createElement("span");
-        headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData[key]);
+        headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData);
         headerRight.appendChild(headerDate);
         const headerAction = document.createElement("button");
         headerAction.textContent = "Supprimer";
@@ -261,13 +264,13 @@ class BattleLogsStatsStuffs {
         // Create body
         const stuffBody = document.createElement("div");
         stuffBody.classList.add("stats-stuff-body");
-        Object.keys(statsData[key]).forEach((stuffKey) => {
+        Object.keys(statsData).forEach((stuffKey) => {
             if (this.__internal__stuffPaneAllowedKey.includes(stuffKey)) {
                 if (stuffKey !== "wb") {
-                    this.__internal__appendStuffStats(statsData[key], stuffKey, stuffBody);
+                    this.__internal__appendStuffStats(statsData, stuffKey, stuffBody);
                 } else {
-                    Object.keys(statsData[key][stuffKey]).forEach((wbKey) => {
-                        this.__internal__appendStuffStatsWb(statsData[key][stuffKey], wbKey, stuffBody);
+                    Object.keys(statsData[stuffKey]).forEach((wbKey) => {
+                        this.__internal__appendStuffStatsWb(statsData[stuffKey], wbKey, stuffBody);
                     })
                 }
             }

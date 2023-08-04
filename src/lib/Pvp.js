@@ -93,7 +93,7 @@ class BattleLogsPvp {
                 BattleLogs.Summarize.Settings.x100.Type
             );
         }
-        BattleLogs.StatsOld.updateStatsStuffs(stuff, user);
+        BattleLogs.Stats.Stuffs.updateStats(stuff, user);
     }
 
     /**
