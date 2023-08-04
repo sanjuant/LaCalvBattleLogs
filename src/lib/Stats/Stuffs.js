@@ -237,6 +237,7 @@ class BattleLogsStatsStuffs {
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
         stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
+        stuffHeader.title = `#${statsData.slot} - ${statsData.name}`;
 
         // Create div for left elements
         const headerLeft = document.createElement("div");

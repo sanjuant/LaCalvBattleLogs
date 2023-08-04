@@ -430,6 +430,7 @@ body{
     padding: .2rem .5rem;
     background-color: #0c0c0d;
     gap: .5rem;
+    cursor: help;
 }
 .stats-stuff-body {
     padding: .5rem;
