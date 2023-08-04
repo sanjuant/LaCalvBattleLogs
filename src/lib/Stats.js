@@ -79,7 +79,7 @@ class BattleLogsStats {
         // Build header
         const paneHeader = document.createElement("div");
         paneHeader.classList.add(`stats-title`)
-        const formattedDate = this.__internal__formatStatsDate(objectData);
+        const formattedDate = this.formatStatsDate(objectData);
 
         // Create title left part of header
         let paneHeaderTitle = document.createElement("span");
@@ -137,6 +137,17 @@ class BattleLogsStats {
             return BattleLogs.Utils.roundToAny(stats[short].itemsPerRarity[rarity] / stats[short]["total"] * 100, fixation);
         }
         return 0;
+    }
+
+    /**
+     * @desc Return date in string format for stats
+     *
+     * @param {Object} objectData: Data of stat
+     * @return {string} Date formatted in string
+     */
+    static formatStatsDate(objectData) {
+        let created_since = BattleLogs.Utils.getDateObject(objectData["time"]);
+        return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
     }
 
     /*********************************************************************\
@@ -230,7 +241,7 @@ class BattleLogsStats {
                 newStatsData.time = new Date().toISOString();
                 resetStats(newStatsData.id)
                 const dateSpan = document.querySelector(`#${this.Settings.Type}-${statsData.id} [data-key="time"]`)
-                dateSpan.textContent = this.Messages.since.format(this.__internal__formatStatsDate(newStatsData));
+                dateSpan.textContent = this.Messages.since.format(this.formatStatsDate(newStatsData));
                 BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings[`Stats${className}`], this[className].Data);
             }
         };
@@ -238,15 +249,4 @@ class BattleLogsStats {
         containingDiv.appendChild(resetButton);
     }
 
-
-    /**
-     * @desc Return date in string format for stats
-     *
-     * @param {Object} objectData: Data of stat
-     * @return {string} Date formatted in string
-     */
-    static __internal__formatStatsDate(objectData) {
-        let created_since = BattleLogs.Utils.getDateObject(objectData["time"]);
-        return `${created_since.getDate().toString().padZero()}/${(created_since.getMonth() + 1).toString().padZero()}/${created_since.getFullYear().toString().substring(-2)} - ${created_since.getHours().toString().padZero()}h${created_since.getMinutes().toString().padZero()}`;
-    }
 }

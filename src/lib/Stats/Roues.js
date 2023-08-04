@@ -45,8 +45,6 @@ class BattleLogsStatsRoues {
      */
     static appendStatsToPane(statsData) {
         const statPane = document.querySelector(`#Stats-${statsData.id}[data-key=${statsData.id}]`);
-        console.log(`#Stats-${statsData.id}[data-key=${statsData.id}]`)
-        console.log(statPane)
         if (statPane !== null) {
             this.__internal__buildStatPane(statsData, statPane)
         }
@@ -73,6 +71,11 @@ class BattleLogsStatsRoues {
         this.__internal__updateStatPaneBlock(statsData, rouesType, short)
     }
 
+    /**
+     * @desc Reset stats
+     *
+     * @param {string} id: Id of wheel to reset
+     */
     static resetStats(id) {
         const statPanes = document.querySelectorAll(`#Stats-${id}[data-key=${id}] .stats-block`);
         statPanes.forEach(pane => {
@@ -158,10 +161,7 @@ class BattleLogsStatsRoues {
      * @param {string} key: Key of wheel.
      */
     static __internal__updateStatPaneBlock(statsData, rouesType, key) {
-        console.log(rouesType)
-        console.log(key)
         const statPaneBlock = document.querySelector(`[data-key=${rouesType}] .stats-block[data-key="${key}"]`)
-        console.log(statPaneBlock)
         const roueTypeSubtitle = statPaneBlock.querySelector(".stats-subtitle");
         let short = roueTypeSubtitle.getAttribute(`data-${statsData.id}`);
         let object = BattleLogs.Utils.getObjectByShortName(short);
