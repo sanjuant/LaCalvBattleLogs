@@ -170,7 +170,7 @@ class BattleLogsStatsStuffs {
                 value.textContent = object.name;
                 value.classList.add(`rarity-${object.rarity}`);
             } else {
-                value.textContent = object;
+                value.textContent = BattleLogs.Utils.formatNumber(object);
             }
         }
     }
@@ -515,6 +515,8 @@ class BattleLogsStatsStuffs {
             if (typeof object === 'object') {
                 name.textContent = object.name;
                 name.classList.add(`rarity-${object.rarity}`);
+            } else if (!isNaN(object)) {  // check if object can be converted to a number
+                name.textContent = BattleLogs.Utils.formatNumber(object);
             } else {
                 name.textContent = object;
             }

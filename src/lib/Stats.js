@@ -49,12 +49,12 @@ class BattleLogsStats {
             this.Stuffs.Filters = BattleLogs.Utils.LocalStorage.getComplexValue(this.Stuffs.Settings.StuffsFilters);
             this.StatsPanes = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsPanes);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
-            // while (true) {
-            //     if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
-            //         break;
-            //     }
-            //     await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
-            // }
+            while (true) {
+                if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
+                    break;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
+            }
             this.Roues.createStatsPanes()
             this.Stuffs.createStatsPanes()
         }
