@@ -118,21 +118,17 @@ class BattleLogsStats {
 
         // Initially hide the pane body
         paneBody.style.display = "none";
-        paneCollapseButton.addEventListener('click', function () {
-            if (paneBody.style.display === "none") {
-                // If pane body is hidden, show it
-                paneBody.style.display = "block";
-                paneCollapseButton.title = "Réduire les stats";
-                paneCollapseButton.classList.remove("svg_chevron-down");
-                paneCollapseButton.classList.add("svg_chevron-up");
-            } else {
-                // If pane body is visible, hide it
-                paneBody.style.display = "none";
-                paneCollapseButton.title = "Déplier les stats";
-                paneCollapseButton.classList.remove("svg_chevron-up");
-                paneCollapseButton.classList.add("svg_chevron-down");
-            }
+        paneCollapseButton.addEventListener('click', () => {
+            this.toggleElementDisplay(
+                paneBody,
+                paneCollapseButton,
+                "svg_chevron-up",
+                "svg_chevron-down",
+                "Réduire les stats",
+                "Déplier les stats"
+            );
         });
+
 
         paneElement.appendChild(paneBody);
 
@@ -185,6 +181,30 @@ class BattleLogsStats {
         }
 
         return dateString;
+    }
+
+    /**
+     * @desc Toggles the display of a given HTML element and updates the SVG and title of the button.
+     *
+     * @param {Element} element: The HTML element to toggle.
+     * @param {Element} button: The button that triggers the toggle and gets its SVG and title updated.
+     * @param {String} showSvgClass: The SVG class to apply when the element is shown.
+     * @param {String} hideSvgClass: The SVG class to apply when the element is hidden.
+     * @param {String} showText: The text to display when the element is shown.
+     * @param {String} hideText: The text to display when the element is hidden.
+     */
+    static toggleElementDisplay(element, button, showSvgClass, hideSvgClass, showText, hideText) {
+        if (element.style.display === "none") {
+            // If element is hidden, show it
+            element.style.display = "block";
+            button.classList.replace(hideSvgClass, showSvgClass);
+            button.title = showText;
+        } else {
+            // If element is visible, hide it
+            element.style.display = "none";
+            button.classList.replace(showSvgClass, hideSvgClass);
+            button.title = hideText;
+        }
     }
 
     /*********************************************************************\

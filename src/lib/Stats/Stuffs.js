@@ -347,20 +347,15 @@ class BattleLogsStatsStuffs {
         stuffCollapseButton.title = "Déplier le stuff";
         // Initially hide the stuff body
         stuffBody.style.display = "none";
-        stuffCollapseButton.addEventListener('click', function () {
-            if (stuffBody.style.display === "none") {
-                // If stuff body is hidden, show it
-                stuffBody.style.removeProperty("display");
-                stuffCollapseButton.title = "Réduire le stuff";
-                stuffCollapseButton.classList.remove("svg_chevron-down-dark");
-                stuffCollapseButton.classList.add("svg_chevron-up-dark");
-            } else {
-                // If stuff body is visible, hide it
-                stuffBody.style.display = "none";
-                stuffCollapseButton.title = "Déplier le stuff";
-                stuffCollapseButton.classList.remove("svg_chevron-up-dark");
-                stuffCollapseButton.classList.add("svg_chevron-down-dark");
-            }
+        stuffCollapseButton.addEventListener('click', () => {
+            BattleLogs.Stats.toggleElementDisplay(
+                stuffBody,
+                stuffCollapseButton,
+                "svg_chevron-up-dark",
+                "svg_chevron-down-dark",
+                "Réduire le stuff",
+                "Déplier le stuf"
+            );
         });
         headerRight.appendChild(stuffCollapseButton);
 
