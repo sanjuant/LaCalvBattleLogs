@@ -44,12 +44,12 @@ class BattleLogsStats {
             this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
             this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
-            while (true) {
-                if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
-                    break;
-                }
-                await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
-            }
+            // while (true) {
+            //     if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
+            //         break;
+            //     }
+            //     await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
+            // }
             this.Roues.createStatsPanes()
             this.Stuffs.createStatsPanes()
         }
@@ -81,6 +81,10 @@ class BattleLogsStats {
         paneHeaderTitle.textContent = this[statsName].Messages[statsType].name;
         paneHeaderTitle.classList.add("stats-title-name");
 
+        // Create right part of header
+        let paneHeaderRight = document.createElement("div");
+        paneHeaderRight.classList.add("stats-title-right");
+
         // Create date right part of header
         let paneHeaderDate = document.createElement("span");
         paneHeaderDate.classList.add("stats-title-date");
@@ -101,10 +105,11 @@ class BattleLogsStats {
         const paneCollapseButton = document.createElement("button");
         paneCollapseButton.classList.add("svg_chevron-down");
         paneCollapseButton.title = "Déplier les stats";
-        paneHeaderDate.appendChild(paneCollapseButton);
 
         paneHeader.appendChild(paneHeaderTitle);
-        paneHeader.appendChild(paneHeaderDate);
+        paneHeaderRight.appendChild(paneHeaderDate);
+        paneHeaderRight.appendChild(paneCollapseButton);
+        paneHeader.appendChild(paneHeaderRight);
         paneElement.appendChild(paneHeader);
 
         // Create body
