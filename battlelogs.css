@@ -546,10 +546,29 @@ body{
     border-radius: 5px;
     padding: 2px 4px;
     border: 1px solid #1c1e1f;
-    margin-right: .5rem;
+    height: 100%;
 }
 .stuffs-filter:focus {
     outline:none;
+}
+.stuffs-actions {
+    display: flex;
+    justify-content: space-between;
+    background-color: #232327;
+    padding: 2px 1em;
+}
+.stuffs-actions-left {
+    display: flex;
+    justify-content: space-between;
+}
+.stuffs-actions-right {
+    display: flex;
+    justify-content: space-between;
+    gap:2px;
+}
+.stuffs-actions button {
+    background-color: #35393b;
+    border-radius: 5px;
 }
 
 
@@ -830,6 +849,30 @@ button.svg_chat {
     display: inline-block;
     width: 24px;
     height: 24px;
+}
+.svg_sort-ab {
+    background: url('data:image/svg+xml,<svg width="14" height="14" viewBox="0 0 0.45 0.45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.09 0.399V0h0.03v0.399l0.064 -0.064 0.021 0.021 -0.09 0.09a0.015 0.015 0 0 1 -0.021 0l-0.09 -0.09 0.021 -0.021L0.09 0.399ZM0.345 0.03A0.045 0.045 0 0 0 0.3 0.075V0.12h0.09V0.075A0.045 0.045 0 0 0 0.345 0.03ZM0.39 0.15v0.06h0.03V0.075a0.075 0.075 0 0 0 -0.15 0V0.21h0.03V0.15h0.09ZM0.27 0.24h0.09a0.06 0.06 0 0 1 0.04 0.105A0.06 0.06 0 0 1 0.36 0.45H0.27V0.24Zm0.09 0.09a0.03 0.03 0 1 0 0 -0.06h-0.06v0.06h0.06Zm-0.06 0.03h0.06a0.03 0.03 0 1 1 0 0.06h-0.06v-0.06Z" fill="%23fff"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+.svg_sort-ba {
+    background: url('data:image/svg+xml,<svg width="14" height="14" viewBox="0 0 0.45 0.45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.094 0.004a0.015 0.015 0 0 1 0.021 0l0.09 0.09 -0.021 0.021L0.12 0.051V0.45H0.09V0.051L0.026 0.116l-0.021 -0.021 0.09 -0.09ZM0.345 0.03A0.045 0.045 0 0 0 0.3 0.075V0.12h0.09V0.075A0.045 0.045 0 0 0 0.345 0.03ZM0.39 0.15v0.06h0.03V0.075a0.075 0.075 0 0 0 -0.15 0V0.21h0.03V0.15h0.09ZM0.27 0.24h0.09a0.06 0.06 0 0 1 0.04 0.105A0.06 0.06 0 0 1 0.36 0.45H0.27V0.24Zm0.09 0.09a0.03 0.03 0 1 0 0 -0.06h-0.06v0.06h0.06Zm-0.06 0.03h0.06a0.03 0.03 0 1 1 0 0.06h-0.06v-0.06Z" fill="%23fff"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+.svg_sort-asc {
+    background: url('data:image/svg+xml,<svg width="14" height="14" viewBox="0 0 0.45 0.45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.09 0.399V0h0.03v0.399l0.064 -0.064 0.021 0.021 -0.09 0.09a0.015 0.015 0 0 1 -0.021 0l-0.09 -0.09 0.021 -0.021L0.09 0.399ZM0.45 0.12H0.27V0.09h0.18v0.03Zm-0.06 0.12H0.27V0.21h0.12v0.03Zm-0.06 0.12H0.27v-0.03h0.06v0.03Z" fill="%23fff"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
+.svg_sort-desc {
+    background: url('data:image/svg+xml,<svg width="14" height="14" viewBox="0 0 0.45 0.45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.094 0.004a0.015 0.015 0 0 1 0.021 0l0.09 0.09 -0.021 0.021L0.12 0.051V0.45H0.09V0.051L0.026 0.116l-0.021 -0.021 0.09 -0.09ZM0.45 0.12H0.27V0.09h0.18v0.03Zm-0.06 0.12H0.27V0.21h0.12v0.03Zm-0.06 0.12H0.27v-0.03h0.06v0.03Z" fill="%23fff"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
 }
 
 /********************/

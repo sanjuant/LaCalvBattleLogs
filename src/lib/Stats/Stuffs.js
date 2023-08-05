@@ -174,7 +174,15 @@ class BattleLogsStatsStuffs {
     static __internal__buildStatPane(statsData, container) {
         const stuffsContainer = document.createElement("div")
         stuffsContainer.classList.add("stats-stuffs-container")
-        const statPaneTitleDate = container.querySelector(".stats-title-date")
+
+        const stuffsActions = document.createElement("div");
+        stuffsActions.classList.add("stuffs-actions");
+        const stuffsActionsLeft = document.createElement("div");
+        stuffsActionsLeft.classList.add("stuffs-actions-left");
+        const stuffsActionsRight = document.createElement("div");
+        stuffsActionsRight.classList.add("stuffs-actions-right");
+        stuffsActions.appendChild(stuffsActionsLeft);
+        stuffsActions.appendChild(stuffsActionsRight);
 
         // Create filter button
         const filterInput = document.createElement('input');
@@ -185,7 +193,33 @@ class BattleLogsStatsStuffs {
         filterInput.addEventListener('input', (event) => {
             this.__internal__filterStuffs(event, container);
         });
-        statPaneTitleDate.insertBefore(filterInput, statPaneTitleDate.firstChild);
+        stuffsActionsLeft.appendChild(filterInput)
+
+        const sortAscButton = document.createElement("button");
+        sortAscButton.classList.add("svg_sort-asc");
+        sortAscButton.title = "Trier en ordre croissant";
+        stuffsActionsRight.appendChild(sortAscButton)
+        sortAscButton.addEventListener('click', () => this.__internal__sortStuffs('asc', stuffsContainer));
+
+        const sortDescButton = document.createElement("button");
+        sortDescButton.classList.add("svg_sort-desc");
+        sortDescButton.title = "Trier en ordre décroissant";
+        stuffsActionsRight.appendChild(sortDescButton)
+        sortDescButton.addEventListener('click', () => this.__internal__sortStuffs('desc', stuffsContainer));
+
+        const sortAbButton = document.createElement("button");
+        sortAbButton.classList.add("svg_sort-ab");
+        sortAbButton.title = "Trier par ordre alphabétique";
+        stuffsActionsRight.appendChild(sortAbButton)
+        sortAbButton.addEventListener('click', () => this.__internal__sortStuffs('ab', stuffsContainer));
+
+        const sortBaButton = document.createElement("button");
+        sortBaButton.classList.add("svg_sort-ba");
+        sortBaButton.title = "Trier par ordre alphabétique inversé";
+        stuffsActionsRight.appendChild(sortBaButton)
+        sortBaButton.addEventListener('click', () => this.__internal__sortStuffs('ba', stuffsContainer));
+
+        container.appendChild(stuffsActions)
 
         // Build div for each type of stuff
         Object.keys(statsData).forEach((key) => {
@@ -241,6 +275,7 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the block within the stats pane.
      */
     static __internal__createStuffPane(statsData, key, container) {
+        console.log(statsData)
         // Create container
         const stuffContainerDiv = document.createElement("div");
         stuffContainerDiv.classList.add("stats-stuff");
@@ -273,7 +308,7 @@ class BattleLogsStatsStuffs {
         const headerRight = document.createElement("div");
         headerRight.classList.add("stuff-date")
         const headerDate = document.createElement("span");
-        headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData, false);
+        headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData, true);
         headerRight.appendChild(headerDate);
         const headerAction = document.createElement("button");
         headerAction.title = "Supprimer";
@@ -498,6 +533,67 @@ class BattleLogsStatsStuffs {
             }
         }
         return false;
+    }
+
+    /**
+     * @desc Sorts the stuffs in the container alphabetically based on the stuff's name.
+     *
+     * @param {string} order: The order to sort by. Can be either 'ab' for A to Z or 'ba' for Z to A.
+     * @param {Element} container: HTML element representing the container to sort.
+     */
+    static __internal__sortStuffs(order, container) {
+        this.__internal__renderStuffs(this.Data.stuffs.stuffs, container);
+        // Get all the "stuff" elements in the container
+        const stuffs = Array.from(container.querySelectorAll('.stats-stuff'));
+
+        // Sort the stuffs alphabetically based on the stuff's name
+        if (["ab", "ba"].includes(order)) {
+            stuffs.sort((a, b) => {
+                const stuffKeyA = a.dataset["key"];
+                const stuffKeyB = b.dataset["key"];
+                const stuffNameA = this.Data.stuffs.stuffs[stuffKeyA].name.toLowerCase();
+                const stuffNameB = this.Data.stuffs.stuffs[stuffKeyB].name.toLowerCase();
+
+                if (order === 'ab') {
+                    if (stuffNameA < stuffNameB) return -1;
+                    if (stuffNameA > stuffNameB) return 1;
+                    return 0;
+                } else if (order === 'ba') {
+                    if (stuffNameA < stuffNameB) return 1;
+                    if (stuffNameA > stuffNameB) return -1;
+                    return 0;
+                }
+            });
+        } else if (["asc", "desc"].includes(order)) {
+            if (order === 'desc') {
+                stuffs.reverse();
+            }
+        }
+
+        // Clear the container and append the sorted stuffs
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+        stuffs.forEach(stuff => container.appendChild(stuff));
+    }
+
+    /**
+     * @desc Renders stuffs in the given container.
+     *
+     * @param {Object} stuffs: The stuffs to render.
+     * @param {Element} container: The container in which to render the stuffs.
+     */
+    static __internal__renderStuffs(stuffs, container) {
+        // Clear the container
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+
+        Object.keys(stuffs).forEach((key) => {
+            if (!BattleLogs.Stats.NotUpdateAttributes.includes(key)) {
+                this.__internal__createStuffPane(stuffs[key], key, container);
+            }
+        })
     }
 
     /**
