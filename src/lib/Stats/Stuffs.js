@@ -83,6 +83,8 @@ class BattleLogsStatsStuffs {
         stuffData.battle.battleCount += 1;
         stuffData.battle.dmgTotal += user.dmgTotal;
         stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
+        stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
+        stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
 
         // Delete stuff if limit is reached
@@ -970,11 +972,13 @@ class BattleLogsStatsStuffs {
                 "famDef": stuff.famDef
             },
             "battle": {
-                "dmgMax": user.dmgTotal,
+                "battleCount": 0,
+                "win": 0,
+                "lose": 0,
                 "dmgMin": user.dmgTotal,
-                "dmgTotal": 0,
+                "dmgMax": user.dmgTotal,
                 "dmgAverage": 0,
-                "battleCount": 0
+                "dmgTotal": 0
             },
             "wb": {},
         }
