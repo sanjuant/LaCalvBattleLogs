@@ -432,7 +432,6 @@ body{
     padding: .2rem .5rem;
     background-color: #0c0c0d;
     gap: .5rem;
-    cursor: help;
 }
 .stats-title-right {
     display: flex;
@@ -539,9 +538,13 @@ body{
 .stuff-title {
     word-break: break-word;
 }
+.stuff-title > span {
+    cursor: help;
+}
 .stuff-date > span {
     font-size: 11px;
     text-align: right;
+    cursor: help;
 }
 .stats-stuff-header button {
     border-radius: 5px;

@@ -68,7 +68,7 @@ class BattleLogsStatsStuffs {
             wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
         }
         stuffData.name = stuff.name
-        stuffData.updated_at = new Date().toISOString();
+        stuffData.update = new Date().toISOString();
         stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
         stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
         stuffData.battle.battleCount += 1;
@@ -102,7 +102,7 @@ class BattleLogsStatsStuffs {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__stuffPaneAllowedKey = ["loadout", "battle", "wb"]
+    static __internal__stuffPaneAllowedKey = ["loadout", "battle", "wb", "name", "update"]
 
     /**
      * @desc Update stuff values
@@ -125,6 +125,13 @@ class BattleLogsStatsStuffs {
                             this.__internal__appendStuffStatsWb(stuffData.wb, wbKey, container);
                         }
                     })
+                } else if (key === "name") {
+                    const spanName = stuffContainerDiv.querySelector(`[data-key=${key}]`)
+                    spanName.textContent = stuffData.customName ? stuffData.customName : stuffData[key];
+                    spanName.title = `#${stuffData.slot} - ${stuffData.name}`;
+                } else if (key === "update") {
+                    const spanDate = stuffContainerDiv.querySelector(`[data-key=${key}]`)
+                    spanDate.title = `Crée le: ${BattleLogs.Stats.formatStatsDate(stuffData)}, Mis à jour le: ${BattleLogs.Stats.formatStatsDate(stuffData, true, true)}`
                 } else {
                     const keyContainer = stuffContainerDiv.querySelector(`[data-key=${key}]`)
                     if (keyContainer) {
@@ -284,13 +291,14 @@ class BattleLogsStatsStuffs {
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
         stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
-        stuffHeader.title = `#${statsData.slot} - ${statsData.name}`;
 
         // Create div for left elements
         const headerLeft = document.createElement("div");
         headerLeft.classList.add("stuff-title")
         const headerTitleSpan = document.createElement("span");
+        headerTitleSpan.dataset["key"] = "name"
         headerTitleSpan.textContent = statsData.customName ? statsData.customName : statsData.name;
+        headerTitleSpan.title = `#${statsData.slot} - ${statsData.name}`;
         headerLeft.appendChild(headerTitleSpan);
         const headerTitleButton = document.createElement("button");
         headerTitleButton.title = "Éditer";
@@ -308,6 +316,8 @@ class BattleLogsStatsStuffs {
         headerRight.classList.add("stuff-date")
         const headerDate = document.createElement("span");
         headerDate.textContent = BattleLogs.Stats.formatStatsDate(statsData, false);
+        headerDate.dataset["key"] = "update"
+        headerDate.title = `Crée le: ${BattleLogs.Stats.formatStatsDate(statsData)}, Mis à jour le: ${BattleLogs.Stats.formatStatsDate(statsData, true, true)}`
         headerRight.appendChild(headerDate);
         const headerAction = document.createElement("button");
         headerAction.title = "Supprimer";
