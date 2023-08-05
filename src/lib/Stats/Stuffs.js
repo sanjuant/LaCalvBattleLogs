@@ -677,7 +677,11 @@ class BattleLogsStatsStuffs {
         function updateStuffName(e) {
             e.preventDefault()
             document.querySelector(`.stats-stuff[data-key="${key}"] .stuff-title > span`).textContent = input.value;
-            BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key].customName = input.value;
+            if (input.value === defaultValue) {
+                BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key].customName = null;
+            } else {
+                BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key].customName = input.value;
+            }
             BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, BattleLogs.Stats.Stuffs.Data);
             promptContainer.remove();
             removeEventListeners();
