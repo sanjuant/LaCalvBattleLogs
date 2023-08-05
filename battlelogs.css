@@ -314,6 +314,7 @@ body{
     max-width: 100%;
     font-family: 'Roboto', sans-serif;
     font-size: 13px;
+    height: 100%;
 }
 
 .stats-title {

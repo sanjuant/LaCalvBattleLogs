@@ -350,7 +350,7 @@ class BattleLogsStatsStuffs {
         stuffCollapseButton.addEventListener('click', function () {
             if (stuffBody.style.display === "none") {
                 // If stuff body is hidden, show it
-                stuffBody.style.display = "block";
+                stuffBody.style.removeProperty("display");
                 stuffCollapseButton.title = "Réduire le stuff";
                 stuffCollapseButton.classList.remove("svg_chevron-down-dark");
                 stuffCollapseButton.classList.add("svg_chevron-up-dark");
@@ -521,7 +521,7 @@ class BattleLogsStatsStuffs {
             // Appliquer une logique de filtrage en fonction de la clé ou d'autres critères
             // Par exemple, si vous avez un critère de filtrage en fonction de la clé, vous pouvez faire quelque chose comme ceci:
             if (this.__internal__findWordInObject(word, stuffData)) { // ou utilisez une autre condition de comparaison
-                stuff.style.display = 'block'; // afficher l'élément qui correspond au filtre
+                stuff.style.removeProperty('display'); // afficher l'élément qui correspond au filtre
             } else {
                 stuff.style.display = 'none'; // masquer les autres éléments
             }
