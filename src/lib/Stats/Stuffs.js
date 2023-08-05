@@ -564,7 +564,8 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the container to sort.
      */
     static __internal__sortStuffs(order, container) {
-        this.__internal__renderStuffs(this.Data.stuffs.stuffs, container);
+        const stuffsData = this.Data.stuffs.stuffs
+        this.__internal__renderStuffs(stuffsData, container);
         // Get all the "stuff" elements in the container
         const stuffs = Array.from(container.querySelectorAll('.stats-stuff'));
 
@@ -573,8 +574,8 @@ class BattleLogsStatsStuffs {
             stuffs.sort((a, b) => {
                 const stuffKeyA = a.dataset["key"];
                 const stuffKeyB = b.dataset["key"];
-                const stuffNameA = this.Data.stuffs.stuffs[stuffKeyA].name.toLowerCase();
-                const stuffNameB = this.Data.stuffs.stuffs[stuffKeyB].name.toLowerCase();
+                const stuffNameA = stuffsData[stuffKeyA].customName ? stuffsData[stuffKeyA].customName.toLowerCase() : stuffsData[stuffKeyA].name.toLowerCase();
+                const stuffNameB = stuffsData[stuffKeyB].customName ? stuffsData[stuffKeyB].customName.toLowerCase() : stuffsData[stuffKeyB].name.toLowerCase();
 
                 if (order === 'ab') {
                     if (stuffNameA < stuffNameB) return -1;
