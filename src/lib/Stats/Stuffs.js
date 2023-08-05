@@ -356,9 +356,12 @@ class BattleLogsStatsStuffs {
         stuffCollapseButton.classList.add("svg_chevron-down-dark");
         stuffCollapseButton.title = "Déplier le stuff";
         // Initially hide the stuff body
-        stuffBody.style.display = "none";
+        if (!BattleLogs.Stats.StatsPanes[key]) {
+            stuffBody.style.display = "none";
+        }
         stuffCollapseButton.addEventListener('click', () => {
             BattleLogs.Stats.toggleElementDisplay(
+                key,
                 stuffBody,
                 stuffCollapseButton,
                 "svg_chevron-up-dark",
@@ -515,6 +518,7 @@ class BattleLogsStatsStuffs {
      */
     static __internal__filterStuffs(event, container) {
         const word = event.target.value; // Récupérer le mot saisi
+
         // Obtenir tous les éléments "stuff" dans le conteneur
         const stuffs = container.querySelectorAll('.stats-stuff');
 

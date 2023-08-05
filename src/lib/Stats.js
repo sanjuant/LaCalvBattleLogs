@@ -11,6 +11,7 @@ class BattleLogsStats {
         StatsEnable: "Stats-Enable",
         StatsRoues: "Stats-Roues",
         StatsStuffs: "Stats-Stuffs",
+        StatsPanes: "Stats-Panes",
         Type: "Stats"
     }
 
@@ -21,6 +22,7 @@ class BattleLogsStats {
     static NotUpdateAttributes = ["id", "time"]
 
     static StatsPanel;
+    static StatsPanes;
 
     /**
      * @desc Builds the menu, and restores previous running state if needed
@@ -39,10 +41,12 @@ class BattleLogsStats {
             // Set default settings
             this.Roues.setDefaultSettingsValues(this.Settings.StatsRoues)
             this.Stuffs.setDefaultSettingsValues(this.Settings.StatsStuffs)
+            this.__internal__setDefaultSettingsValues(this.Settings.StatsPanes)
 
             // Restore previous session state
             this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
             this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
+            this.StatsPanes = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsPanes);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             // while (true) {
             //     if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
@@ -117,9 +121,12 @@ class BattleLogsStats {
         paneBody.classList.add("stats-body");
 
         // Initially hide the pane body
-        paneBody.style.display = "none";
+        if (!BattleLogs.Stats.StatsPanes[objectData.id]) {
+            paneBody.style.display = "none";
+        }
         paneCollapseButton.addEventListener('click', () => {
             this.toggleElementDisplay(
+                objectData.id,
                 paneBody,
                 paneCollapseButton,
                 "svg_chevron-up",
@@ -192,6 +199,7 @@ class BattleLogsStats {
     /**
      * @desc Toggles the display of a given HTML element and updates the SVG and title of the button.
      *
+     * @param {string} id: Id of stats to toggle.
      * @param {Element} element: The HTML element to toggle.
      * @param {Element} button: The button that triggers the toggle and gets its SVG and title updated.
      * @param {String} showSvgClass: The SVG class to apply when the element is shown.
@@ -199,17 +207,21 @@ class BattleLogsStats {
      * @param {String} showText: The text to display when the element is shown.
      * @param {String} hideText: The text to display when the element is hidden.
      */
-    static toggleElementDisplay(element, button, showSvgClass, hideSvgClass, showText, hideText) {
+    static toggleElementDisplay(id, element, button, showSvgClass, hideSvgClass, showText, hideText) {
         if (element.style.display === "none") {
             // If element is hidden, show it
             element.style.removeProperty("display");
             button.classList.replace(hideSvgClass, showSvgClass);
             button.title = showText;
+            this.StatsPanes[id] = true
+            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsPanes, this.StatsPanes)
         } else {
             // If element is visible, hide it
             element.style.display = "none";
             button.classList.replace(showSvgClass, hideSvgClass);
             button.title = hideText;
+            this.StatsPanes[id] = false
+            BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StatsPanes, this.StatsPanes)
         }
     }
 
@@ -312,4 +324,10 @@ class BattleLogsStats {
         containingDiv.appendChild(resetButton);
     }
 
+    /**
+     * @desc Sets the Menu settings default values in the local storage
+     */
+    static __internal__setDefaultSettingsValues() {
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StatsPanes, {});
+    }
 }
