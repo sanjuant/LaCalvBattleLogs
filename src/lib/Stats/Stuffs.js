@@ -34,9 +34,9 @@ class BattleLogsStatsStuffs {
      * @param {Object} statsData: The statistical data for a specific wheel type, containing details such as ID, total, cost, etc.
      */
     static appendStatsToPane(statsData) {
-        const statPane = document.querySelector(`#Stats-${statsData.id}[data-key=${statsData.id}]`);
-        if (statPane !== null) {
-            this.__internal__buildStatPane(statsData, statPane)
+        const statPaneBody = document.querySelector(`#Stats-${statsData.id}[data-key=${statsData.id}] .stats-body`);
+        if (statPaneBody !== null) {
+            this.__internal__buildStatPane(statsData, statPaneBody)
         }
     }
 
@@ -275,7 +275,6 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the block within the stats pane.
      */
     static __internal__createStuffPane(statsData, key, container) {
-        console.log(statsData)
         // Create container
         const stuffContainerDiv = document.createElement("div");
         stuffContainerDiv.classList.add("stats-stuff");
@@ -341,6 +340,29 @@ class BattleLogsStatsStuffs {
                 }
             }
         })
+
+        // Create Collapse/Expand button for the stuff body
+        const stuffCollapseButton = document.createElement("button");
+        stuffCollapseButton.classList.add("svg_chevron-down-dark");
+        stuffCollapseButton.title = "Déplier le stuff";
+        // Initially hide the stuff body
+        stuffBody.style.display = "none";
+        stuffCollapseButton.addEventListener('click', function () {
+            if (stuffBody.style.display === "none") {
+                // If stuff body is hidden, show it
+                stuffBody.style.display = "block";
+                stuffCollapseButton.title = "Réduire le stuff";
+                stuffCollapseButton.classList.remove("svg_chevron-down-dark");
+                stuffCollapseButton.classList.add("svg_chevron-up-dark");
+            } else {
+                // If stuff body is visible, hide it
+                stuffBody.style.display = "none";
+                stuffCollapseButton.title = "Déplier le stuff";
+                stuffCollapseButton.classList.remove("svg_chevron-up-dark");
+                stuffCollapseButton.classList.add("svg_chevron-down-dark");
+            }
+        });
+        headerRight.appendChild(stuffCollapseButton);
 
         // Append body to container
         stuffContainerDiv.appendChild(stuffBody);

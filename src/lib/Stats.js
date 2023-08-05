@@ -97,12 +97,42 @@ class BattleLogsStats {
             this[statsName].resetStats.bind(this[statsName])
         );
 
+        // Create Collapse/Expand button for the pane
+        const paneCollapseButton = document.createElement("button");
+        paneCollapseButton.classList.add("svg_chevron-down");
+        paneCollapseButton.title = "Déplier les stats";
+        paneHeaderDate.appendChild(paneCollapseButton);
+
         paneHeader.appendChild(paneHeaderTitle);
         paneHeader.appendChild(paneHeaderDate);
         paneElement.appendChild(paneHeader);
+
+        // Create body
+        const paneBody = document.createElement("div");
+        paneBody.classList.add("stats-body");
+
+        // Initially hide the pane body
+        paneBody.style.display = "none";
+        paneCollapseButton.addEventListener('click', function () {
+            if (paneBody.style.display === "none") {
+                // If pane body is hidden, show it
+                paneBody.style.display = "block";
+                paneCollapseButton.title = "Réduire les stats";
+                paneCollapseButton.classList.remove("svg_chevron-down");
+                paneCollapseButton.classList.add("svg_chevron-up");
+            } else {
+                // If pane body is visible, hide it
+                paneBody.style.display = "none";
+                paneCollapseButton.title = "Déplier les stats";
+                paneCollapseButton.classList.remove("svg_chevron-up");
+                paneCollapseButton.classList.add("svg_chevron-down");
+            }
+        });
+
+        paneElement.appendChild(paneBody);
+
         return paneElement;
     }
-
 
     /**
      * Reset selected status and update elements accordingly

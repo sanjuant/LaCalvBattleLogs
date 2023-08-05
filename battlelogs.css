@@ -318,7 +318,7 @@ body{
 
 .stats-title {
     background-color: #58585c;
-    padding: .3em 1em;
+    padding: .3em 0 .3em 1em;
     display: flex;
     justify-content: space-between;
 }
@@ -718,8 +718,20 @@ button.selected {
     width: 24px;
     height: 24px;
 }
+.svg_chevron-up-dark {
+    background: url("data:image/svg+xml,%3Csvg width='24' height='24' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000' color='%23000'%3E%3Cpath d='M0 0h24v24H0z' fill='none'%3E%3C/path%3E%3Cpath d='M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z'%3E%3C/path%3E%3C/svg%3E") no-repeat center;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
 .svg_chevron-down {
     background: url("data:image/svg+xml,%3Csvg width='24' height='24' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff' color='%23000'%3E%3Cpath d='M0 0h24v24H0z' fill='none'%3E%3C/path%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'%3E%3C/path%3E%3C/svg%3E") no-repeat center;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
+.svg_chevron-down-dark {
+    background: url("data:image/svg+xml,%3Csvg width='24' height='24' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000' color='%23000'%3E%3Cpath d='M0 0h24v24H0z' fill='none'%3E%3C/path%3E%3Cpath d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'%3E%3C/path%3E%3C/svg%3E") no-repeat center;
     display: inline-block;
     width: 24px;
     height: 24px;

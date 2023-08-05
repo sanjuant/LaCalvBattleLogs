@@ -44,9 +44,9 @@ class BattleLogsStatsRoues {
      * @param {Object} statsData: The statistical data for a specific wheel type, containing details such as ID, total, cost, etc.
      */
     static appendStatsToPane(statsData) {
-        const statPane = document.querySelector(`#Stats-${statsData.id}[data-key=${statsData.id}]`);
-        if (statPane !== null) {
-            this.__internal__buildStatPane(statsData, statPane)
+        const statPaneBody = document.querySelector(`#Stats-${statsData.id}[data-key=${statsData.id}] .stats-body`);
+        if (statPaneBody !== null) {
+            this.__internal__buildStatPane(statsData, statPaneBody)
         }
     }
 
