@@ -441,8 +441,12 @@ class BattleLogsStatsStuffs {
         headerLeft.appendChild(headerTitleSpan);
         const headerTitleButton = document.createElement("button");
         headerTitleButton.title = "Éditer";
-        headerTitleButton.classList.add("svg_edit-dark");
+        headerTitleButton.classList.add("svg_edit");
         headerTitleButton.dataset["key"] = key
+        headerTitleButton.oncontextmenu = () => {
+            this.__internal__showPrompt(statsData, key)
+            return false;
+        };
         headerTitleButton.onclick = () => {
             this.__internal__showPrompt(statsData, key)
             return false;
@@ -845,6 +849,7 @@ class BattleLogsStatsStuffs {
      * @param {string} key: The key used to identify the specific stuff in the application's data structures.
      */
     static __internal__showPrompt(stuff, key) {
+        console.log(key)
         let defaultValue = stuff.name;
 
         let promptContainer = document.createElement("div");
@@ -911,9 +916,8 @@ class BattleLogsStatsStuffs {
         buttonContainer.appendChild(closeButton);
 
         promptContainer.appendChild(buttonContainer);
-
         document.addEventListener("click", function (event) {
-            if (!promptContainer.contains(event.target) && document.querySelector(".prompt") && !document.querySelector(`button[data-key="${key}"]`).contains(event.target)) {
+            if (!promptContainer.contains(event.target) && document.querySelector(".prompt") && !document.querySelector(`button.svg_edit[data-key="${key}"]`).contains(event.target)) {
                 promptContainer.remove();
                 removeEventListeners();
             }
