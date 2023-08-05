@@ -565,7 +565,7 @@ body{
     display: flex;
     justify-content: space-between;
     background-color: #232327;
-    padding: 2px 1em;
+    padding: 2px 4px;
 }
 .stuffs-actions-left {
     display: flex;

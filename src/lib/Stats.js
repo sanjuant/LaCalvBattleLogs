@@ -312,13 +312,7 @@ class BattleLogsStats {
         resetButton.onclick = () => {
             const confirmed = window.confirm("Tu vas remettre à zéro les stats sélectionnées, es-tu sûr ?");
             if (confirmed) {
-                this[className].Data[statsData.id] = JSON.parse(JSON.stringify(this[className].__internal__defaultStats[statsData.id]));
-                const newStatsData = this[className].Data[statsData.id]
-                newStatsData.time = new Date().toISOString();
-                resetStats(newStatsData.id)
-                const dateSpan = document.querySelector(`#${this.Settings.Type}-${statsData.id} [data-key="time"]`)
-                dateSpan.textContent = this.Messages.since.format(this.formatStatsDate(newStatsData));
-                BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings[`Stats${className}`], this[className].Data);
+                resetStats(statsData.id)
             }
         };
 

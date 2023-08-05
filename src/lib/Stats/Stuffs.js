@@ -39,6 +39,13 @@ class BattleLogsStatsStuffs {
         const statPaneBody = document.querySelector(`#Stats-${statsData.id}[data-key=${statsData.id}] .stats-body`);
         if (statPaneBody !== null) {
             this.__internal__buildStatPane(statsData, statPaneBody)
+        } else {
+            // Build div for each type of stuff
+            Object.keys(statsData).forEach((key) => {
+                if (!BattleLogs.Stats.NotUpdateAttributes.includes(key)) {
+                    this.__internal__createStatPaneBlock(statsData, key, statPaneBody);
+                }
+            })
         }
     }
 
@@ -77,7 +84,22 @@ class BattleLogsStatsStuffs {
         stuffData.battle.dmgTotal += user.dmgTotal;
         stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
-        this.__internal__createOrUpdateStuff(stuffData, stuffHash)
+
+        // Delete stuff if limit is reached
+        const stuffsLength = Object.keys(this.Data.stuffs.stuffs).length;
+        if (stuffsLength > this.__internal_stuffDisplayLimit) {
+            let stuffsKeysSortedByWeight = this.getStuffsKeysSortedByWeight()
+            const lowestWeightKey = stuffsKeysSortedByWeight[stuffsKeysSortedByWeight.length - 1]
+            if (stuffsKeysSortedByWeight.slice(0, this.__internal_stuffDisplayLimit).includes(stuffHash)) {
+                if (stuffsLength >= this.__internal_stuffStorageLimit) {
+                    delete this.Data.stuffs.stuffs[lowestWeightKey];
+                }
+                document.querySelector(`[data-key="${lowestWeightKey}"]`).remove()
+                this.__internal__createOrUpdateStuff(stuffData, stuffHash)
+            }
+        } else {
+            this.__internal__createOrUpdateStuff(stuffData, stuffHash)
+        }
     }
 
     /**
@@ -86,9 +108,25 @@ class BattleLogsStatsStuffs {
      * @param {string} id: Id of object to reset
      */
     static resetStats(id) {
-        const statPanes = document.querySelector(`#Stats-${id}[data-key=${id}] .stats-stuffs-container`);
-        statPanes.remove()
+        // Remove all "stuffs" that are not locked
+        for (let stuffKey in this.Data[id].stuffs) {
+            if (!this.Data[id].stuffs[stuffKey].locked) {
+                delete this.Data[id].stuffs[stuffKey];
+                delete BattleLogs.Stats.StatsPanes[stuffKey];
+            }
+        }
+        this.Data[id].time = new Date().toISOString();
+
+        const statBody = document.querySelector('#Stats-stuffs[data-key="stuffs"] .stats-body');
+        statBody.querySelector(".stats-stuffs-container").remove()
+        statBody.querySelector(".stuffs-actions").remove()
+
         this.appendStatsToPane(this.Data[id])
+
+        const dateSpan = document.querySelector(`#${BattleLogs.Stats.Settings.Type}-stuffs [data-key="time"]`)
+        dateSpan.textContent = BattleLogs.Stats.Messages.since.format(BattleLogs.Stats.formatStatsDate(this.Data[id]));
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsPanes, BattleLogs.Stats.StatsPanes);
     }
 
     /**
@@ -101,11 +139,69 @@ class BattleLogsStatsStuffs {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StuffsFilters, {"order":"asc", "input":""});
     }
 
+    /**
+     * @desc Returns the keys of the "stuffs" objects sorted by a weighted score.
+     * The weight is calculated based on the "updateTimestamp", "battleCount" and "timeTimestamp" properties of each "stuff" object.
+     * The weights assigned to these properties are defined by the "__internal_updateTimestampWeight", "__internal_battleCountWeight"
+     * and "__internal_timeTimestampWeight" properties, respectively.
+     *
+     * The weighting and normalization process is as follows:
+     * - The "updateTimestamp", "battleCount" and "timeTimestamp" of each "stuff" object are normalized by subtracting the minimum value and dividing by the range (max - min).
+     * - Each of these normalized values is then multiplied by its respective weight.
+     * - The final weighted score of each "stuff" is calculated by adding up all the weighted values.
+     *
+     * The list of stuff keys is then sorted in descending order based on these weighted scores.
+     *
+     * @returns {Array} An array of stuff keys sorted in descending order based on the weighted scores.
+     */
+    static getStuffsKeysSortedByWeight() {
+        // Create a list of all "stuffs"
+        let stuffsList = [];
+        for (let stuffKey in this.Data.stuffs.stuffs) {
+            let stuff = this.Data.stuffs.stuffs[stuffKey];
+            let updateTimestamp = new Date(stuff.update).getTime() / 1000;
+            let battleCount = stuff.battle.battleCount;
+            let timeTimestamp = new Date(stuff.time).getTime() / 1000;
+            let locked = stuff.locked;
+            stuffsList.push({"stuffKey": stuffKey, "updateTimestamp": updateTimestamp, "battleCount": battleCount, "timeTimestamp":timeTimestamp, "locked": locked});
+        }
+
+        // Normalize and weight
+        let maxUpdateTimestamp = Math.max(...stuffsList.map(s => s.updateTimestamp));
+        let minUpdateTimestamp = Math.min(...stuffsList.map(s => s.updateTimestamp));
+        let maxBattleCount = Math.max(...stuffsList.map(s => s.battleCount));
+        let minBattleCount = Math.min(...stuffsList.map(s => s.battleCount));
+        let maxTimeTimestamp = Math.max(...stuffsList.map(s => s.timeTimestamp));
+        let minTimeTimestamp = Math.min(...stuffsList.map(s => s.timeTimestamp));
+
+        for (let stuff of stuffsList) {
+            stuff.updateTimestamp = this.__internal_updateTimestampWeight * ((stuff.updateTimestamp - minUpdateTimestamp) / (maxUpdateTimestamp - minUpdateTimestamp));
+            stuff.battleCount = this.__internal_battleCountWeight * ((stuff.battleCount - minBattleCount) / (maxBattleCount - minBattleCount));
+            stuff.timeTimestamp = this.__internal_timeTimestampWeight * ((stuff.timeTimestamp - minTimeTimestamp) / (maxTimeTimestamp - minTimeTimestamp));
+
+            stuff.weightedScore = stuff.updateTimestamp + stuff.battleCount + stuff.timeTimestamp;
+            // Increase the score by 100 if the stuff is locked
+            if (stuff.locked) {
+                stuff.weightedScore += 100;
+            }
+        }
+
+        // Sort by weighted score
+        stuffsList.sort((a, b) => b.weightedScore - a.weightedScore);
+
+        return stuffsList.map(stuff => stuff.stuffKey);
+    }
+
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
     static __internal__stuffPaneAllowedKey = ["loadout", "battle", "wb"]
+    static __internal_stuffDisplayLimit = 50
+    static __internal_stuffStorageLimit = 70
+    static __internal_battleCountWeight = 0.50;
+    static __internal_timeTimestampWeight = 0.15;
+    static __internal_updateTimestampWeight = 0.35;
 
     /**
      * @desc Update stuff values
@@ -368,9 +464,11 @@ class BattleLogsStatsStuffs {
         headerAction.onclick = () => {
             const confirmed = window.confirm("Tu vas supprimer le stuff, es-tu sûr ?");
             if (confirmed) {
-                delete BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key];
                 stuffContainerDiv.remove();
+                delete BattleLogs.Stats.Stuffs.Data.stuffs.stuffs[key];
+                delete BattleLogs.Stats.StatsPanes[key];
                 BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
+                BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsPanes, BattleLogs.Stats.StatsPanes);
             }
         };
         headerRight.appendChild(headerAction);
@@ -396,11 +494,15 @@ class BattleLogsStatsStuffs {
 
         // Create Collapse/Expand button for the stuff body
         const stuffCollapseButton = document.createElement("button");
-        stuffCollapseButton.classList.add("svg_chevron-down-dark");
-        stuffCollapseButton.title = "Déplier le stuff";
         // Initially hide the stuff body
-        if (!BattleLogs.Stats.StatsPanes[key]) {
+        if (BattleLogs.Stats.StatsPanes.hasOwnProperty(key)) {
+            stuffCollapseButton.classList.add("svg_chevron-down-dark");
+            stuffCollapseButton.title = "Déplier le stuff";
             stuffBody.style.display = "none";
+        } else {
+            stuffCollapseButton.classList.add("svg_chevron-up-dark");
+            stuffCollapseButton.title = "Réduire le stuff";
+            BattleLogs.Stats.StatsPanes[key] = false;
         }
         stuffCollapseButton.addEventListener('click', () => {
             BattleLogs.Stats.toggleElementDisplay(
@@ -724,8 +826,9 @@ class BattleLogsStatsStuffs {
             container.removeChild(container.firstChild);
         }
 
+        const stuffsKeysSortedByWeight = this.getStuffsKeysSortedByWeight().slice(0, this.__internal_stuffDisplayLimit)
         Object.keys(stuffs).forEach((key) => {
-            if (!BattleLogs.Stats.NotUpdateAttributes.includes(key)) {
+            if (stuffsKeysSortedByWeight.includes(key)) {
                 this.__internal__createStuffPane(stuffs[key], key, container);
             }
         })

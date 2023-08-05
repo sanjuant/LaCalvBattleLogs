@@ -77,11 +77,17 @@ class BattleLogsStatsRoues {
      * @param {string} id: Id of wheel to reset
      */
     static resetStats(id) {
+        this.Data[id] = JSON.parse(JSON.stringify(this.Data.__internal__defaultStats[id]));
+        const newStatsData = this.Data[id]
+        newStatsData.time = new Date().toISOString();
         const statPanes = document.querySelectorAll(`#Stats-${id}[data-key=${id}] .stats-block`);
         statPanes.forEach(pane => {
             pane.remove()
         })
         this.appendStatsToPane(this.Data[id])
+        const dateSpan = document.querySelector(`#${BattleLogs.Stats.Settings.Type}-${id} [data-key="time"]`)
+        dateSpan.textContent = this.Messages.since.format(BattleLogs.Stats.formatStatsDate(newStatsData));
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.Data);
     }
 
     /**
