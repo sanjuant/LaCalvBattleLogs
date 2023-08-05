@@ -529,26 +529,29 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Finds a word within an object, performing the search case-insensitively.
+     * @desc Finds a word within an object, performing the search case-insensitively and accent-insensitively.
      *
      * @param {string} word: The word to search for.
      * @param {Object} obj: The object to search within.
      * @return {boolean} Returns true if the word is found, otherwise false.
      */
     static __internal__findWordInObject(word, obj) {
-        const lowercaseWord = word.toLowerCase();
+        const normalizedWord = word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         for (const key in obj) {
-            if (typeof obj[key] === 'string' && obj[key].toLowerCase().includes(lowercaseWord)) {
-                return true;
+            if (typeof obj[key] === 'string') {
+                const normalizedString = obj[key].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (normalizedString.includes(normalizedWord)) {
+                    return true;
+                }
             }
             if (typeof obj[key] === 'object') {
-                if (this.__internal__findWordInObject(lowercaseWord, obj[key])) {
+                if (this.__internal__findWordInObject(normalizedWord, obj[key])) {
                     return true;
                 }
             }
             if (Array.isArray(obj[key])) {
                 for (const item of obj[key]) {
-                    if (this.__internal__findWordInObject(lowercaseWord, item)) {
+                    if (this.__internal__findWordInObject(normalizedWord, item)) {
                         return true;
                     }
                 }
