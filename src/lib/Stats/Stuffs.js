@@ -3,7 +3,8 @@
  */
 class BattleLogsStatsStuffs {
     static Settings = {
-        Type: "Stuffs"
+        StuffsFilters: "Stats-Stuffs-Filters",
+        Type: "Stuffs",
     }
 
     static Messages = {
@@ -15,6 +16,7 @@ class BattleLogsStatsStuffs {
     };
 
     static Data;
+    static Filters;
 
     /**
      * @desc Creates and appends statistical panes for each type of wheel within the stats panel.
@@ -96,6 +98,7 @@ class BattleLogsStatsStuffs {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(key, {
             "stuffs": this.__internal__defaultStats["stuffs"]
         });
+        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StuffsFilters, {"order":"asc", "input":""});
     }
 
     /*********************************************************************\
@@ -196,35 +199,59 @@ class BattleLogsStatsStuffs {
         filterInput.classList.add("stuffs-filter");
         filterInput.type = 'text';
         filterInput.id = 'filterInput';
+        filterInput.value = this.Filters.input;
         filterInput.placeholder = 'Recherchez un stuff...';
+        let timer = null; // Store the timer outside the event handler
         filterInput.addEventListener('input', (event) => {
-            this.__internal__filterStuffs(event, container);
+            // Clear the previous timer if it exists
+            if (timer) {
+                clearTimeout(timer);
+            }
+
+            // Create a new timer that calls the update function after 500ms
+            timer = setTimeout(() => {
+                this.__internal__filterStuffs(event, container);
+            }, 500);
         });
         stuffsActionsLeft.appendChild(filterInput)
+
+        let sortButtons = []
 
         const sortAscButton = document.createElement("button");
         sortAscButton.classList.add("svg_sort-asc");
         sortAscButton.title = "Trier en ordre croissant";
+        sortButtons['asc'] = sortAscButton;
         stuffsActionsRight.appendChild(sortAscButton)
-        sortAscButton.addEventListener('click', () => this.__internal__sortStuffs('asc', stuffsContainer));
+        sortAscButton.addEventListener('click', () => {
+            this.__internal__sortStuffs('asc', stuffsContainer, sortAscButton, stuffsActionsRight);
+        });
 
         const sortDescButton = document.createElement("button");
         sortDescButton.classList.add("svg_sort-desc");
         sortDescButton.title = "Trier en ordre décroissant";
+        sortButtons['desc'] = sortDescButton;
         stuffsActionsRight.appendChild(sortDescButton)
-        sortDescButton.addEventListener('click', () => this.__internal__sortStuffs('desc', stuffsContainer));
+        sortDescButton.addEventListener('click', () => {
+            this.__internal__sortStuffs('desc', stuffsContainer, sortDescButton, stuffsActionsRight);
+        });
 
         const sortAbButton = document.createElement("button");
         sortAbButton.classList.add("svg_sort-ab");
         sortAbButton.title = "Trier par ordre alphabétique";
+        sortButtons['ab'] = sortAbButton;
         stuffsActionsRight.appendChild(sortAbButton)
-        sortAbButton.addEventListener('click', () => this.__internal__sortStuffs('ab', stuffsContainer));
+        sortAbButton.addEventListener('click', () => {
+            this.__internal__sortStuffs('ab', stuffsContainer, sortAbButton, stuffsActionsRight);
+        });
 
         const sortBaButton = document.createElement("button");
         sortBaButton.classList.add("svg_sort-ba");
         sortBaButton.title = "Trier par ordre alphabétique inversé";
+        sortButtons['ba'] = sortBaButton;
         stuffsActionsRight.appendChild(sortBaButton)
-        sortBaButton.addEventListener('click', () => this.__internal__sortStuffs('ba', stuffsContainer));
+        sortBaButton.addEventListener('click', () => {
+            this.__internal__sortStuffs('ba', stuffsContainer, sortBaButton, stuffsActionsRight);
+        });
 
         container.appendChild(stuffsActions)
 
@@ -235,6 +262,8 @@ class BattleLogsStatsStuffs {
             }
         })
         container.appendChild(stuffsContainer);
+
+        this.__internal__sortStuffs(this.Filters.order, stuffsContainer, sortButtons[this.Filters.order], stuffsActionsRight);
     }
 
     /**
@@ -517,7 +546,12 @@ class BattleLogsStatsStuffs {
      * @param {Element} container: HTML element representing the container to filter.
      */
     static __internal__filterStuffs(event, container) {
-        const word = event.target.value; // Récupérer le mot saisi
+        let word;
+        if (typeof event === 'string') {
+            word = event;
+        } else {
+            word = event.target.value; // Récupérer le mot saisi
+        }
 
         // Obtenir tous les éléments "stuff" dans le conteneur
         const stuffs = container.querySelectorAll('.stats-stuff');
@@ -535,6 +569,8 @@ class BattleLogsStatsStuffs {
                 stuff.style.display = 'none'; // masquer les autres éléments
             }
         });
+        this.Filters.input = word;
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StuffsFilters, this.Filters)
     }
 
     /**
@@ -570,12 +606,14 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Sorts the stuffs in the container alphabetically based on the stuff's name.
+     * @desc Sorts the stuffs in the container based on the order and handles button selection.
      *
-     * @param {string} order: The order to sort by. Can be either 'ab' for A to Z or 'ba' for Z to A.
+     * @param {string} order: The order to sort by. Can be either 'asc', 'desc', 'ab', or 'ba'.
      * @param {Element} container: HTML element representing the container to sort.
+     * @param {Element} button: The button that was clicked.
+     * @param {Element} buttonContainer: The container of all the buttons.
      */
-    static __internal__sortStuffs(order, container) {
+    static __internal__sortStuffs(order, container, button, buttonContainer) {
         const stuffsData = this.Data.stuffs.stuffs
         this.__internal__renderStuffs(stuffsData, container);
         // Get all the "stuff" elements in the container
@@ -610,6 +648,30 @@ class BattleLogsStatsStuffs {
             container.removeChild(container.firstChild);
         }
         stuffs.forEach(stuff => container.appendChild(stuff));
+
+        // Handle button selection
+        this.__internal__handleButtonSelection(button, buttonContainer);
+        this.__internal__filterStuffs(this.Filters.input, container);
+
+        this.Filters.order = order;
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.StuffsFilters, this.Filters)
+    }
+
+    /**
+     * @desc Handles the selection and deselection of buttons.
+     *
+     * @param {Element} button: The button to select.
+     * @param {Element} buttonContainer: The container of all the buttons.
+     */
+    static __internal__handleButtonSelection(button, buttonContainer) {
+        // Find the currently selected button and deselect it
+        const selectedButton = buttonContainer.querySelector('.selected');
+        if (selectedButton) {
+            selectedButton.classList.remove('selected');
+        }
+
+        // Select the clicked button
+        button.classList.add('selected');
     }
 
     /**
@@ -790,7 +852,6 @@ class BattleLogsStatsStuffs {
             "battleCount": 0
         }
     }
-
 
     /**
      * @desc Default statistical values for stuffs

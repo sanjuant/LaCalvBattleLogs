@@ -46,6 +46,7 @@ class BattleLogsStats {
             // Restore previous session state
             this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
             this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
+            this.Stuffs.Filters = BattleLogs.Utils.LocalStorage.getComplexValue(this.Stuffs.Settings.StuffsFilters);
             this.StatsPanes = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsPanes);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             // while (true) {
