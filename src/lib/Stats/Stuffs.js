@@ -102,7 +102,7 @@ class BattleLogsStatsStuffs {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__stuffPaneAllowedKey = ["loadout", "battle", "wb", "name", "update"]
+    static __internal__stuffPaneAllowedKey = ["loadout", "battle", "wb"]
 
     /**
      * @desc Update stuff values
@@ -112,7 +112,7 @@ class BattleLogsStatsStuffs {
      */
     static __internal__updateStuffValues(stuffData, stuffContainerDiv) {
         Object.keys(stuffData).forEach((key) => {
-            if (this.__internal__stuffPaneAllowedKey.includes(key)) {
+            if (this.__internal__stuffPaneAllowedKey.includes(key) || ["name", "update"].includes(key)) {
                 if (key === "wb") {
                     Object.keys(stuffData.wb).forEach((wbKey) => {
                         const keyContainer = stuffContainerDiv.querySelector(`[data-key=${wbKey}]`)

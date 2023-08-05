@@ -202,7 +202,7 @@ class BattleLogsStats {
     static toggleElementDisplay(element, button, showSvgClass, hideSvgClass, showText, hideText) {
         if (element.style.display === "none") {
             // If element is hidden, show it
-            element.style.display = "block";
+            element.style.removeProperty("display");
             button.classList.replace(hideSvgClass, showSvgClass);
             button.title = showText;
         } else {
