@@ -324,6 +324,20 @@ class BattleLogsStatsStuffs {
         // Create div for left elements
         const headerLeft = document.createElement("div");
         headerLeft.classList.add("stuff-title")
+        const headerLockButton = document.createElement("button");
+        if (statsData.locked) {
+            headerLockButton.title = "Déverrouiller";
+            headerLockButton.classList.add("selected");
+        } else {
+            headerLockButton.title = "Verrouiller";
+        }
+        headerLockButton.classList.add("svg_lock");
+        headerLockButton.dataset["key"] = key
+        headerLockButton.onclick = () => {
+            this.__internal__lockStuff(statsData, headerLockButton)
+            return false;
+        };
+        headerLeft.appendChild(headerLockButton);
         const headerTitleSpan = document.createElement("span");
         headerTitleSpan.dataset["key"] = "name"
         headerTitleSpan.textContent = statsData.customName ? statsData.customName : statsData.name;
@@ -539,6 +553,28 @@ class BattleLogsStatsStuffs {
         // concatenate the elements of the "items" array with the other attributes
         let concatenatedItems = stuff.arme.name + stuff.calv.name + itemsArray.join('') + stuff.famAtk.name + stuff.famDef.name;
         return concatenatedItems.hashCode()
+    }
+
+    /**
+     * @desc This method is used to assigns an "onclick" event to the lock button to lock or unlock the stuff.
+     * @param {Object} stuff: The stuff object that should be locked or unlocked.
+     * @param {Element} buttonContainer: The HTML element representing the button that should be used to lock or unlock the stuff.
+     */
+    static __internal__lockStuff(stuff, buttonContainer) {
+        // Check if the button is selected
+        if (buttonContainer.classList.contains("selected")) {
+            // If the button is selected, remove the 'selected' class from the button and unlock the stuff
+            buttonContainer.classList.remove('selected');
+            buttonContainer.title = "Verrouiller";
+            stuff.locked = false;
+        } else {
+            // If the button is not selected, add the 'selected' class to the button and lock the stuff
+            buttonContainer.classList.add('selected');
+            buttonContainer.title = "Déverrouiller";
+            stuff.locked = true;
+        }
+        // Update the stored data to reflect the changes
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
     }
 
     /**
