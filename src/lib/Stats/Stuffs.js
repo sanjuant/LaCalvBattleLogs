@@ -13,6 +13,19 @@ class BattleLogsStatsStuffs {
             title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
             cost: "premium"
         },
+        battle: "Combat",
+        battleCount: "Total",
+        win: "Victoires",
+        lose: "Défaites",
+        dmgMin: "Dégâts minimum",
+        dmgMax: "Dégâts maximum",
+        dmgAverage: "Dégâts moyens",
+        dmgTotal: "Dégâts totaux",
+        arme: "Arme",
+        calv: "Calv",
+        items: "Item",
+        famAtk: "Fam Atk",
+        famDef: "Fam Def"
     };
 
     static Data;
@@ -83,8 +96,8 @@ class BattleLogsStatsStuffs {
         stuffData.battle.battleCount += 1;
         stuffData.battle.dmgTotal += user.dmgTotal;
         stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
-        stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
-        stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
+        // stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
+        // stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
 
         // Delete stuff if limit is reached
@@ -501,15 +514,19 @@ class BattleLogsStatsStuffs {
         // Create Collapse/Expand button for the stuff body
         const stuffCollapseButton = document.createElement("button");
         // Initially hide the stuff body
-        if (BattleLogs.Stats.StatsPanes.hasOwnProperty(key)) {
+        if (!BattleLogs.Stats.StatsPanes.hasOwnProperty(key)) {
+            BattleLogs.Stats.StatsPanes[key] = false;
+            stuffCollapseButton.classList.add("svg_chevron-up-dark");
+            stuffCollapseButton.title = "Réduire le stuff";
+        } else if (!BattleLogs.Stats.StatsPanes[key]) {
             stuffCollapseButton.classList.add("svg_chevron-down-dark");
             stuffCollapseButton.title = "Déplier le stuff";
             stuffBody.style.display = "none";
         } else {
             stuffCollapseButton.classList.add("svg_chevron-up-dark");
             stuffCollapseButton.title = "Réduire le stuff";
-            BattleLogs.Stats.StatsPanes[key] = false;
         }
+
         stuffCollapseButton.addEventListener('click', () => {
             BattleLogs.Stats.toggleElementDisplay(
                 key,
@@ -558,7 +575,7 @@ class BattleLogsStatsStuffs {
         } else {
             const blockLabel = document.createElement("div");
             blockLabel.classList.add("stuff-body-block-title");
-            blockLabel.textContent = key.capitalize()
+            blockLabel.textContent = this.Messages[key].capitalize();
             const blockValues = document.createElement("div");
             blockValues.classList.add("stuff-body-block-values")
             blockValues.classList.add(`values-${key}`)
@@ -631,7 +648,7 @@ class BattleLogsStatsStuffs {
         } else {
             const label = document.createElement("span");
             label.classList.add("key")
-            label.textContent = subkey.capitalize();
+            label.textContent = this.Messages[subkey].capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
             if (typeof object === 'object') {
@@ -973,8 +990,8 @@ class BattleLogsStatsStuffs {
             },
             "battle": {
                 "battleCount": 0,
-                "win": 0,
-                "lose": 0,
+                // "win": 0,
+                // "lose": 0,
                 "dmgMin": user.dmgTotal,
                 "dmgMax": user.dmgTotal,
                 "dmgAverage": 0,
@@ -994,11 +1011,11 @@ class BattleLogsStatsStuffs {
     static __internal__createDefaultStuffWbDataObject(user, opponent) {
         return {
             "name": opponent.name,
-            "dmgMax": user.dmgTotal,
+            "battleCount": 0,
             "dmgMin": user.dmgTotal,
-            "dmgTotal": 0,
+            "dmgMax": user.dmgTotal,
             "dmgAverage": 0,
-            "battleCount": 0
+            "dmgTotal": 0
         }
     }
 

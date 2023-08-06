@@ -514,6 +514,7 @@ body{
 }
 .values-loadout .key {
     justify-content: flex-end;
+    white-space: nowrap;
 }
 .values-loadout .value {
     justify-content: flex-start;
@@ -521,6 +522,7 @@ body{
 .values-wb .key, .values-battle .key {
     flex-basis: 100%;
     justify-content: flex-start;
+    white-space: nowrap;
 }
 .values-wb .value, .values-battle .value {
     flex-basis: 30%;
