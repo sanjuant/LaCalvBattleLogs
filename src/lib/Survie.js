@@ -82,6 +82,7 @@ class BattleLogsSurvie {
         for (const stat of stats) {
             const log = this.__internal__addLog(uid, choice, stat.user, stat.opponent, stat.rewards, stat.stuff);
             this.appendMessage(log);
+            BattleLogs.Stats.Stuffs.updateStats(stat.stuff, stat.user);
         }
     }
 
