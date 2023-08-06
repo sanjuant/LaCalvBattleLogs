@@ -17,6 +17,7 @@ class BattleLogsStatsStuffs {
         battleCount: "Total",
         win: "Victoires",
         lose: "Défaites",
+        dmgMin: "Dégâts minimum",
         dmgMax: "Dégâts maximum",
         dmgAverage: "Dégâts moyens",
         dmgTotal: "Dégâts totaux",
@@ -81,6 +82,7 @@ class BattleLogsStatsStuffs {
         stuffData.update = new Date().toISOString();
         // Update order of items
         stuffData.loadout.items = stuff.items
+        stuffData.totalBattle += 1;
 
         if (battleType === BattleLogs.Boss.Settings.Type && opponent) {
             const wbHash = opponent.name.hashCode();
@@ -95,6 +97,9 @@ class BattleLogsStatsStuffs {
             wbData.dmgTotal += user.dmgTotal;
             wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
         } else {
+            if (Object.keys(stuffData.battle).length === 0) {
+                stuffData.battle = this.__internal__createDefaultStuffBattleDataObject(user);
+            }
             stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
             stuffData.battle.battleCount += 1;
             stuffData.battle.dmgTotal += user.dmgTotal;
@@ -169,7 +174,10 @@ class BattleLogsStatsStuffs {
         }
 
         Object.keys(statsStuffs.stuffs.stuffs).forEach((stuffKey) => {
-            statsStuffs.stuffs.stuffs[stuffKey] = this.__internal__matchKeysWithModel(statsStuffs.stuffs.stuffs[stuffKey]);
+            statsStuffs.stuffs.stuffs[stuffKey] = this.__internal__matchKeysWithModel(statsStuffs.stuffs.stuffs[stuffKey], this.__internal__createDefaultStuffDataObject({}, {}));
+            Object.keys(statsStuffs.stuffs.stuffs[stuffKey].wb).forEach((wbKey) => {
+                statsStuffs.stuffs.stuffs[stuffKey].wb[wbKey] = this.__internal__matchKeysWithModel(statsStuffs.stuffs.stuffs[stuffKey].wb[wbKey], this.__internal__createDefaultStuffWbDataObject({}, {}));
+            })
         })
 
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, statsStuffs);
@@ -197,23 +205,23 @@ class BattleLogsStatsStuffs {
         for (let stuffKey in this.Data.stuffs.stuffs) {
             let stuff = this.Data.stuffs.stuffs[stuffKey];
             let updateTimestamp = new Date(stuff.update).getTime() / 1000;
-            let battleCount = stuff.battle.battleCount;
+            let totalBattle = stuff.totalBattle;
             let timeTimestamp = new Date(stuff.time).getTime() / 1000;
             let locked = stuff.locked;
-            stuffsList.push({"stuffKey": stuffKey, "updateTimestamp": updateTimestamp, "battleCount": battleCount, "timeTimestamp":timeTimestamp, "locked": locked});
+            stuffsList.push({"stuffKey": stuffKey, "updateTimestamp": updateTimestamp, "totalBattle": totalBattle, "timeTimestamp":timeTimestamp, "locked": locked});
         }
 
         // Normalize and weight
         let maxUpdateTimestamp = Math.max(...stuffsList.map(s => s.updateTimestamp));
         let minUpdateTimestamp = Math.min(...stuffsList.map(s => s.updateTimestamp));
-        let maxBattleCount = Math.max(...stuffsList.map(s => s.battleCount));
-        let minBattleCount = Math.min(...stuffsList.map(s => s.battleCount));
+        let maxTotalBattle = Math.max(...stuffsList.map(s => s.totalBattle));
+        let minTotalBattle = Math.min(...stuffsList.map(s => s.totalBattle));
         let maxTimeTimestamp = Math.max(...stuffsList.map(s => s.timeTimestamp));
         let minTimeTimestamp = Math.min(...stuffsList.map(s => s.timeTimestamp));
 
         for (let stuff of stuffsList) {
             stuff.updateTimestamp = this.__internal_updateTimestampWeight * ((stuff.updateTimestamp - minUpdateTimestamp) / (maxUpdateTimestamp - minUpdateTimestamp));
-            stuff.battleCount = this.__internal_battleCountWeight * ((stuff.battleCount - minBattleCount) / (maxBattleCount - minBattleCount));
+            stuff.battleCount = this.__internal_battleCountWeight * ((stuff.battleCount - minTotalBattle) / (maxTotalBattle - minTotalBattle));
             stuff.timeTimestamp = this.__internal_timeTimestampWeight * ((stuff.timeTimestamp - minTimeTimestamp) / (maxTimeTimestamp - minTimeTimestamp));
 
             stuff.weightedScore = stuff.updateTimestamp + stuff.battleCount + stuff.timeTimestamp;
@@ -690,6 +698,7 @@ class BattleLogsStatsStuffs {
         } else {
             const label = document.createElement("span");
             label.classList.add("key")
+            console.log(subkey)
             label.textContent = this.Messages[subkey].capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
@@ -1032,20 +1041,27 @@ class BattleLogsStatsStuffs {
      * @desc Compares the keys of the data object with the model, adds missing keys, and ensures order according to the model.
      *
      * @param {Object} dataObject: The data object to be checked.
+     * @param {Object} model: The model reference.
      * @return {Object} The updated data object in the order of the model.
      */
-    static __internal__matchKeysWithModel(dataObject) {
-        const model = this.__internal__createDefaultStuffDataObject({}, {});
+    static __internal__matchKeysWithModel(dataObject, model) {
+        function isEmptyObject(obj) {
+            return Object.keys(obj).length === 0 && obj.constructor === Object;
+        }
 
-        // This function is recursive to handle nested objects.
         function matchAndOrderKeys(data, reference) {
             let orderedObject = {};
 
             for (let key in reference) {
                 if (reference.hasOwnProperty(key)) {
                     if (typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
-                        // Ensure the nested object has the same structure and order as the model
-                        orderedObject[key] = data.hasOwnProperty(key) ? matchAndOrderKeys(data[key], reference[key]) : reference[key];
+                        if (isEmptyObject(reference[key])) {
+                            // If the reference/model object is empty, retain the original data for that key
+                            orderedObject[key] = data[key];
+                        } else {
+                            // Ensure the nested object has the same structure and order as the model
+                            orderedObject[key] = data.hasOwnProperty(key) ? matchAndOrderKeys(data[key], reference[key]) : reference[key];
+                        }
                     } else {
                         // Directly assign the value from data or use default from the model
                         orderedObject[key] = data.hasOwnProperty(key) ? data[key] : reference[key];
@@ -1075,6 +1091,7 @@ class BattleLogsStatsStuffs {
             "name": stuff.name,
             "customName": null,
             "element": stuff.element,
+            "totalBattle": 0,
             "loadout": {
                 "arme": stuff.arme,
                 "calv": stuff.calv,
@@ -1085,7 +1102,7 @@ class BattleLogsStatsStuffs {
             "battle": {
                 "battleCount": 0,
                 "winratePvp": {"win": 0, "lose": 0},
-                "dmgMax": user.dmgTotal,
+                "dmgMax": 0,
                 "dmgAverage": 0,
                 "dmgTotal": 0
             },
@@ -1094,7 +1111,7 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Creates a default object for each new stuff
+     * @desc Creates a default data for boss
      *
      * @param {Object} user: User data object.
      * @param {Object} opponent: Opponent data object.
@@ -1105,7 +1122,7 @@ class BattleLogsStatsStuffs {
             "name": opponent.name,
             "battleCount": 0,
             "dmgMin": user.dmgTotal,
-            "dmgMax": user.dmgTotal,
+            "dmgMax": 0,
             "dmgAverage": 0,
             "dmgTotal": 0
         }
