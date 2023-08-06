@@ -782,13 +782,18 @@ class BattleLogsStatsStuffs {
         // Get all the "stuff" elements in the container
         const stuffs = Array.from(container.querySelectorAll('.stats-stuff'));
 
+        // Function to normalize a string
+        const normalizeString = (str) => {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        };
+
         // Sort the stuffs alphabetically based on the stuff's name
         if (["ab", "ba"].includes(order)) {
             stuffs.sort((a, b) => {
                 const stuffKeyA = a.dataset["key"];
                 const stuffKeyB = b.dataset["key"];
-                const stuffNameA = stuffsData[stuffKeyA].customName ? stuffsData[stuffKeyA].customName.toLowerCase() : stuffsData[stuffKeyA].name.toLowerCase();
-                const stuffNameB = stuffsData[stuffKeyB].customName ? stuffsData[stuffKeyB].customName.toLowerCase() : stuffsData[stuffKeyB].name.toLowerCase();
+                const stuffNameA = normalizeString(stuffsData[stuffKeyA].customName ? stuffsData[stuffKeyA].customName : stuffsData[stuffKeyA].name);
+                const stuffNameB = normalizeString(stuffsData[stuffKeyB].customName ? stuffsData[stuffKeyB].customName : stuffsData[stuffKeyB].name);
 
                 if (order === 'ab') {
                     if (stuffNameA < stuffNameB) return -1;
