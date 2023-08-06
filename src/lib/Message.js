@@ -482,7 +482,7 @@ class BattleLogsMessage {
                 this.Settings.MessageFormat,
                 this.Settings.Format
             );
-            this.__internal__updateMessages();
+            this.updateMessages();
         };
     }
 
