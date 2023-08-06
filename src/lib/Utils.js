@@ -70,6 +70,18 @@ class BattleLogsUtils {
     }
 
     /**
+     * Calculates the winrate based on the number of victories and total games played.
+     *
+     * @param {number} gamesWon - The number of games won.
+     * @param {number} totalGames - The total number of games played (won + lost).
+     * @returns {string} The winrate as a percentage. If no games have been played, it returns N/A.
+     */
+    static getWinrateString(gamesWon, totalGames) {
+        if (totalGames === 0) return 'N/A';
+        return this.roundToAny((gamesWon / totalGames) * 100, 2) + '%';
+    }
+
+    /**
      * @brief Converts the string representation of a number to its integer equivalent
      *
      * @param {string} str: The string to parse

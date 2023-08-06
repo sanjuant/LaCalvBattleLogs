@@ -25,7 +25,8 @@ class BattleLogsStatsStuffs {
         calv: "Calv",
         items: "Item",
         famAtk: "Fam Atk",
-        famDef: "Fam Def"
+        famDef: "Fam Def",
+        winratePvp: "Taux de victoire PvP"
     };
 
     static Data;
@@ -92,12 +93,14 @@ class BattleLogsStatsStuffs {
         stuffData.name = stuff.name
         stuffData.update = new Date().toISOString();
         stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
-        stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
+        // stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
         stuffData.battle.battleCount += 1;
         stuffData.battle.dmgTotal += user.dmgTotal;
         stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
         // Update order of items
         stuffData.loadout.items = stuff.items
+        stuffData.battle.winratePvp.win = user.result === "winner" ? stuffData.battle.winratePvp.win + 1 : stuffData.battle.winratePvp.win
+        stuffData.battle.winratePvp.lose = user.result === "looser" ? stuffData.battle.winratePvp.lose + 1 : stuffData.battle.winratePvp.lose
         // stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
         // stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
@@ -154,6 +157,52 @@ class BattleLogsStatsStuffs {
             "stuffs": this.__internal__defaultStats["stuffs"]
         });
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StuffsFilters, {"order":"asc", "input":""});
+    }
+
+    static loadAndCompareStuffsWithModel() {
+        let statsStuffs = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Stats.Settings.StatsStuffs);
+
+        if (!statsStuffs) {
+            return null; // You can also return an error message or the default model.
+        }
+
+        Object.keys(statsStuffs.stuffs.stuffs).forEach((stuffKey) => {
+            statsStuffs.stuffs.stuffs[stuffKey] = this.__internal__matchKeysWithModel(statsStuffs.stuffs.stuffs[stuffKey]);
+        })
+
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, statsStuffs);
+        return statsStuffs;
+    }
+
+    /**
+     * @desc Compares the keys of the data object with the model, adds missing keys, and ensures order according to the model.
+     *
+     * @param {Object} dataObject: The data object to be checked.
+     * @return {Object} The updated data object in the order of the model.
+     */
+    static __internal__matchKeysWithModel(dataObject) {
+        const model = this.__internal__createDefaultStuffDataObject({}, {});
+
+        // This function is recursive to handle nested objects.
+        function matchAndOrderKeys(data, reference) {
+            let orderedObject = {};
+
+            for (let key in reference) {
+                if (reference.hasOwnProperty(key)) {
+                    if (data.hasOwnProperty(key) && typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
+                        orderedObject[key] = matchAndOrderKeys(data[key], reference[key]);
+                    } else if (data.hasOwnProperty(key)) {
+                        orderedObject[key] = data[key];
+                    } else {
+                        orderedObject[key] = reference[key];
+                    }
+                }
+            }
+
+            return orderedObject;
+        }
+
+        return matchAndOrderKeys(dataObject, model);
     }
 
     /**
@@ -285,8 +334,20 @@ class BattleLogsStatsStuffs {
             const subkeyContainer = container.querySelector(`[data-key=${subkey}]`)
             const value = subkeyContainer.querySelector(".value");
             if (typeof object === 'object') {
-                value.textContent = object.name;
-                value.classList.add(`rarity-${object.rarity}`);
+                if (subkey === "winratePvp") {
+                    let totalGames = object.win + object.lose
+                    function calculateWinrate(gamesWon, totalGames) {
+                        if (totalGames === 0) {
+                            return 0; // Avoid dividing by zero
+                        }
+
+                        return (gamesWon / totalGames) * 100;
+                    }
+                    value.textContent = BattleLogs.Utils.getWinrateString(object.win, totalGames).toString();
+                } else {
+                    value.textContent = object.name;
+                    value.classList.add(`rarity-${object.rarity}`);
+                }
             } else {
                 value.textContent = BattleLogs.Utils.formatNumber(object);
             }
@@ -669,8 +730,13 @@ class BattleLogsStatsStuffs {
             const name = document.createElement("span");
             name.classList.add("value")
             if (typeof object === 'object') {
-                name.textContent = object.name;
-                name.classList.add(`rarity-${object.rarity}`);
+                if (subkey === "winratePvp") {
+                    let totalGames = object.win + object.lose
+                    name.textContent = BattleLogs.Utils.getWinrateString(object.win, totalGames).toString();
+                } else {
+                    name.textContent = object.name;
+                    name.classList.add(`rarity-${object.rarity}`);
+                }
             } else if (!isNaN(object)) {  // check if object can be converted to a number
                 name.textContent = BattleLogs.Utils.formatNumber(object);
             } else {
@@ -1020,10 +1086,11 @@ class BattleLogsStatsStuffs {
                 "famDef": stuff.famDef
             },
             "battle": {
-                "battleCount": 0,
+                "winratePvp": {"win": 0, "lose": 0},
                 // "win": 0,
                 // "lose": 0,
-                "dmgMin": user.dmgTotal,
+                // "dmgMin": user.dmgTotal,
+                "battleCount": 0,
                 "dmgMax": user.dmgTotal,
                 "dmgAverage": 0,
                 "dmgTotal": 0

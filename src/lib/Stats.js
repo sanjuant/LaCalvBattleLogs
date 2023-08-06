@@ -39,15 +39,16 @@ class BattleLogsStats {
             this.__internal__addStatsButton(this.Settings.StatsEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
 
             // Set default settings
+            this.__internal__setDefaultSettingsValues(this.Settings.StatsPanes)
             this.Roues.setDefaultSettingsValues(this.Settings.StatsRoues)
             this.Stuffs.setDefaultSettingsValues(this.Settings.StatsStuffs)
-            this.__internal__setDefaultSettingsValues(this.Settings.StatsPanes)
 
             // Restore previous session state
-            this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
-            this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
-            this.Stuffs.Filters = BattleLogs.Utils.LocalStorage.getComplexValue(this.Stuffs.Settings.StuffsFilters);
             this.StatsPanes = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsPanes);
+            this.Stuffs.Filters = BattleLogs.Utils.LocalStorage.getComplexValue(this.Stuffs.Settings.StuffsFilters);
+            this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
+            // this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
+            this.Stuffs.Data = this.Stuffs.loadAndCompareStuffsWithModel();
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
                 if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
