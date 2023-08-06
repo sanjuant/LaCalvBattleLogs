@@ -25,7 +25,8 @@ class BattleLogsStatsStuffs {
         calv: "Calv",
         items: "Item",
         famAtk: "Fam Atk",
-        famDef: "Fam Def"
+        famDef: "Fam Def",
+        winratePvp: "Taux de victoire PvP"
     };
 
     static Data;
@@ -65,18 +66,25 @@ class BattleLogsStatsStuffs {
     /**
      * @desc Update stats of stuff
      *
+     * @param {string} battleType: type of battle.
      * @param {Object} stuff: stuff to update.
      * @param {Object} user: user object for battle stats
      * @param {Object} opponent: opponent object for battle wb stats
      */
-    static updateStats(stuff, user, opponent = null) {
+    static updateStats(battleType, stuff, user, opponent = null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
         let stuffData = this.Data["stuffs"].stuffs[stuffHash]
         if (!stuffData) {
             stuffData = this.__internal__createDefaultStuffDataObject(stuff, user)
             this.Data["stuffs"].stuffs[stuffHash] = stuffData;
         }
-        if (opponent) {
+        stuffData.name = stuff.name
+        stuffData.update = new Date().toISOString();
+        // Update order of items
+        stuffData.loadout.items = stuff.items
+        stuffData.totalBattle += 1;
+
+        if (battleType === BattleLogs.Boss.Settings.Type && opponent) {
             const wbHash = opponent.name.hashCode();
             let wbData = stuffData.wb[wbHash];
             if (!wbData) {
@@ -88,18 +96,17 @@ class BattleLogsStatsStuffs {
             wbData.battleCount += 1;
             wbData.dmgTotal += user.dmgTotal;
             wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
+        } else {
+            stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
+            stuffData.battle.battleCount += 1;
+            stuffData.battle.dmgTotal += user.dmgTotal;
+            stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
+            if (battleType === BattleLogs.Pvp.Settings.Type) {
+                stuffData.battle.winratePvp.win = user.result === "winner" ? stuffData.battle.winratePvp.win + 1 : stuffData.battle.winratePvp.win
+                stuffData.battle.winratePvp.lose = user.result === "looser" ? stuffData.battle.winratePvp.lose + 1 : stuffData.battle.winratePvp.lose
+            }
         }
-        stuffData.name = stuff.name
-        stuffData.update = new Date().toISOString();
-        stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
-        stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
-        stuffData.battle.battleCount += 1;
-        stuffData.battle.dmgTotal += user.dmgTotal;
-        stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
-        // Update order of items
-        stuffData.loadout.items = stuff.items
-        // stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
-        // stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
+
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
 
         // Delete stuff if limit is reached
@@ -156,6 +163,24 @@ class BattleLogsStatsStuffs {
         BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.StuffsFilters, {"order":"asc", "input":""});
     }
 
+    static loadAndCompareStuffsWithModel() {
+        let statsStuffs = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Stats.Settings.StatsStuffs);
+
+        if (!statsStuffs) {
+            return null; // You can also return an error message or the default model.
+        }
+
+        Object.keys(statsStuffs.stuffs.stuffs).forEach((stuffKey) => {
+            statsStuffs.stuffs.stuffs[stuffKey] = this.__internal__matchKeysWithModel(statsStuffs.stuffs.stuffs[stuffKey], this.__internal__createDefaultStuffDataObject({}, {}));
+            Object.keys(statsStuffs.stuffs.stuffs[stuffKey].wb).forEach((wbKey) => {
+                statsStuffs.stuffs.stuffs[stuffKey].wb[wbKey] = this.__internal__matchKeysWithModel(statsStuffs.stuffs.stuffs[stuffKey].wb[wbKey], this.__internal__createDefaultStuffWbDataObject({}, {}));
+            })
+        })
+
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, statsStuffs);
+        return statsStuffs;
+    }
+
     /**
      * @desc Returns the keys of the "stuffs" objects sorted by a weighted score.
      * The weight is calculated based on the "updateTimestamp", "battleCount" and "timeTimestamp" properties of each "stuff" object.
@@ -177,23 +202,23 @@ class BattleLogsStatsStuffs {
         for (let stuffKey in this.Data.stuffs.stuffs) {
             let stuff = this.Data.stuffs.stuffs[stuffKey];
             let updateTimestamp = new Date(stuff.update).getTime() / 1000;
-            let battleCount = stuff.battle.battleCount;
+            let totalBattle = stuff.totalBattle;
             let timeTimestamp = new Date(stuff.time).getTime() / 1000;
             let locked = stuff.locked;
-            stuffsList.push({"stuffKey": stuffKey, "updateTimestamp": updateTimestamp, "battleCount": battleCount, "timeTimestamp":timeTimestamp, "locked": locked});
+            stuffsList.push({"stuffKey": stuffKey, "updateTimestamp": updateTimestamp, "totalBattle": totalBattle, "timeTimestamp":timeTimestamp, "locked": locked});
         }
 
         // Normalize and weight
         let maxUpdateTimestamp = Math.max(...stuffsList.map(s => s.updateTimestamp));
         let minUpdateTimestamp = Math.min(...stuffsList.map(s => s.updateTimestamp));
-        let maxBattleCount = Math.max(...stuffsList.map(s => s.battleCount));
-        let minBattleCount = Math.min(...stuffsList.map(s => s.battleCount));
+        let maxTotalBattle = Math.max(...stuffsList.map(s => s.totalBattle));
+        let minTotalBattle = Math.min(...stuffsList.map(s => s.totalBattle));
         let maxTimeTimestamp = Math.max(...stuffsList.map(s => s.timeTimestamp));
         let minTimeTimestamp = Math.min(...stuffsList.map(s => s.timeTimestamp));
 
         for (let stuff of stuffsList) {
             stuff.updateTimestamp = this.__internal_updateTimestampWeight * ((stuff.updateTimestamp - minUpdateTimestamp) / (maxUpdateTimestamp - minUpdateTimestamp));
-            stuff.battleCount = this.__internal_battleCountWeight * ((stuff.battleCount - minBattleCount) / (maxBattleCount - minBattleCount));
+            stuff.battleCount = this.__internal_battleCountWeight * ((stuff.battleCount - minTotalBattle) / (maxTotalBattle - minTotalBattle));
             stuff.timeTimestamp = this.__internal_timeTimestampWeight * ((stuff.timeTimestamp - minTimeTimestamp) / (maxTimeTimestamp - minTimeTimestamp));
 
             stuff.weightedScore = stuff.updateTimestamp + stuff.battleCount + stuff.timeTimestamp;
@@ -273,6 +298,7 @@ class BattleLogsStatsStuffs {
         if (Array.isArray(object)) {
             object.forEach((item, i) => {
                 const subkeyContainer = container.querySelector(`[data-key=${subkey + i}]`)
+                if (subkeyContainer === null) return;
                 const value = subkeyContainer.querySelector(".value");
                 if (typeof item === 'object') {
                     value.textContent = item.name;
@@ -283,10 +309,16 @@ class BattleLogsStatsStuffs {
             })
         } else {
             const subkeyContainer = container.querySelector(`[data-key=${subkey}]`)
+            if (subkeyContainer === null) return;
             const value = subkeyContainer.querySelector(".value");
             if (typeof object === 'object') {
-                value.textContent = object.name;
-                value.classList.add(`rarity-${object.rarity}`);
+                if (subkey === "winratePvp") {
+                    let totalGames = object.win + object.lose
+                    value.textContent = BattleLogs.Utils.getWinrateString(object.win, totalGames).toString();
+                } else {
+                    value.textContent = object.name;
+                    value.classList.add(`rarity-${object.rarity}`);
+                }
             } else {
                 value.textContent = BattleLogs.Utils.formatNumber(object);
             }
@@ -655,22 +687,27 @@ class BattleLogsStatsStuffs {
      * @param {Number} id: Represent number of iteration for array
      */
     static __internal__appendAttributes(object, key, subkey, container, id = null) {
-        const attrContainer = document.createElement("div")
-        attrContainer.classList.add(key)
-        attrContainer.dataset["key"] = id !== null ? subkey + id : subkey
+        const attrContainer = document.createElement("div");
+        attrContainer.classList.add(key);
+        attrContainer.dataset["key"] = id !== null ? subkey + id : subkey;
         if (Array.isArray(object)) {
             object.forEach((item, i) => {
-                this.__internal__appendAttributes(item, key, subkey, container, i)
+                this.__internal__appendAttributes(item, key, subkey, container, i);
             })
         } else {
             const label = document.createElement("span");
-            label.classList.add("key")
+            label.classList.add("key");
             label.textContent = this.Messages[subkey].capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
             if (typeof object === 'object') {
-                name.textContent = object.name;
-                name.classList.add(`rarity-${object.rarity}`);
+                if (subkey === "winratePvp") {
+                    let totalGames = object.win + object.lose
+                    name.textContent = BattleLogs.Utils.getWinrateString(object.win, totalGames).toString();
+                } else {
+                    name.textContent = object.name;
+                    name.classList.add(`rarity-${object.rarity}`);
+                }
             } else if (!isNaN(object)) {  // check if object can be converted to a number
                 name.textContent = BattleLogs.Utils.formatNumber(object);
             } else {
@@ -997,14 +1034,53 @@ class BattleLogsStatsStuffs {
         return `${statsData.arme.name}\t${statsData.calv.name}\t${statsData.items.map(item => item.name).join("\t")}\t${statsData.famAtk.name}\t${statsData.famDef.name}`;
     }
 
+
+    /**
+     * @desc Compares the keys of the data object with the model, adds missing keys, and ensures order according to the model.
+     *
+     * @param {Object} dataObject: The data object to be checked.
+     * @param {Object} model: The model reference.
+     * @return {Object} The updated data object in the order of the model.
+     */
+    static __internal__matchKeysWithModel(dataObject, model) {
+        function isEmptyObject(obj) {
+            return Object.keys(obj).length === 0 && obj.constructor === Object;
+        }
+
+        function matchAndOrderKeys(data, reference) {
+            let orderedObject = {};
+
+            for (let key in reference) {
+                if (reference.hasOwnProperty(key)) {
+                    if (typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
+                        if (isEmptyObject(reference[key])) {
+                            // If the reference/model object is empty, retain the original data for that key
+                            orderedObject[key] = data[key];
+                        } else {
+                            // Ensure the nested object has the same structure and order as the model
+                            orderedObject[key] = data.hasOwnProperty(key) ? matchAndOrderKeys(data[key], reference[key]) : reference[key];
+                        }
+                    } else {
+                        // Directly assign the value from data or use default from the model
+                        orderedObject[key] = data.hasOwnProperty(key) ? data[key] : reference[key];
+                    }
+                }
+            }
+
+            return orderedObject;
+        }
+
+        return matchAndOrderKeys(dataObject, model);
+    }
+
+
     /**
      * @desc Creates a default object for each new stuff
      *
      * @param {Object} stuff: Equipment data object.
-     * @param {Object} user: User data object.
      * @return {Object} return a stuff data object with default values
      */
-    static __internal__createDefaultStuffDataObject(stuff, user) {
+    static __internal__createDefaultStuffDataObject(stuff) {
         return {
             "time": new Date().toISOString(),
             "update": new Date().toISOString(),
@@ -1012,6 +1088,7 @@ class BattleLogsStatsStuffs {
             "name": stuff.name,
             "customName": null,
             "element": stuff.element,
+            "totalBattle": 0,
             "loadout": {
                 "arme": stuff.arme,
                 "calv": stuff.calv,
@@ -1021,10 +1098,8 @@ class BattleLogsStatsStuffs {
             },
             "battle": {
                 "battleCount": 0,
-                // "win": 0,
-                // "lose": 0,
-                "dmgMin": user.dmgTotal,
-                "dmgMax": user.dmgTotal,
+                "winratePvp": {"win": 0, "lose": 0},
+                "dmgMax": 0,
                 "dmgAverage": 0,
                 "dmgTotal": 0
             },
@@ -1033,7 +1108,7 @@ class BattleLogsStatsStuffs {
     }
 
     /**
-     * @desc Creates a default object for each new stuff
+     * @desc Creates a default data for boss
      *
      * @param {Object} user: User data object.
      * @param {Object} opponent: Opponent data object.
@@ -1044,7 +1119,7 @@ class BattleLogsStatsStuffs {
             "name": opponent.name,
             "battleCount": 0,
             "dmgMin": user.dmgTotal,
-            "dmgMax": user.dmgTotal,
+            "dmgMax": 0,
             "dmgAverage": 0,
             "dmgTotal": 0
         }
