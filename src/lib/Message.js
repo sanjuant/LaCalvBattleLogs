@@ -456,7 +456,7 @@ class BattleLogsMessage {
                 this.Settings.MessageFilters,
                 this.Filters
             );
-            this.__internal__updateMessages();
+            this.updateMessages();
         };
     }
 
@@ -547,7 +547,7 @@ class BattleLogsMessage {
         clearTimeout(this.__internal__delayUpdate);
         this.__internal__delayUpdate = setTimeout(() => {
             this.updateMessages()
-        }, 1150);
+        }, 500);
     }
 
     /**
