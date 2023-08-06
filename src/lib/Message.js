@@ -543,8 +543,8 @@ class BattleLogsMessage {
      */
     static __internal__updateMessages() {
         clearTimeout(this.__internal__delayUpdate);
-        this.__internal__delayUpdate = setTimeout(function () {
-            BattleLogs.Message.updateMessages()
+        this.__internal__delayUpdate = setTimeout(() => {
+            this.updateMessages()
         }, 1150);
     }
 
