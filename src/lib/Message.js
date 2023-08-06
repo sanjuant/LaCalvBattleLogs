@@ -213,6 +213,7 @@ class BattleLogsMessage {
 
     static __internal__messagesContainer = null;
     static __internal__messagesActions = null;
+    static __internal__delayUpdate = null;
     static __internal__format = {
         normal: {
             selected: false,
@@ -453,7 +454,7 @@ class BattleLogsMessage {
                 this.Settings.MessageFilters,
                 this.Filters
             );
-            this.updateMessages();
+            this.__internal__updateMessages();
         };
     }
 
@@ -535,6 +536,16 @@ class BattleLogsMessage {
             this.__internal__format[format].selected = true;
             this.Settings.Format = format;
         }
+    }
+
+    /**
+     * @desc Update message and add delay to prevent excessive reload when user toggle filters in settings
+     */
+    static __internal__updateMessages() {
+        clearTimeout(this.__internal__delayUpdate);
+        this.__internal__delayUpdate = setTimeout(() => {
+            this.updateMessages()
+        }, 1150);
     }
 
     /**
