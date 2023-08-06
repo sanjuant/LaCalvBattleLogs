@@ -687,17 +687,16 @@ class BattleLogsStatsStuffs {
      * @param {Number} id: Represent number of iteration for array
      */
     static __internal__appendAttributes(object, key, subkey, container, id = null) {
-        const attrContainer = document.createElement("div")
-        attrContainer.classList.add(key)
-        attrContainer.dataset["key"] = id !== null ? subkey + id : subkey
+        const attrContainer = document.createElement("div");
+        attrContainer.classList.add(key);
+        attrContainer.dataset["key"] = id !== null ? subkey + id : subkey;
         if (Array.isArray(object)) {
             object.forEach((item, i) => {
-                this.__internal__appendAttributes(item, key, subkey, container, i)
+                this.__internal__appendAttributes(item, key, subkey, container, i);
             })
         } else {
             const label = document.createElement("span");
-            label.classList.add("key")
-            console.log(subkey)
+            label.classList.add("key");
             label.textContent = this.Messages[subkey].capitalize();
             const name = document.createElement("span");
             name.classList.add("value")
