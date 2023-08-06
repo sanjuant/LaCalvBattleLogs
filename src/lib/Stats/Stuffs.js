@@ -97,9 +97,6 @@ class BattleLogsStatsStuffs {
             wbData.dmgTotal += user.dmgTotal;
             wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
         } else {
-            if (Object.keys(stuffData.battle).length === 0) {
-                stuffData.battle = this.__internal__createDefaultStuffBattleDataObject(user);
-            }
             stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
             stuffData.battle.battleCount += 1;
             stuffData.battle.dmgTotal += user.dmgTotal;
@@ -301,6 +298,7 @@ class BattleLogsStatsStuffs {
         if (Array.isArray(object)) {
             object.forEach((item, i) => {
                 const subkeyContainer = container.querySelector(`[data-key=${subkey + i}]`)
+                if (subkeyContainer === null) return;
                 const value = subkeyContainer.querySelector(".value");
                 if (typeof item === 'object') {
                     value.textContent = item.name;
@@ -311,6 +309,7 @@ class BattleLogsStatsStuffs {
             })
         } else {
             const subkeyContainer = container.querySelector(`[data-key=${subkey}]`)
+            if (subkeyContainer === null) return;
             const value = subkeyContainer.querySelector(".value");
             if (typeof object === 'object') {
                 if (subkey === "winratePvp") {
