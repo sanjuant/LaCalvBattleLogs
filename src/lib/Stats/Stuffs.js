@@ -96,6 +96,8 @@ class BattleLogsStatsStuffs {
         stuffData.battle.battleCount += 1;
         stuffData.battle.dmgTotal += user.dmgTotal;
         stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
+        // Update order of items
+        stuffData.loadout.items = stuff.items
         // stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
         // stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
@@ -265,17 +267,22 @@ class BattleLogsStatsStuffs {
      * @param {string} key: Key of data.
      * @param {string} subkey: Subkey of data.
      * @param {Element} container: HTML element representing the stuff block.
-     * @param {Number} id: Represent number of iteration for array
      */
-    static __internal__updateAttributes(stuffData, key, subkey, container, id = null) {
+    static __internal__updateAttributes(stuffData, key, subkey, container) {
         const object = stuffData[key][subkey];
-        const subkeyContainer = container.querySelector(`[data-key=${id !== null ? subkey + id : subkey}]`)
-        if (subkeyContainer === null) return;
         if (Array.isArray(object)) {
             object.forEach((item, i) => {
-                this.__internal__updateAttributes(item, key, subkey, subkeyContainer, i)
+                const subkeyContainer = container.querySelector(`[data-key=${subkey + i}]`)
+                const value = subkeyContainer.querySelector(".value");
+                if (typeof item === 'object') {
+                    value.textContent = item.name;
+                    value.classList.add(`rarity-${item.rarity}`);
+                } else {
+                    value.textContent = BattleLogs.Utils.formatNumber(item);
+                }
             })
         } else {
+            const subkeyContainer = container.querySelector(`[data-key=${subkey}]`)
             const value = subkeyContainer.querySelector(".value");
             if (typeof object === 'object') {
                 value.textContent = object.name;
