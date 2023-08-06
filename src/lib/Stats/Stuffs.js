@@ -1078,10 +1078,9 @@ class BattleLogsStatsStuffs {
      * @desc Creates a default object for each new stuff
      *
      * @param {Object} stuff: Equipment data object.
-     * @param {Object} user: User data object.
      * @return {Object} return a stuff data object with default values
      */
-    static __internal__createDefaultStuffDataObject(stuff, user) {
+    static __internal__createDefaultStuffDataObject(stuff) {
         return {
             "time": new Date().toISOString(),
             "update": new Date().toISOString(),
