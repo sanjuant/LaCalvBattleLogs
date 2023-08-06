@@ -339,13 +339,6 @@ class BattleLogsStatsStuffs {
             if (typeof object === 'object') {
                 if (subkey === "winratePvp") {
                     let totalGames = object.win + object.lose
-                    function calculateWinrate(gamesWon, totalGames) {
-                        if (totalGames === 0) {
-                            return 0; // Avoid dividing by zero
-                        }
-
-                        return (gamesWon / totalGames) * 100;
-                    }
                     value.textContent = BattleLogs.Utils.getWinrateString(object.win, totalGames).toString();
                 } else {
                     value.textContent = object.name;
@@ -1089,8 +1082,8 @@ class BattleLogsStatsStuffs {
                 "famDef": stuff.famDef
             },
             "battle": {
-                "winratePvp": {"win": 0, "lose": 0},
                 "battleCount": 0,
+                "winratePvp": {"win": 0, "lose": 0},
                 "dmgMax": user.dmgTotal,
                 "dmgAverage": 0,
                 "dmgTotal": 0
