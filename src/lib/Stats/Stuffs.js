@@ -192,12 +192,12 @@ class BattleLogsStatsStuffs {
 
             for (let key in reference) {
                 if (reference.hasOwnProperty(key)) {
-                    if (data.hasOwnProperty(key) && typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
-                        orderedObject[key] = matchAndOrderKeys(data[key], reference[key]);
-                    } else if (data.hasOwnProperty(key)) {
-                        orderedObject[key] = data[key];
+                    if (typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
+                        // Ensure the nested object has the same structure and order as the model
+                        orderedObject[key] = data.hasOwnProperty(key) ? matchAndOrderKeys(data[key], reference[key]) : reference[key];
                     } else {
-                        orderedObject[key] = reference[key];
+                        // Directly assign the value from data or use default from the model
+                        orderedObject[key] = data.hasOwnProperty(key) ? data[key] : reference[key];
                     }
                 }
             }
@@ -207,6 +207,7 @@ class BattleLogsStatsStuffs {
 
         return matchAndOrderKeys(dataObject, model);
     }
+
 
     /**
      * @desc Returns the keys of the "stuffs" objects sorted by a weighted score.
