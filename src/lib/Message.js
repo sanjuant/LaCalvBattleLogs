@@ -137,6 +137,7 @@ class BattleLogsMessage {
      * @desc Update messages
      */
     static updateMessages() {
+        this.__internal__messagesContainer.classList.add("hidden");
         this.__internal__messagesContainer.innerHTML = "";
         this.__internal__getLogsInOrders().forEach((log) => {
             if (BattleLogs[log.type]) {
@@ -145,6 +146,7 @@ class BattleLogsMessage {
                 BattleLogs.Summarize.appendMessage(log);
             }
         });
+        this.__internal__messagesContainer.classList.remove("hidden");
     }
 
     /**
