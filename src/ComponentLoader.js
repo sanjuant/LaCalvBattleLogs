@@ -28,6 +28,8 @@ class BattleLogsComponentLoader
         
         // From the least dependant, to the most dependent
         this.__addScript("src/lib/Utils/LocalStorage.js");
+        this.__addScript("src/lib/Stats/Roues.js");
+        this.__addScript("src/lib/Stats/Stuffs.js");
 
         this.__loadingOrder += 1;
         this.__addScript("src/lib/Interceptor.js");
@@ -53,6 +55,7 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Option.js");
         this.__addScript("src/lib/Glossary.js");
         this.__addScript("src/lib/Expedition.js");
+        // this.__addScript("src/lib/StatsOld.js");
         this.__addScript("src/lib/Stats.js");
 
         this.__loadingOrder += 1;
