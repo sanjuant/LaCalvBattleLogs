@@ -158,7 +158,8 @@ class BattleLogsExpedition {
         log.rewards.items.forEach(item => {
             const objectSpan = document.createElement("span");
             objectSpan.classList.add("rarity-" + item.rarity);
-            let proba = Math.round(item.proba * 100 * 1000) / 1000
+            let proba = item.proba * 100;
+            proba = Math.min(100, BattleLogs.Utils.roundToAny(proba, 3));
             if (item.isFam) {
                 objectSpan.innerHTML = this.Messages.item[BattleLogs.Message.Settings.Format].format(`${item.name} (x${item.count}) [${proba}%] (F)`);
             } else {
@@ -189,6 +190,7 @@ class BattleLogsExpedition {
             const type = reward[0];
             const object = reward[1];
             let proba = object["multiplier"] ? object["proba"] * (1 + famRarity * 0.05) : object["proba"];
+            proba = Math.min(100, proba);
             let name;
             let count;
             let rarity;
