@@ -189,6 +189,7 @@ class BattleLogsExpedition {
             const type = reward[0];
             const object = reward[1];
             let proba = object["multiplier"] ? object["proba"] * (1 + famRarity * 0.05) : object["proba"];
+            proba = Math.min(100, proba);
             let name;
             let count;
             let rarity;
