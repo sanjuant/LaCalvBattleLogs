@@ -17,7 +17,6 @@ class BattleLogsStatsStuffs {
         battleCount: "Total",
         win: "Victoires",
         lose: "Défaites",
-        dmgMin: "Dégâts minimum",
         dmgMax: "Dégâts maximum",
         dmgAverage: "Dégâts moyens",
         dmgTotal: "Dégâts totaux",
@@ -176,38 +175,6 @@ class BattleLogsStatsStuffs {
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, statsStuffs);
         return statsStuffs;
     }
-
-    /**
-     * @desc Compares the keys of the data object with the model, adds missing keys, and ensures order according to the model.
-     *
-     * @param {Object} dataObject: The data object to be checked.
-     * @return {Object} The updated data object in the order of the model.
-     */
-    static __internal__matchKeysWithModel(dataObject) {
-        const model = this.__internal__createDefaultStuffDataObject({}, {});
-
-        // This function is recursive to handle nested objects.
-        function matchAndOrderKeys(data, reference) {
-            let orderedObject = {};
-
-            for (let key in reference) {
-                if (reference.hasOwnProperty(key)) {
-                    if (typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
-                        // Ensure the nested object has the same structure and order as the model
-                        orderedObject[key] = data.hasOwnProperty(key) ? matchAndOrderKeys(data[key], reference[key]) : reference[key];
-                    } else {
-                        // Directly assign the value from data or use default from the model
-                        orderedObject[key] = data.hasOwnProperty(key) ? data[key] : reference[key];
-                    }
-                }
-            }
-
-            return orderedObject;
-        }
-
-        return matchAndOrderKeys(dataObject, model);
-    }
-
 
     /**
      * @desc Returns the keys of the "stuffs" objects sorted by a weighted score.
@@ -1059,6 +1026,39 @@ class BattleLogsStatsStuffs {
     static __internal__getFormattedStuffLoadoutString(statsData) {
         return `${statsData.arme.name}\t${statsData.calv.name}\t${statsData.items.map(item => item.name).join("\t")}\t${statsData.famAtk.name}\t${statsData.famDef.name}`;
     }
+
+
+    /**
+     * @desc Compares the keys of the data object with the model, adds missing keys, and ensures order according to the model.
+     *
+     * @param {Object} dataObject: The data object to be checked.
+     * @return {Object} The updated data object in the order of the model.
+     */
+    static __internal__matchKeysWithModel(dataObject) {
+        const model = this.__internal__createDefaultStuffDataObject({}, {});
+
+        // This function is recursive to handle nested objects.
+        function matchAndOrderKeys(data, reference) {
+            let orderedObject = {};
+
+            for (let key in reference) {
+                if (reference.hasOwnProperty(key)) {
+                    if (typeof reference[key] === 'object' && reference[key] !== null && !Array.isArray(reference[key])) {
+                        // Ensure the nested object has the same structure and order as the model
+                        orderedObject[key] = data.hasOwnProperty(key) ? matchAndOrderKeys(data[key], reference[key]) : reference[key];
+                    } else {
+                        // Directly assign the value from data or use default from the model
+                        orderedObject[key] = data.hasOwnProperty(key) ? data[key] : reference[key];
+                    }
+                }
+            }
+
+            return orderedObject;
+        }
+
+        return matchAndOrderKeys(dataObject, model);
+    }
+
 
     /**
      * @desc Creates a default object for each new stuff
