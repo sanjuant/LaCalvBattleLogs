@@ -66,18 +66,24 @@ class BattleLogsStatsStuffs {
     /**
      * @desc Update stats of stuff
      *
+     * @param {string} battleType: type of battle.
      * @param {Object} stuff: stuff to update.
      * @param {Object} user: user object for battle stats
      * @param {Object} opponent: opponent object for battle wb stats
      */
-    static updateStats(stuff, user, opponent = null) {
+    static updateStats(battleType, stuff, user, opponent = null) {
         const stuffHash = this.__internal__createStuffHash(stuff)
         let stuffData = this.Data["stuffs"].stuffs[stuffHash]
         if (!stuffData) {
             stuffData = this.__internal__createDefaultStuffDataObject(stuff, user)
             this.Data["stuffs"].stuffs[stuffHash] = stuffData;
         }
-        if (opponent) {
+        stuffData.name = stuff.name
+        stuffData.update = new Date().toISOString();
+        // Update order of items
+        stuffData.loadout.items = stuff.items
+
+        if (battleType === BattleLogs.Boss.Settings.Type && opponent) {
             const wbHash = opponent.name.hashCode();
             let wbData = stuffData.wb[wbHash];
             if (!wbData) {
@@ -89,20 +95,17 @@ class BattleLogsStatsStuffs {
             wbData.battleCount += 1;
             wbData.dmgTotal += user.dmgTotal;
             wbData.dmgAverage = Math.round(wbData.dmgTotal / wbData.battleCount);
+        } else {
+            stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
+            stuffData.battle.battleCount += 1;
+            stuffData.battle.dmgTotal += user.dmgTotal;
+            stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
+            if (battleType === BattleLogs.Pvp.Settings.Type) {
+                stuffData.battle.winratePvp.win = user.result === "winner" ? stuffData.battle.winratePvp.win + 1 : stuffData.battle.winratePvp.win
+                stuffData.battle.winratePvp.lose = user.result === "looser" ? stuffData.battle.winratePvp.lose + 1 : stuffData.battle.winratePvp.lose
+            }
         }
-        stuffData.name = stuff.name
-        stuffData.update = new Date().toISOString();
-        stuffData.battle.dmgMax = stuffData.battle.dmgMax > user.dmgTotal ? stuffData.battle.dmgMax : user.dmgTotal;
-        // stuffData.battle.dmgMin = stuffData.battle.dmgMin < user.dmgTotal ? stuffData.battle.dmgMin : user.dmgTotal;
-        stuffData.battle.battleCount += 1;
-        stuffData.battle.dmgTotal += user.dmgTotal;
-        stuffData.battle.dmgAverage = Math.round(stuffData.battle.dmgTotal / stuffData.battle.battleCount);
-        // Update order of items
-        stuffData.loadout.items = stuff.items
-        stuffData.battle.winratePvp.win = user.result === "winner" ? stuffData.battle.winratePvp.win + 1 : stuffData.battle.winratePvp.win
-        stuffData.battle.winratePvp.lose = user.result === "looser" ? stuffData.battle.winratePvp.lose + 1 : stuffData.battle.winratePvp.lose
-        // stuffData.battle.win = user.result === "winner" ? stuffData.battle.win + 1 : stuffData.battle.win
-        // stuffData.battle.lose = user.result === "looser" ? stuffData.battle.lose + 1 : stuffData.battle.lose
+
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsStuffs, this.Data);
 
         // Delete stuff if limit is reached
@@ -1087,9 +1090,6 @@ class BattleLogsStatsStuffs {
             },
             "battle": {
                 "winratePvp": {"win": 0, "lose": 0},
-                // "win": 0,
-                // "lose": 0,
-                // "dmgMin": user.dmgTotal,
                 "battleCount": 0,
                 "dmgMax": user.dmgTotal,
                 "dmgAverage": 0,

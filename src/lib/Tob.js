@@ -95,7 +95,7 @@ class BattleLogsTob {
                 BattleLogs.Summarize.Settings.x100.Type
             );
         }
-        BattleLogs.Stats.Stuffs.updateStats(stuff, user);
+        BattleLogs.Stats.Stuffs.updateStats(this.Settings.Type, stuff, user);
     }
 
     /**
