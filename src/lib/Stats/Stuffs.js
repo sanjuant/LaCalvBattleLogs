@@ -431,6 +431,16 @@ class BattleLogsStatsStuffs {
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
         stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
+        stuffHeader.oncontextmenu = (event) => {
+            event.preventDefault();
+
+            const stuffString = this.__internal__getFormattedStuffLoadoutString(statsData.loadout);
+            navigator.clipboard.writeText(stuffString).then(() => {
+                console.log("Stuff copied to clipboard.");
+            }).catch(err => {
+                console.error("Could not copy text: ", err);
+            });
+        };
 
         // Create div for left elements
         const headerLeft = document.createElement("div");
@@ -873,7 +883,6 @@ class BattleLogsStatsStuffs {
      * @param {string} key: The key used to identify the specific stuff in the application's data structures.
      */
     static __internal__showPrompt(stuff, key) {
-        console.log(key)
         let defaultValue = stuff.name;
 
         let promptContainer = document.createElement("div");
@@ -969,6 +978,16 @@ class BattleLogsStatsStuffs {
         document.addEventListener("keyup", keyupListener);
 
         document.body.appendChild(promptContainer);
+    }
+
+    /**
+     * @desc Formats the statistical data of a stuff into a string representation.
+     *
+     * @param {Object} statsData - Statistical data for the stuff.
+     * @returns {string} - Formatted string detailing properties like 'Calv', 'Arme', 'Items', 'FamAtk', and 'FamDef'.
+     */
+    static __internal__getFormattedStuffLoadoutString(statsData) {
+        return `${statsData.arme.name}\t${statsData.calv.name}\t${statsData.items.map(item => item.name).join("\t")}\t${statsData.famAtk.name}\t${statsData.famDef.name}`;
     }
 
     /**
