@@ -86,7 +86,7 @@ class BattleLogsStatsRoues {
         })
         this.appendStatsToPane(this.Data[id])
         const dateSpan = document.querySelector(`#${BattleLogs.Stats.Settings.Type}-${id} [data-key="time"]`)
-        dateSpan.textContent = this.Messages.since.format(BattleLogs.Stats.formatStatsDate(newStatsData));
+        dateSpan.textContent = BattleLogs.Stats.Messages.since.format(BattleLogs.Stats.formatStatsDate(newStatsData));
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.Data);
     }
 
