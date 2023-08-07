@@ -147,6 +147,7 @@ class BattleLogsMessage {
             }
         });
         BattleLogs.Menu.BattleLogsWrapper.classList.remove("hidden");
+        this.__internal__scrollDownMessages();
     }
 
     /**
@@ -215,7 +216,6 @@ class BattleLogsMessage {
 
     static __internal__messagesContainer = null;
     static __internal__messagesActions = null;
-    static __internal__delayUpdate = null;
     static __internal__format = {
         normal: {
             selected: false,
@@ -541,13 +541,13 @@ class BattleLogsMessage {
     }
 
     /**
-     * @desc Update message and add delay to prevent excessive reload when user toggle filters in settings
+     * @desc Scroll down the wrapper to visualise last commited messages first
      */
-    static __internal__updateMessages() {
-        clearTimeout(this.__internal__delayUpdate);
-        this.__internal__delayUpdate = setTimeout(() => {
-            this.updateMessages()
-        }, 500);
+    static __internal__scrollDownMessages() {
+        // Scroll wrapper to bottom
+        if (!this.__internal__messagesContainer.classList.contains("hidden")) {
+            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+        }
     }
 
     /**
