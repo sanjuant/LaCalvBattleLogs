@@ -77,7 +77,7 @@ class BattleLogsStatsRoues {
      * @param {string} id: Id of wheel to reset
      */
     static resetStats(id) {
-        this.Data[id] = JSON.parse(JSON.stringify(this.Data.__internal__defaultStats[id]));
+        this.Data[id] = JSON.parse(JSON.stringify(this.__internal__defaultStats[id]));
         const newStatsData = this.Data[id]
         newStatsData.time = new Date().toISOString();
         const statPanes = document.querySelectorAll(`#Stats-${id}[data-key=${id}] .stats-block`);
