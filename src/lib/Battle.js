@@ -924,8 +924,8 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      */
     static __internal__setDmgTotal(user, opponent) {
-        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.famDmg + user.famRenvoi;
-        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.famDmg + opponent.famRenvoi;
+        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.intimidation + user.famDmg + user.famRenvoi;
+        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.intimidation + opponent.famDmg + opponent.famRenvoi;
     }
 
     /**
