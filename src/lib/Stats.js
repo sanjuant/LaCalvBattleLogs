@@ -6,11 +6,13 @@ class BattleLogsStats {
     // Aliases on the other classes
     static Roues = BattleLogsStatsRoues;
     static Stuffs = BattleLogsStatsStuffs;
+    static Account = BattleLogsStatsAccount;
 
     static Settings = {
         StatsEnable: "Stats-Enable",
         StatsRoues: "Stats-Roues",
         StatsStuffs: "Stats-Stuffs",
+        StatsAccount: "Stats-Account",
         StatsPanes: "Stats-Panes",
         Type: "Stats"
     }
@@ -42,6 +44,7 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues(this.Settings.StatsPanes)
             this.Roues.setDefaultSettingsValues(this.Settings.StatsRoues)
             this.Stuffs.setDefaultSettingsValues(this.Settings.StatsStuffs)
+            this.Account.setDefaultSettingsValues(this.Settings.StatsAccount)
 
             // Restore previous session state
             this.StatsPanes = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsPanes);
@@ -49,6 +52,7 @@ class BattleLogsStats {
             this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
             // this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
             this.Stuffs.Data = this.Stuffs.loadAndCompareStuffsWithModel();
+            this.Account.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsAccount);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
                 if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
@@ -58,6 +62,7 @@ class BattleLogsStats {
             }
             this.Roues.createStatsPanes()
             this.Stuffs.createStatsPanes()
+            this.Account.createStatsPanes()
         }
     }
 
@@ -84,6 +89,8 @@ class BattleLogsStats {
 
         // Create title left part of header
         let paneHeaderTitle = document.createElement("span");
+        console.log(statsName)
+        console.log(statsType)
         paneHeaderTitle.textContent = this[statsName].Messages[statsType].name;
         paneHeaderTitle.classList.add("stats-title-name");
 
