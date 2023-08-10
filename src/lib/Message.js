@@ -205,7 +205,6 @@ class BattleLogsMessage {
             this.__internal__messagesContainer.classList.remove("hidden");
             this.SettingsButton.classList.remove("selected");
             this.SettingsButton.title = "Paramètres";
-            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
             BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, "false");
         }
     }
