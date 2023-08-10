@@ -291,6 +291,10 @@ body{
     background-color: #0c0c0d;
 }
 
+#battlelogs-glossary_panel {
+    height: 100%;
+}
+
 #battlelogs-glossary_panel.hidden {
     display: none;
 }
@@ -622,6 +626,18 @@ body{
 }
 
 /********************/
+/* Option           */
+/********************/
+.type-effectiveness {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #2f3031;
+    padding: 0 3rem 3rem 3rem;
+}
+
+/********************/
 /* Utils            */
 /********************/
 button {
@@ -678,6 +694,10 @@ button.selected {
 }
 .pointer-none {
     pointer-events: none;
+}
+.dynamic-image {
+    width: 100%;
+    height: auto;
 }
 
 /********************/
@@ -1014,3 +1034,4 @@ button.svg_chat {
         margin-left: 0 !important;
     }
 }
+

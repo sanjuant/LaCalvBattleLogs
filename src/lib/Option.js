@@ -27,6 +27,8 @@ class BattleLogsOption {
                 this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
 
                 this.__internal__addKonamiCode()
+
+                this.__internal__addTypeEffectiveness()
             }
         }
     }
@@ -287,6 +289,17 @@ class BattleLogsOption {
         document.addEventListener("keydown", keydownListener);
 
         document.body.appendChild(promptContainer);
+    }
+
+    static __internal__addTypeEffectiveness() {
+        const typeEffectivenessContainer = document.createElement("div");
+        typeEffectivenessContainer.classList.add("type-effectiveness");
+        const typeEffectivenessChart = document.createElement("img");
+        typeEffectivenessChart.src = BattleLogsComponentLoader.__baseUrl + "images/type_effectiveness_chart.svg";
+        typeEffectivenessChart.alt = "Diagramme d'efficacité des types";
+        typeEffectivenessChart.classList.add("dynamic-image");
+        typeEffectivenessContainer.appendChild(typeEffectivenessChart);
+        BattleLogs.Glossary.GlossaryPanel.appendChild(typeEffectivenessContainer);
     }
 
     /**
