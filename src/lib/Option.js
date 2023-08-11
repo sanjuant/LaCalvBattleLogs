@@ -24,12 +24,12 @@ class BattleLogsOption {
                 BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
 
                 // Add CSV button
-                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Video.BattleLogsVideoButton);
 
                 this.__internal__addKonamiCode()
 
-                this.__internal__addTypeEffectiveness()
             }
+            this.__internal__addTypeEffectiveness()
         }
     }
 
@@ -117,7 +117,7 @@ class BattleLogsOption {
             BattleLogs.Utils.LocalStorage.setValue(chatButton.id, newStatus);
         };
 
-        containingDiv.appendChild(chatButton);
+        containingDiv.insertAdjacentElement("afterend", chatButton);
     }
 
     static __internal__toggleChat(display) {
