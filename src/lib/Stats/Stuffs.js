@@ -118,7 +118,10 @@ class BattleLogsStatsStuffs {
                 if (stuffsLength >= this.__internal_stuffStorageLimit) {
                     delete this.Data.stuffs.stuffs[lowestWeightKey];
                 }
-                document.querySelector(`[data-key="${lowestWeightKey}"]`).remove()
+                let lowestStuff = document.querySelector(`[data-key="${lowestWeightKey}"]`)
+                if (lowestStuff) {
+                    lowestStuff.remove();
+                }
                 this.__internal__createOrUpdateStuff(stuffData, stuffHash)
             }
         } else {
