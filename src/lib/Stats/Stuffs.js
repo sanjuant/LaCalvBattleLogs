@@ -84,6 +84,11 @@ class BattleLogsStatsStuffs {
         stuffData.loadout.items = stuff.items
         stuffData.totalBattle += 1;
 
+        // Sometimes element is not defined
+        if (!stuffData.element) {
+            stuffData.element = stuff.element
+        }
+
         if (battleType === BattleLogs.Boss.Settings.Type && opponent) {
             const wbHash = opponent.name.hashCode();
             let wbData = stuffData.wb[wbHash];
@@ -472,7 +477,9 @@ class BattleLogsStatsStuffs {
         // Create header
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
-        stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
+        if (statsData.element) {
+            stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
+        }
         stuffHeader.oncontextmenu = (event) => {
             event.preventDefault();
 
