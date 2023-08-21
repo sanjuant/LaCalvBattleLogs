@@ -67,18 +67,18 @@ class BattleLogsVideo {
             const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
                 "true");
             if (newStatus) {
-                videoButton.classList.add("selected");
-                videoButton.title = "Masquer le lecteur Twitch";
+                this.BattleLogsVideoButton.classList.add("selected");
+                this.BattleLogsVideoButton.title = "Masquer le lecteur Twitch";
                 this.BattleLogsTwitchVideo.style.display = "block";
                 this.BattleLogsTwitchChat.style.height = "80%";
             } else {
-                videoButton.classList.remove("selected");
-                videoButton.title = "Afficher le lecteur Twitch (nécessite le chat)";
+                this.BattleLogsVideoButton.classList.remove("selected");
+                this.BattleLogsVideoButton.title = "Afficher le lecteur Twitch (nécessite le chat)";
                 this.BattleLogsTwitchVideo.style.display = "none";
                 this.BattleLogsTwitchChat.style.height = "inherit";
             }
 
-            BattleLogs.Utils.LocalStorage.setValue(videoButton.id, newStatus);
+            BattleLogs.Utils.LocalStorage.setValue(this.BattleLogsVideoButton.id, newStatus);
         };
 
         this.BattleLogsVideoButton.oncontextmenu = () => {
