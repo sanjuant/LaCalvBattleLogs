@@ -4,7 +4,8 @@
 class BattleLogsSurvie {
     static Settings = {
         Logs: "Survie-Logs",
-        Type: "Survie"
+        Type: "Survie",
+        Limit: 100
     };
 
     static Messages = {
@@ -148,7 +149,7 @@ class BattleLogsSurvie {
     static __internal__addLog(uid, choice, user, opponent, rewards, stuff) {
         const log = new this.Log(this.Settings.Type, uid, choice, user, opponent, rewards, stuff);
         this.LogsArray.push(log);
-        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log, this.Settings.Limit);
 
         return log;
     }

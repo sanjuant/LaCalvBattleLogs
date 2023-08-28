@@ -21,11 +21,21 @@ class BattleLogsUtilsLocalStorage
      *
      * @param {string} key: The key to set the value of
      * @param {any} value: The value
+     * @param {Number} limit: The limit size of messages logs
      */
-    static setComplexValue(key, value)
+    static setComplexValue(key, value, limit=null)
     {
         const existingValue = this.getComplexValue(key)
         if (Array.isArray(existingValue)) {
+
+            if (limit != null) {
+                if (existingValue.length === (limit - 1)) {
+                    BattleLogs.Message.appendMessage(`La limite de ${limit} messages pour le type ${value.type} à été atteinte.`, "Info", {"time": new Date().toISOString()});
+                }
+                if (existingValue.length >= limit) {
+                    existingValue.shift()
+                }
+            }
             existingValue.push(value);
             value = existingValue
         }
