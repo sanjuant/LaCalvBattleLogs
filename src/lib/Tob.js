@@ -4,7 +4,8 @@
 class BattleLogsTob {
     static Settings = {
         Logs: "Tob-Logs",
-        Type: "Tob"
+        Type: "Tob",
+        Limit: 500
     };
 
     static Messages = {
@@ -156,7 +157,7 @@ class BattleLogsTob {
     static __internal__addLog(user, opponent, rewards, stage, stuff) {
         const log = new this.Log(this.Settings.Type, user, opponent, rewards, stage, stuff);
         this.LogsArray.push(log);
-        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log, this.Settings.Limit);
 
         return log;
     }

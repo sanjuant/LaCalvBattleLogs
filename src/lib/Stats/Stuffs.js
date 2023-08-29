@@ -594,7 +594,7 @@ class BattleLogsStatsStuffs {
                 "svg_chevron-up-dark",
                 "svg_chevron-down-dark",
                 "Réduire le stuff",
-                "Déplier le stuf"
+                "Déplier le stuff"
             );
         });
         headerRight.appendChild(stuffCollapseButton);
