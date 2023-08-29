@@ -261,6 +261,10 @@ body{
     color: #00A7FF;
     font-family: Calibri,sans-serif;
 }
+.messages > p[data-type="Info"] {
+    background-color: hsl(42, 37%, 19%);
+    color: hsl(43, 94%, 81%);
+}
 
 /* Sélectionne le span avec la classe "type" */
 

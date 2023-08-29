@@ -30,7 +30,7 @@ class BattleLogsUtilsLocalStorage
             if (limit != null) {
                 if (value.type !== BattleLogs.Survie.Settings.Type && existingValue.length === (limit - 1) ||
                     value.type === BattleLogs.Survie.Settings.Type && existingValue.length === (limit - 3) ) {
-                    BattleLogs.Message.appendMessage(`Tu approches de la limite de ${limit} messages pour le type ${value.type}. Pour tout conserver, pense à les exporter. Fais de la place en supprimant les anciens, ou laisse faire le nettoyage automatique.`, "Info", {"time": new Date().toISOString()});
+                    BattleLogs.Message.appendMessage(`Tu approches de la limite de ${limit} messages pour le type ${value.type}. Pour tout conserver, pense à les exporter. Fais de la place en supprimant les anciens, ou laisse faire le nettoyage automatique.`, "Info", {"type": "Info", "time": new Date().toISOString()});
                 }
                 if (existingValue.length === limit) {
                     existingValue.shift()

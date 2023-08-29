@@ -165,7 +165,7 @@ class BattleLogsMessage {
                 BattleLogs.Summarize.LogsArray[type].splice(index, 1);
             }
             BattleLogs.Utils.LocalStorage.delLogValue(BattleLogs.Summarize.Settings[type].Logs, time)
-        } else {
+        } else if (BattleLogs[type]) {
             let index = BattleLogs[type].LogsArray.findIndex((log) => log.time === time);
             if (index !== -1) {
                 BattleLogs[type].LogsArray.splice(index, 1);
