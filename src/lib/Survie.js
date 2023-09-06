@@ -5,7 +5,7 @@ class BattleLogsSurvie {
     static Settings = {
         Logs: "Survie-Logs",
         Type: "Survie",
-        Limit: 100
+        Limit: 500
     };
 
     static Messages = {

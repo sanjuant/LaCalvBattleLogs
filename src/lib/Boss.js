@@ -6,7 +6,7 @@ class BattleLogsBoss {
         Logs: "Boss-Logs",
         Type: "Boss",
         LastBattle: "Boss-LastBattle",
-        Limit: 100
+        Limit: 500
     };
 
     static Messages = {
