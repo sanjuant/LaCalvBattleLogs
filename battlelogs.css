@@ -511,7 +511,7 @@ body{
 .stuff-body-block-title {
     background-color: #232327;
 }
-.stuff-body-block-values div[data-key] {
+.stuff-body-block-values div[data-key]{
     border-radius: 5px;
     overflow: hidden;
     display: flex;
@@ -589,6 +589,54 @@ body{
 .stuffs-actions button {
     background-color: #35393b;
     border-radius: 5px;
+}
+.stats-account {
+    padding: .5rem;
+    display: flex;
+    flex-flow: row wrap;
+    align-content: space-between;
+    justify-items: stretch;
+    flex: 1 1 auto;
+    gap: .5rem;
+}
+
+.stats-account-body {
+    display: flex;
+    flex-direction: column;
+    border: none;
+    background-color: transparent;
+    border-radius: 5px;
+    overflow: hidden;
+    flex: 1 1 auto;
+    gap: .5rem;
+}
+.stats-account-body .key {
+    height: 100%;
+    background-color: #232327;
+    text-transform: uppercase;
+    font-size: 11px;
+    text-align: right;
+    padding: 0 10px;
+    flex-grow: 1;
+}
+.stats-account-body .value {
+    background-color: #595959;
+    text-align: left;
+    padding: 0 5px;
+    flex-grow: 1;
+    align-self: stretch;
+    justify-content: end;
+    max-width: 6rem;
+}
+.stats-account-body div[data-key]{
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+    align-items: center;
+    background-color: #232327;
+    line-height: 1.5rem;
 }
 
 

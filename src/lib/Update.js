@@ -11,6 +11,13 @@ class BattleLogsUpdate {
     static Wb = Number.MIN_VALUE;
     static stuffAtk = 0;
     static stuffs = {};
+    static Alopiece = 0;
+    static Tickets = 0;
+    static Calvs = [];
+    static Items = [];
+    static Armes = [];
+    static Objects = [];
+    static Familiers = [];
 
     /**
      * @desc Initialize Class
@@ -72,6 +79,27 @@ class BattleLogsUpdate {
         if (data["player"]) {
             this.__internal__parse_player_stuffs(data["player"]);
         }
+        if (data["tickets"]) {
+            this.Tickets = data["tickets"]
+        }
+        if (data["alopiece"]) {
+            this.Alopiece = data["alopiece"]
+        }
+        if (data["calvs"]) {
+            this.Calvs = data["calvs"]
+        }
+        if (data["items"]) {
+            this.Items = data["items"]
+        }
+        if (data["armes"]) {
+            this.Armes = data["armes"]
+        }
+        if (data["familiers"]) {
+            this.Familiers = data["familiers"]
+        }
+        if (data["objects"]) {
+            this.Objects = data["objects"]
+        }
         if (data["player"] && data["player"]["stuffAtk"] >= 0) {
             this.stuffAtk = data["player"]["stuffAtk"] + 1;
         }
@@ -110,6 +138,8 @@ class BattleLogsUpdate {
         // Set new value streaming to local storage
         BattleLogs.Utils.LocalStorage.setValue(this.Settings.Streaming, this.Streaming);
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.DateSoundBossAvailable, this.__internal__dateForSoundBossAvailable);
+
+        BattleLogs.Stats.Account.updateStats()
     }
 
         /**

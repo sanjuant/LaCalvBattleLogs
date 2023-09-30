@@ -30,6 +30,7 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Utils/LocalStorage.js");
         this.__addScript("src/lib/Stats/Roues.js");
         this.__addScript("src/lib/Stats/Stuffs.js");
+        this.__addScript("src/lib/Stats/Account.js");
 
         this.__loadingOrder += 1;
         this.__addScript("src/lib/Interceptor.js");

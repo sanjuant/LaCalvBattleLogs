@@ -2,6 +2,11 @@
  * @class The BattleLogsUpdate regroups the Update functionalities
  */
 class BattleLogsLoad {
+    static Armes = [];
+    static Calvs = [];
+    static Items = [];
+    static Familiers = [];
+
     /**
      * @desc Parse XMLHttpRequest response
      *
@@ -15,9 +20,10 @@ class BattleLogsLoad {
         } catch (e) {
             return;
         }
-        this.__internal__items = BattleLogs.Utils.pakoUncompress(data["items"]);
-        this.__internal__armes = BattleLogs.Utils.pakoUncompress(data["armes"]);
-        this.__internal__calvs = BattleLogs.Utils.pakoUncompress(data["calvs"]);
+        this.Items = BattleLogs.Utils.pakoUncompress(data["items"]);
+        this.Armes = BattleLogs.Utils.pakoUncompress(data["armes"]);
+        this.Calvs = BattleLogs.Utils.pakoUncompress(data["calvs"]);
+        this.Familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
         this.__internal__expeditions = BattleLogs.Utils.pakoUncompress(data["expeditions"]);
         this.__internal__familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
 
@@ -30,13 +36,13 @@ class BattleLogsLoad {
      * @return true if load objects has loaded else false
      */
     static hasLoaded() {
-        if (this.__internal__items.length === 0) {
+        if (this.Items.length === 0) {
             return false;
         }
-        if (this.__internal__armes.length === 0) {
+        if (this.Armes.length === 0) {
             return false;
         }
-        if (this.__internal__calvs.length === 0) {
+        if (this.Calvs.length === 0) {
             return false;
         }
         return true;
@@ -49,9 +55,9 @@ class BattleLogsLoad {
      */
     static getObjects() {
         const internalArrays = [
-            this.__internal__items,
-            this.__internal__armes,
-            this.__internal__calvs,
+            this.Items,
+            this.Armes,
+            this.Calvs,
             this.__internal__familiers
         ];
         return [].concat(...internalArrays)
@@ -81,9 +87,6 @@ class BattleLogsLoad {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__items = [];
-    static __internal__armes = [];
-    static __internal__calvs = [];
     static __internal__expeditions = [];
     static __internal__familiers = [];
 }

@@ -21,6 +21,7 @@ class BattleLogsRoues {
 
     static Multiplier = 1;
 
+
     /**
      * @desc Initialize Class
      *
@@ -210,7 +211,7 @@ class BattleLogsRoues {
 
         const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray, rouesType, cost);
         BattleLogs.Notif.appendNotif(log);
-        return { "items" : itemsArray, "cost" : cost};
+        return {"items": itemsArray, "cost": cost};
     }
 
     /**

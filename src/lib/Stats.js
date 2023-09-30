@@ -6,11 +6,13 @@ class BattleLogsStats {
     // Aliases on the other classes
     static Roues = BattleLogsStatsRoues;
     static Stuffs = BattleLogsStatsStuffs;
+    static Account = BattleLogsStatsAccount;
 
     static Settings = {
         StatsEnable: "Stats-Enable",
         StatsRoues: "Stats-Roues",
         StatsStuffs: "Stats-Stuffs",
+        StatsAccount: "Stats-Account",
         StatsPanes: "Stats-Panes",
         Type: "Stats"
     }
@@ -42,6 +44,7 @@ class BattleLogsStats {
             this.__internal__setDefaultSettingsValues(this.Settings.StatsPanes)
             this.Roues.setDefaultSettingsValues(this.Settings.StatsRoues)
             this.Stuffs.setDefaultSettingsValues(this.Settings.StatsStuffs)
+            this.Account.setDefaultSettingsValues(this.Settings.StatsAccount)
 
             // Restore previous session state
             this.StatsPanes = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsPanes);
@@ -49,6 +52,7 @@ class BattleLogsStats {
             this.Roues.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsRoues);
             // this.Stuffs.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsStuffs);
             this.Stuffs.Data = this.Stuffs.loadAndCompareStuffsWithModel();
+            this.Account.Data = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.StatsAccount);
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
             while (true) {
                 if (BattleLogs.Shop.hasLoaded() && BattleLogs.Roues.hasLoaded() && BattleLogs.Load.hasLoaded()) {
@@ -56,6 +60,7 @@ class BattleLogsStats {
                 }
                 await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
             }
+            this.Account.createStatsPanes()
             this.Roues.createStatsPanes()
             this.Stuffs.createStatsPanes()
         }
@@ -66,10 +71,12 @@ class BattleLogsStats {
      *
      * @param {Object} objectData: Contains data for the object, must include an 'id' property.
      * @param {String} statsName: Name of the statistic.
+     * @param {boolean} since: Display date for stats.
+     * @param {boolean} reset: Display reset button.
      *
      * @returns {HTMLElement} The pane element containing the object's statistics.
      */
-    static createPane(objectData, statsName) {
+    static createPane(objectData, statsName, since=true, reset=true) {
         let statsType = objectData.id;
 
         // Build pane for object stats
@@ -94,18 +101,22 @@ class BattleLogsStats {
         // Create date right part of header
         let paneHeaderDate = document.createElement("span");
         paneHeaderDate.classList.add("stats-title-date");
-        let sinceSpan = document.createElement("span");
-        sinceSpan.textContent = this.Messages.since.format(formattedDate);
-        sinceSpan.dataset["key"] = "time"
-        paneHeaderDate.appendChild(sinceSpan)
+        if (since) {
+            let sinceSpan = document.createElement("span");
+            sinceSpan.textContent = this.Messages.since.format(formattedDate);
+            sinceSpan.dataset["key"] = "time"
+            paneHeaderDate.appendChild(sinceSpan)
+        }
 
-        // Add clear button
-        this.__internal__addClearButton(
-            objectData,
-            paneHeaderDate,
-            statsName,
-            this[statsName].resetStats.bind(this[statsName])
-        );
+        if (reset) {
+            // Add clear button
+            this.__internal__addClearButton(
+                objectData,
+                paneHeaderDate,
+                statsName,
+                this[statsName].resetStats.bind(this[statsName])
+            );
+        }
 
         // Create Collapse/Expand button for the pane
         const paneCollapseButton = document.createElement("button");
