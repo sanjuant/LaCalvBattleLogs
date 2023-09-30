@@ -9,7 +9,13 @@ class BattleLogsStatsAccount {
     static Messages = {
         account: {
             name: "Stats du compte",
-            title: "{0} <span class='item-name'>{1}</span> ouvert{2}",
+            alopiece: "Alopièces",
+            ticket: "Tickets",
+            armes: "Armes possédées",
+            calvs: "Calvs possédées",
+            items: "Items possédés",
+            familiers: "Familiers possédés",
+            worth: "Valeur du compte",
         },
     };
 
@@ -21,7 +27,7 @@ class BattleLogsStatsAccount {
      */
     static createStatsPanes() {
         Object.keys(this.Data).forEach(key => {
-            const pane = BattleLogs.Stats.createPane(this.Data[key], this.Settings.Type)
+            const pane = BattleLogs.Stats.createPane(this.Data[key], this.Settings.Type, false, false)
             BattleLogs.Stats.StatsPanel.appendChild(pane)
             this.appendStatsToPane(this.Data[key])
         })
@@ -40,43 +46,23 @@ class BattleLogsStatsAccount {
     }
 
     /**
-     * @desc Updates the wheel stats with the provided details, such as count, cost, items, etc.
-     *       The method also updates the visual stats bar to reflect the new data.
-     *
-     * @param {Number} count: Number of wheels spin.
-     * @param {string} short: Short name of the wheel (e.g., "c", "d", "r", "re", "ticket").
-     * @param {Array} items: Array of items obtained from the wheel.
-     * @param {string} rouesType: Type of wheel (e.g., "oeuf", "coquille", "ticket").
-     * @param {Number} cost: Price of a wheel.
+     * @desc Updates the account stats
      */
-    static updateStats(count, short, items, rouesType, cost) {
-        const statsData = this.Data[rouesType];
-        statsData[short]["total"] += count;
-        statsData[short]["cost"] = BattleLogs.Utils.roundToAny(statsData[short]["cost"] + cost, 2);
-        items.forEach(item => {
-            statsData[short].itemsPerRarity[item.rarity] += item.count;
-        })
-        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.Data);
-        // this.__internal__updateStatPaneBlock(statsData, rouesType, short)
-    }
-
-    /**
-     * @desc Reset stats
-     *
-     * @param {string} id: Id of wheel to reset
-     */
-    static resetStats(id) {
-        this.Data[id] = JSON.parse(JSON.stringify(this.__internal__defaultStats[id]));
-        const newStatsData = this.Data[id]
-        newStatsData.time = new Date().toISOString();
-        const statPanes = document.querySelectorAll(`#Stats-${id}[data-key=${id}] .stats-block`);
-        statPanes.forEach(pane => {
-            pane.remove()
-        })
-        this.appendStatsToPane(this.Data[id])
-        const dateSpan = document.querySelector(`#${BattleLogs.Stats.Settings.Type}-${id} [data-key="time"]`)
-        dateSpan.textContent = BattleLogs.Stats.Messages.since.format(BattleLogs.Stats.formatStatsDate(newStatsData));
-        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsRoues, this.Data);
+    static updateStats() {
+        const statsData = this.Data["account"];
+        statsData.alopiece = BattleLogs.Update.Alopiece;
+        statsData.ticket = BattleLogs.Update.Tickets;
+        statsData.armes.owned = BattleLogs.Update.Armes.length > statsData.armes.owned ? BattleLogs.Update.Armes.length : statsData.armes.owned;
+        statsData.armes.total = BattleLogs.Load.Armes.length - 1 > statsData.armes.total ? BattleLogs.Load.Armes.length - 1 : statsData.armes.total;
+        statsData.calvs.owned = BattleLogs.Update.Calvs.length > statsData.calvs.owned ? BattleLogs.Update.Calvs.length : statsData.calvs.owned;
+        statsData.calvs.total = BattleLogs.Load.Calvs.length - 1 > statsData.calvs.total ? BattleLogs.Load.Calvs.length - 1 : statsData.calvs.total;
+        statsData.items.owned = BattleLogs.Update.Items.length > statsData.items.owned ? BattleLogs.Update.Items.length : statsData.items.owned;
+        statsData.items.total = BattleLogs.Load.Items.length > statsData.items.total ? BattleLogs.Load.Items.length : statsData.items.total;
+        statsData.familiers.owned = BattleLogs.Update.Familiers.length > statsData.familiers.owned ? BattleLogs.Update.Familiers.length : statsData.familiers.owned;
+        statsData.familiers.total = BattleLogs.Load.Familiers.length - 1 > statsData.familiers.total ? BattleLogs.Load.Familiers.length - 1 : statsData.familiers.total;
+        statsData.worth = this.__internal__calculateAccountValue() > 0 ? this.__internal__calculateAccountValue() : statsData.worth;
+        BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsAccount, this.Data);
+        this.__internal__updateAttributes(statsData);
     }
 
     /**
@@ -94,28 +80,140 @@ class BattleLogsStatsAccount {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
+    static __internal__statsAllowedKey = ["ticket", "alopiece", "familiers", "armes", "calvs", "items", "worth"];
+    static __internal__statsBlockValue = null;
 
     /**
-     * @desc Builds the stats pane for a specific wheel type, utilizing the given data.
+     * @desc Builds the stats pane for account stats, utilizing the given data.
      *
-     * @param {Object} statsData: Statistical data for the specific wheel type.
+     * @param {Object} statsData: Statistical data for account.
      * @param {Element} container: HTML element representing the container pane.
      */
     static __internal__buildStatPane(statsData, container) {
-        // Build div for each type of roue
-        Object.keys()
+        const blockContainer = document.createElement("div");
+        blockContainer.classList.add("stats-account");
+        const blockValues = document.createElement("div");
+        blockValues.classList.add("stats-account-body");
+        Object.keys(statsData).forEach((key) => {
+            if (this.__internal__statsAllowedKey.includes(key)) {
+                this.__internal__appendAttributes(statsData, key, blockValues);
+            }
+        })
+        blockContainer.appendChild(blockValues);
+        container.appendChild(blockContainer);
+        this.__internal__statsBlockValue = blockValues;
     }
 
     /**
-     * @desc Creates a block within the stats pane for a specific wheel type.
-     *       This block contains elements such as the title, percentage bar, and details related to different rarities.
+     * @desc Append attributes of stuff in container
      *
-     * @param {Object} statsData: Statistical data for the specific wheel type.
-     * @param {string} key: Key of wheel.
-     * @param {Element} container: HTML element representing the block within the stats pane.
+     * @param {Object} object: object data to append
+     * @param {string} key: Key of data.
+     * @param {Element} container: HTML element representing the stuff block.
      */
-    static __internal__createStatPaneBlock(statsData, key, container) {
+    static __internal__appendAttributes(object, key, container) {
+        const attrContainer = document.createElement("div");
+        attrContainer.classList.add(key);
+        attrContainer.dataset["key"] = key;
 
+        const label = document.createElement("span");
+        label.classList.add("key");
+        label.textContent = this.Messages[object.id][key].capitalize();
+        const name = document.createElement("span");
+        name.classList.add("value")
+        if (typeof object[key] === 'object') {
+            name.textContent = `${object[key].owned}/${object[key].total}`;
+        } else if (!isNaN(object[key])) {  // check if object can be converted to a number
+            name.textContent = BattleLogs.Utils.formatNumber(object[key]);
+        } else {
+            name.textContent = object[key];
+        }
+
+        attrContainer.appendChild(label)
+        attrContainer.appendChild(name)
+        container.appendChild(attrContainer)
+    }
+
+    /**
+     * @desc Update attributes of stuff in container
+     *
+     * @param {Object} stuffData: stuff data to update
+     */
+    static __internal__updateAttributes(stuffData) {
+        Object.keys(stuffData).forEach((key) => {
+            if (this.__internal__statsAllowedKey.includes(key)) {
+                const container = this.__internal__statsBlockValue.querySelector(`[data-key=${key}]`)
+                if (container === null) return;
+                const value = container.querySelector(".value");
+                if (typeof stuffData[key] === 'object') {
+                    value.textContent = `${stuffData[key].owned}/${stuffData[key].total}`;
+                } else {
+                    value.textContent = BattleLogs.Utils.formatNumber(stuffData[key]);
+                }
+            }
+        })
+    }
+
+
+    static __internal__calculateAccountValue() {
+        let cheveuxCost = {0: 2000, 1: 5000, 2: 10000, 3: 30000, 4: 100000, 5: 300000, 6: 300000}
+        let oeufsCost = {1: 2000, 2: 10000, 3: 20000, 4: 40000}
+        let upgradeProbabilities = {
+            1: 1,
+            2: 0.85,
+            3: 0.8,
+            4: 0.7,
+            5: 0.6,
+            6: 0.5,
+            7: 0.4,
+            8: 0.3,
+            9: 0.2,
+            10: 0.1,
+            11: 0.05,
+            12: 0.025,
+            13: 0.01,
+            14: 0.003
+        }
+        let countAlopiece = 0
+
+
+        const processItems = (items) => {
+            items.forEach(item => {
+                const obj = BattleLogs.Utils.getObjectByName(item.name);
+                const {level, count} = item;
+
+                let accumulatedCost = cheveuxCost[obj["rarity"]] * count;
+
+                if (level > 1) {
+                    for (let i = 2; i <= level; i++) {
+                        accumulatedCost += cheveuxCost[obj["rarity"]] / upgradeProbabilities[i];
+                    }
+                }
+
+                countAlopiece += accumulatedCost;
+            });
+        };
+
+        processItems(BattleLogs.Update.Armes);
+        processItems(BattleLogs.Update.Items);
+        processItems(BattleLogs.Update.Calvs);
+
+        BattleLogs.Update.Objects.forEach(object => {
+            let obj = BattleLogs.Utils.getObjectByName(object["name"]);
+            let cost = 0;
+
+            if ("cost" in obj && obj["cost"] === 0 && obj["oeuf"]) {
+                cost = oeufsCost[obj["rarity"]] * (Math.floor(object["count"] / obj["needed"])); // coquilles
+            } else if ("cost" in obj) {
+                cost = obj["cost"] * object["count"];
+            } else {
+                cost = cheveuxCost[obj["rarity"]] * object["count"];
+            }
+
+            countAlopiece += cost;
+        });
+
+        return countAlopiece
     }
 
     /**
@@ -126,61 +224,25 @@ class BattleLogsStatsAccount {
         "account": {
             "id": "account",
             "time": new Date().toISOString(),
-            "ticket": 0,
             "alopiece": 0,
-            "familiers": 0,
+            "ticket": 0,
             "armes": {
-                0: {
-                    "totalObjects": 0,
-                    "objects": [
-                        {
-                            // "name": "Ciseaux cisaillés",
-                            // "short": "ciseauxcisaills",
-                            "count": 2,
-                            "level": 9,
-                            // "rarity": 1
-                        }
-                    ]
-                },
-                1: {"totalObjects": 0, "objects": []},
-                2: {"totalObjects": 0, "objects": []},
-                3: {"totalObjects": 0, "objects": []},
-                4: {"totalObjects": 0, "objects": []},
-                5: {"totalObjects": 0, "objects": []},
-                6: {"totalObjects": 0, "objects": []}
+                "total": 0,
+                "owned": 0
             },
             "calvs": {
-                0: {"totalObjects": 0, "objects": []},
-                1: {"totalObjects": 0, "objects": []},
-                2: {"totalObjects": 0, "objects": []},
-                3: {"totalObjects": 0, "objects": []},
-                4: {"totalObjects": 0, "objects": []},
-                5: {"totalObjects": 0, "objects": []},
-                6: {"totalObjects": 0, "objects": []}
+                "total": 0,
+                "owned": 0
             },
             "items": {
-                0: {"totalObjects": 0, "objects": []},
-                1: {"totalObjects": 0, "objects": []},
-                2: {"totalObjects": 0, "objects": []},
-                3: {"totalObjects": 0, "objects": []},
-                4: {"totalObjects": 0, "objects": []},
-                5: {"totalObjects": 0, "objects": []},
-                6: {"totalObjects": 0, "objects": []}
+                "total": 0,
+                "owned": 0
             },
-            "objects": {
-                0: {"totalObjects": 0, "objects": [
-                        {
-                            "count": 0,
-                            "level": 1
-                        }
-                    ]},
-                1: {"totalObjects": 0, "objects": []},
-                2: {"totalObjects": 0, "objects": []},
-                3: {"totalObjects": 0, "objects": []},
-                4: {"totalObjects": 0, "objects": []},
-                5: {"totalObjects": 0, "objects": []},
-                6: {"totalObjects": 0, "objects": []}
+            "familiers": {
+                "total": 0,
+                "owned": 0
             },
+            "worth": 0,
         },
     }
 }

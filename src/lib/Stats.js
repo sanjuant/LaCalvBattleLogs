@@ -60,9 +60,9 @@ class BattleLogsStats {
                 }
                 await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde (ajustez selon vos besoins)
             }
+            this.Account.createStatsPanes()
             this.Roues.createStatsPanes()
             this.Stuffs.createStatsPanes()
-            this.Account.createStatsPanes()
         }
     }
 
@@ -71,10 +71,12 @@ class BattleLogsStats {
      *
      * @param {Object} objectData: Contains data for the object, must include an 'id' property.
      * @param {String} statsName: Name of the statistic.
+     * @param {boolean} since: Display date for stats.
+     * @param {boolean} reset: Display reset button.
      *
      * @returns {HTMLElement} The pane element containing the object's statistics.
      */
-    static createPane(objectData, statsName) {
+    static createPane(objectData, statsName, since=true, reset=true) {
         let statsType = objectData.id;
 
         // Build pane for object stats
@@ -89,8 +91,6 @@ class BattleLogsStats {
 
         // Create title left part of header
         let paneHeaderTitle = document.createElement("span");
-        console.log(statsName)
-        console.log(statsType)
         paneHeaderTitle.textContent = this[statsName].Messages[statsType].name;
         paneHeaderTitle.classList.add("stats-title-name");
 
@@ -101,18 +101,22 @@ class BattleLogsStats {
         // Create date right part of header
         let paneHeaderDate = document.createElement("span");
         paneHeaderDate.classList.add("stats-title-date");
-        let sinceSpan = document.createElement("span");
-        sinceSpan.textContent = this.Messages.since.format(formattedDate);
-        sinceSpan.dataset["key"] = "time"
-        paneHeaderDate.appendChild(sinceSpan)
+        if (since) {
+            let sinceSpan = document.createElement("span");
+            sinceSpan.textContent = this.Messages.since.format(formattedDate);
+            sinceSpan.dataset["key"] = "time"
+            paneHeaderDate.appendChild(sinceSpan)
+        }
 
-        // Add clear button
-        this.__internal__addClearButton(
-            objectData,
-            paneHeaderDate,
-            statsName,
-            this[statsName].resetStats.bind(this[statsName])
-        );
+        if (reset) {
+            // Add clear button
+            this.__internal__addClearButton(
+                objectData,
+                paneHeaderDate,
+                statsName,
+                this[statsName].resetStats.bind(this[statsName])
+            );
+        }
 
         // Create Collapse/Expand button for the pane
         const paneCollapseButton = document.createElement("button");
