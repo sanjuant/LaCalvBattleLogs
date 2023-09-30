@@ -186,7 +186,8 @@ class BattleLogsStatsAccount {
 
                 if (level > 1) {
                     for (let i = 2; i <= level; i++) {
-                        accumulatedCost += cheveuxCost[obj["rarity"]] / upgradeProbabilities[i];
+                        // For a given level, probabilities are stored in index i - 1
+                        accumulatedCost += cheveuxCost[obj["rarity"]] / upgradeProbabilities[i - 1];
                     }
                 }
 
