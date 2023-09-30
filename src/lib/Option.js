@@ -24,10 +24,12 @@ class BattleLogsOption {
                 BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
 
                 // Add CSV button
-                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Video.BattleLogsVideoButton);
 
                 this.__internal__addKonamiCode()
+
             }
+            this.__internal__addTypeEffectiveness()
         }
     }
 
@@ -115,7 +117,7 @@ class BattleLogsOption {
             BattleLogs.Utils.LocalStorage.setValue(chatButton.id, newStatus);
         };
 
-        containingDiv.appendChild(chatButton);
+        containingDiv.insertAdjacentElement("afterend", chatButton);
     }
 
     static __internal__toggleChat(display) {
@@ -287,6 +289,17 @@ class BattleLogsOption {
         document.addEventListener("keydown", keydownListener);
 
         document.body.appendChild(promptContainer);
+    }
+
+    static __internal__addTypeEffectiveness() {
+        const typeEffectivenessContainer = document.createElement("div");
+        typeEffectivenessContainer.classList.add("type-effectiveness");
+        const typeEffectivenessChart = document.createElement("img");
+        typeEffectivenessChart.src = BattleLogsComponentLoader.__baseUrl + "images/type_effectiveness_chart.svg";
+        typeEffectivenessChart.alt = "Diagramme d'efficacité des types";
+        typeEffectivenessChart.classList.add("dynamic-image");
+        typeEffectivenessContainer.appendChild(typeEffectivenessChart);
+        BattleLogs.Glossary.GlossaryPanel.appendChild(typeEffectivenessContainer);
     }
 
     /**

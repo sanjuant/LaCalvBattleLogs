@@ -261,6 +261,10 @@ body{
     color: #00A7FF;
     font-family: Calibri,sans-serif;
 }
+.messages > p[data-type="Info"] {
+    background-color: hsl(42, 37%, 19%);
+    color: hsl(43, 94%, 81%);
+}
 
 /* Sélectionne le span avec la classe "type" */
 
@@ -289,6 +293,10 @@ body{
     display: flex;
     height: 92vh;
     background-color: #0c0c0d;
+}
+
+#battlelogs-glossary_panel {
+    height: 100%;
 }
 
 #battlelogs-glossary_panel.hidden {
@@ -622,6 +630,18 @@ body{
 }
 
 /********************/
+/* Option           */
+/********************/
+.type-effectiveness {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #2f3031;
+    padding: 0 3rem 3rem 3rem;
+}
+
+/********************/
 /* Utils            */
 /********************/
 button {
@@ -678,6 +698,10 @@ button.selected {
 }
 .pointer-none {
     pointer-events: none;
+}
+.dynamic-image {
+    width: 100%;
+    height: auto;
 }
 
 /********************/
@@ -1014,3 +1038,4 @@ button.svg_chat {
         margin-left: 0 !important;
     }
 }
+

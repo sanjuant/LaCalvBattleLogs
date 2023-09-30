@@ -5,7 +5,8 @@ class BattleLogsBoss {
     static Settings = {
         Logs: "Boss-Logs",
         Type: "Boss",
-        LastBattle: "Boss-LastBattle"
+        LastBattle: "Boss-LastBattle",
+        Limit: 500
     };
 
     static Messages = {
@@ -158,7 +159,7 @@ class BattleLogsBoss {
     static __internal__addLog(user, opponent, rewards, stuff) {
         const log = new this.Logs(this.Settings.Type, user, opponent, rewards, stuff);
         this.LogsArray.push(log);
-        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log, this.Settings.Limit);
 
         return log;
     }

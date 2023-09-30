@@ -56,7 +56,6 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Option.js");
         this.__addScript("src/lib/Glossary.js");
         this.__addScript("src/lib/Expedition.js");
-        // this.__addScript("src/lib/StatsOld.js");
         this.__addScript("src/lib/Stats.js");
 
         this.__loadingOrder += 1;

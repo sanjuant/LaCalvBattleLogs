@@ -4,7 +4,8 @@
 class BattleLogsPvp {
     static Settings = {
         Logs: "Pvp-Logs",
-        Type: "Pvp"
+        Type: "Pvp",
+        Limit: 1000
     };
 
     static Messages = {
@@ -153,7 +154,7 @@ class BattleLogsPvp {
     static __internal__addLog(user, opponent, rewards, stuff) {
         const log = new this.Logs(this.Settings.Type, user, opponent, rewards, stuff);
         this.LogsArray.push(log);
-        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log);
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log, this.Settings.Limit);
 
         return log;
     }

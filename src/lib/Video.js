@@ -11,6 +11,7 @@ class BattleLogsVideo {
     static BattleLogsTwitchChat;
     static BattleLogsTwitchChannel;
     static BattleLogsTwitchIframe;
+    static BattleLogsVideoButton;
 
     /**
      * @desc Builds the menu, and restores previous running state if needed
@@ -47,45 +48,45 @@ class BattleLogsVideo {
      * @param {Element} containingDiv: The div element to append the separator to
      */
     static __internal__addVideoButton(id, containingDiv) {
-        const videoButton = document.createElement("button");
-        videoButton.id = id;
-        videoButton.classList.add("svg_video");
+        this.BattleLogsVideoButton = document.createElement("button");
+        this.BattleLogsVideoButton.id = id;
+        this.BattleLogsVideoButton.classList.add("svg_video");
 
         let videoEnable = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
         if (videoEnable) {
-            videoButton.classList.add("selected");
-            videoButton.title = "Masquer le lecteur Twitch";
+            this.BattleLogsVideoButton.classList.add("selected");
+            this.BattleLogsVideoButton.title = "Masquer le lecteur Twitch";
             this.BattleLogsTwitchVideo.style.display = "block";
             this.BattleLogsTwitchChat.style.height = "80%";
         } else {
-            videoButton.title = "Afficher le lecteur Twitch (nécessite le chat)";
+            this.BattleLogsVideoButton.title = "Afficher le lecteur Twitch (nécessite le chat)";
             this.BattleLogsTwitchVideo.style.display = "none";
             this.BattleLogsTwitchChat.style.height = "inherit";
         }
-        videoButton.onclick = () => {
+        this.BattleLogsVideoButton.onclick = () => {
             const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
                 "true");
             if (newStatus) {
-                videoButton.classList.add("selected");
-                videoButton.title = "Masquer le lecteur Twitch";
+                this.BattleLogsVideoButton.classList.add("selected");
+                this.BattleLogsVideoButton.title = "Masquer le lecteur Twitch";
                 this.BattleLogsTwitchVideo.style.display = "block";
                 this.BattleLogsTwitchChat.style.height = "80%";
             } else {
-                videoButton.classList.remove("selected");
-                videoButton.title = "Afficher le lecteur Twitch (nécessite le chat)";
+                this.BattleLogsVideoButton.classList.remove("selected");
+                this.BattleLogsVideoButton.title = "Afficher le lecteur Twitch (nécessite le chat)";
                 this.BattleLogsTwitchVideo.style.display = "none";
                 this.BattleLogsTwitchChat.style.height = "inherit";
             }
 
-            BattleLogs.Utils.LocalStorage.setValue(videoButton.id, newStatus);
+            BattleLogs.Utils.LocalStorage.setValue(this.BattleLogsVideoButton.id, newStatus);
         };
 
-        videoButton.oncontextmenu = () => {
+        this.BattleLogsVideoButton.oncontextmenu = () => {
             this.__internal__showPrompt()
             return false;
         };
 
-        containingDiv.appendChild(videoButton);
+        containingDiv.appendChild(this.BattleLogsVideoButton);
     }
 
     static __internal__showPrompt() {

@@ -54,10 +54,11 @@ class BattleLogsGlossary {
         // Add settings container
         this.GlossaryPanel = document.createElement("div");
         this.GlossaryPanel.id = "battlelogs-glossary_panel";
-        this.GlossaryPanel.classList.add("glossary")
         if (!(BattleLogs.Utils.LocalStorage.getValue(this.Settings.GlossaryEnable) === "true")) {
             this.GlossaryPanel.classList.add("hidden")
         }
+        const glossaryIframes = document.createElement("div");
+        glossaryIframes.classList.add("glossary")
         this.Iframe = document.createElement("iframe");
         this.Iframe.id = 'glossaryLacalv';
         this.Iframe.src = '/stats/';
@@ -71,8 +72,9 @@ class BattleLogsGlossary {
         } else {
             this.IframeComparaison.style.display = "none";
         }
-        this.GlossaryPanel.appendChild(this.Iframe);
-        this.GlossaryPanel.appendChild(this.IframeComparaison);
+        glossaryIframes.appendChild(this.Iframe)
+        glossaryIframes.appendChild(this.IframeComparaison)
+        this.GlossaryPanel.appendChild(glossaryIframes)
         BattleLogs.Menu.BattleLogsWrapper.appendChild(this.GlossaryPanel);
     }
 

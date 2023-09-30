@@ -5,6 +5,7 @@ class BattleLogsNotif {
     static Settings = {
         Logs: "Notif-Logs",
         Type: "Notif",
+        Limit: 500
     };
 
     static LogsArray = [];
@@ -79,7 +80,7 @@ class BattleLogsNotif {
      */
     static __internal__addLog(notif) {
         this.LogsArray.push(notif);
-        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, notif);
+        BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, notif, this.Settings.Limit);
         return notif;
     }
 

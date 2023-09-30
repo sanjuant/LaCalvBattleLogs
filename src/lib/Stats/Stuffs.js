@@ -84,6 +84,11 @@ class BattleLogsStatsStuffs {
         stuffData.loadout.items = stuff.items
         stuffData.totalBattle += 1;
 
+        // Sometimes element is not defined
+        if (!stuffData.element) {
+            stuffData.element = stuff.element
+        }
+
         if (battleType === BattleLogs.Boss.Settings.Type && opponent) {
             const wbHash = opponent.name.hashCode();
             let wbData = stuffData.wb[wbHash];
@@ -118,7 +123,10 @@ class BattleLogsStatsStuffs {
                 if (stuffsLength >= this.__internal_stuffStorageLimit) {
                     delete this.Data.stuffs.stuffs[lowestWeightKey];
                 }
-                document.querySelector(`[data-key="${lowestWeightKey}"]`).remove()
+                let lowestStuff = document.querySelector(`[data-key="${lowestWeightKey}"]`)
+                if (lowestStuff) {
+                    lowestStuff.remove();
+                }
                 this.__internal__createOrUpdateStuff(stuffData, stuffHash)
             }
         } else {
@@ -469,7 +477,9 @@ class BattleLogsStatsStuffs {
         // Create header
         const stuffHeader = document.createElement("div");
         stuffHeader.classList.add("stats-stuff-header");
-        stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
+        if (statsData.element) {
+            stuffHeader.classList.add(statsData.element.toLocaleLowerCase());
+        }
         stuffHeader.oncontextmenu = (event) => {
             event.preventDefault();
 
@@ -584,7 +594,7 @@ class BattleLogsStatsStuffs {
                 "svg_chevron-up-dark",
                 "svg_chevron-down-dark",
                 "Réduire le stuff",
-                "Déplier le stuf"
+                "Déplier le stuff"
             );
         });
         headerRight.appendChild(stuffCollapseButton);

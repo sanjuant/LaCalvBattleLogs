@@ -165,7 +165,7 @@ class BattleLogsMessage {
                 BattleLogs.Summarize.LogsArray[type].splice(index, 1);
             }
             BattleLogs.Utils.LocalStorage.delLogValue(BattleLogs.Summarize.Settings[type].Logs, time)
-        } else {
+        } else if (BattleLogs[type]) {
             let index = BattleLogs[type].LogsArray.findIndex((log) => log.time === time);
             if (index !== -1) {
                 BattleLogs[type].LogsArray.splice(index, 1);
@@ -205,7 +205,6 @@ class BattleLogsMessage {
             this.__internal__messagesContainer.classList.remove("hidden");
             this.SettingsButton.classList.remove("selected");
             this.SettingsButton.title = "Paramètres";
-            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
             BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, "false");
         }
     }

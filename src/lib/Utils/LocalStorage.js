@@ -21,11 +21,21 @@ class BattleLogsUtilsLocalStorage
      *
      * @param {string} key: The key to set the value of
      * @param {any} value: The value
+     * @param {Number} limit: The limit size of messages logs
      */
-    static setComplexValue(key, value)
+    static setComplexValue(key, value, limit=null)
     {
         const existingValue = this.getComplexValue(key)
         if (Array.isArray(existingValue)) {
+            if (limit != null) {
+                if (value.type !== BattleLogs.Survie.Settings.Type && existingValue.length === (limit - 1) ||
+                    value.type === BattleLogs.Survie.Settings.Type && existingValue.length === (limit - 3) ) {
+                    BattleLogs.Message.appendMessage(`Tu approches de la limite de ${limit} messages pour le type ${value.type}. Pour tout conserver, pense à les exporter. Fais de la place en supprimant les anciens, ou laisse faire le nettoyage automatique.`, "Info", {"type": "Info", "time": new Date().toISOString()});
+                }
+                if (existingValue.length === limit) {
+                    existingValue.shift()
+                }
+            }
             existingValue.push(value);
             value = existingValue
         }

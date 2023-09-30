@@ -84,9 +84,9 @@ class BattleLogs
             this.Csv.initialize(initStep);
             this.Sound.initialize(initStep);
             this.Video.initialize(initStep);
-            this.Option.initialize(initStep);
             this.Glossary.initialize(initStep);
             this.Stats.initialize(initStep);
+            this.Option.initialize(initStep);
         }
 
         console.log(`%cBattleLogs started`, "color:#00A7FF;font-weight:900;");
