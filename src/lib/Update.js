@@ -18,6 +18,7 @@ class BattleLogsUpdate {
     static Armes = [];
     static Objects = [];
     static Familiers = [];
+    static Costumes = [];
 
     /**
      * @desc Initialize Class
@@ -96,6 +97,9 @@ class BattleLogsUpdate {
         }
         if (data["familiers"]) {
             this.Familiers = data["familiers"]
+        }
+        if (data["event_costumes"]) {
+            this.Costumes = data["event_costumes"]
         }
         if (data["objects"]) {
             this.Objects = data["objects"]
