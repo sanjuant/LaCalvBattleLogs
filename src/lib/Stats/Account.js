@@ -212,6 +212,17 @@ class BattleLogsStatsAccount {
             countAlopiece += cost;
         });
 
+        BattleLogs.Update.Familiers.forEach(fam => {
+            let obj = BattleLogs.Utils.getObjectByName(fam["name"]);
+            if (fam["sorts"].length === 4) {
+                fam["sorts"].forEach(famSort => {
+                    let sortShop = BattleLogs.Utils.getObjectByShortName(famSort["short"]);
+                    if (sortShop["cost"]) countAlopiece += sortShop["cost"];
+                })
+            }
+            if (obj["cost"]) countAlopiece += obj["cost"];
+        });
+
         return countAlopiece
     }
 

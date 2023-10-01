@@ -225,7 +225,24 @@ class BattleLogsUtils {
             BattleLogs.Shop.getObjects(),
         ];
         const allObjects = [].concat(...internalArrays);
-        let foundObject = allObjects.find(item => {
+        // Créer un objet pour stocker les objets fusionnés
+        let mergedObjects = {};
+        allObjects.forEach(item => {
+            let shortName = item.short.toLowerCase();
+            if (!mergedObjects[shortName]) {
+                // Si l'objet n'existe pas encore, on l'ajoute
+                mergedObjects[shortName] = item;
+            } else {
+                // Si l'objet existe déjà, écraser les attributs existants et ajouter les nouveaux
+                let existingObject = mergedObjects[shortName];
+                Object.keys(item).forEach(key => {
+                    if (key !== 'name' && key !== 'short') {
+                        existingObject[key] = item[key];
+                    }
+                });
+            }
+        });
+        let foundObject = Object.values(mergedObjects).find(item => {
             return item.short.toLowerCase() === shortName.toLowerCase()
         });
         if (foundObject !== undefined) {
@@ -244,7 +261,24 @@ class BattleLogsUtils {
             BattleLogs.Shop.getObjects(),
         ];
         const allObjects = [].concat(...internalArrays);
-        let foundObject = allObjects.find(item => {
+        // Créer un objet pour stocker les objets fusionnés
+        let mergedObjects = {};
+        allObjects.forEach(item => {
+            let shortName = item.short.toLowerCase();
+            if (!mergedObjects[shortName]) {
+                // Si l'objet n'existe pas encore, on l'ajoute
+                mergedObjects[shortName] = item;
+            } else {
+                // Si l'objet existe déjà, écraser les attributs existants et ajouter les nouveaux
+                let existingObject = mergedObjects[shortName];
+                Object.keys(item).forEach(key => {
+                    if (key !== 'name' && key !== 'short') {
+                        existingObject[key] = item[key];
+                    }
+                });
+            }
+        });
+        let foundObject = Object.values(mergedObjects).find(item => {
             return item.name.toLowerCase() === name.toLowerCase()
         });
         if (foundObject !== undefined) {
