@@ -140,6 +140,8 @@ class BattleLogsStatsAccount {
      * @param {Object} stuffData: stuff data to update
      */
     static __internal__updateAttributes(stuffData) {
+        if (this.__internal__statsBlockValue === null) return // skip if not initialized
+
         Object.keys(stuffData).forEach((key) => {
             if (this.__internal__statsAllowedKey.includes(key)) {
                 const container = this.__internal__statsBlockValue.querySelector(`[data-key=${key}]`)
@@ -175,8 +177,6 @@ class BattleLogsStatsAccount {
             14: 0.003
         }
         let countAlopiece = 0
-
-
         const processItems = (items) => {
             items.forEach(item => {
                 const obj = BattleLogs.Utils.getObjectByName(item.name);
@@ -185,7 +185,7 @@ class BattleLogsStatsAccount {
                 let accumulatedCost = cheveuxCost[obj["rarity"]] * count;
 
                 if (level > 1) {
-                    for (let i = 2; i <= level; i++) {
+                    for (let i = 1; i < level; i++) {
                         accumulatedCost += cheveuxCost[obj["rarity"]] / upgradeProbabilities[i];
                     }
                 }
@@ -200,8 +200,7 @@ class BattleLogsStatsAccount {
 
         BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
-            let cost = 0;
-
+            let cost;
             if ("cost" in obj && obj["cost"] === 0 && obj["oeuf"]) {
                 cost = oeufsCost[obj["rarity"]] * (Math.floor(object["count"] / obj["needed"])); // coquilles
             } else if ("cost" in obj) {
