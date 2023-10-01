@@ -121,7 +121,7 @@ class BattleLogsStatsAccount {
         name.classList.add("value")
         if (typeof object[key] === 'object') {
             name.textContent = `${object[key].owned}/${object[key].total}`;
-            if (object[key].owned === object[key].total) name.classList.add("rarity-4")
+            if (object[key].total !== 0 && object[key].owned === object[key].total) name.classList.add("rarity-4")
         } else if (!isNaN(object[key])) {  // check if object can be converted to a number
             name.textContent = BattleLogs.Utils.formatNumber(object[key]);
         } else {
