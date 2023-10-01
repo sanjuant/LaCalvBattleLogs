@@ -57,7 +57,7 @@ class BattleLogsUtils {
             return `${integerPart}B`;
         } else if (number >= million) {
             const integerPart = Math.floor(number / million);
-            const decimalPart = (number % million).toString().slice(0, 3).replace(/0+$/, '');
+            const decimalPart = (number % million).toString().slice(0, 3)
             if (decimalPart.length > 0) {
                 return `${integerPart}M${decimalPart}`;
             } else {
