@@ -80,7 +80,7 @@ class BattleLogsStatsAccount {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__statsAllowedKey = ["ticket", "alopiece", "familiers", "armes", "calvs", "items", "worth"];
+    static __internal__statsAllowedKey = ["worth", "alopiece", "ticket", "armes", "calvs", "items", "familiers"];
     static __internal__statsBlockValue = null;
 
     /**
@@ -94,10 +94,8 @@ class BattleLogsStatsAccount {
         blockContainer.classList.add("stats-account");
         const blockValues = document.createElement("div");
         blockValues.classList.add("stats-account-body");
-        Object.keys(statsData).forEach((key) => {
-            if (this.__internal__statsAllowedKey.includes(key)) {
-                this.__internal__appendAttributes(statsData, key, blockValues);
-            }
+        this.__internal__statsAllowedKey.forEach((key) => {
+            this.__internal__appendAttributes(statsData, key, blockValues);
         })
         blockContainer.appendChild(blockValues);
         container.appendChild(blockContainer);
@@ -123,6 +121,7 @@ class BattleLogsStatsAccount {
         name.classList.add("value")
         if (typeof object[key] === 'object') {
             name.textContent = `${object[key].owned}/${object[key].total}`;
+            if (object[key].owned === object[key].total) name.classList.add("rarity-4")
         } else if (!isNaN(object[key])) {  // check if object can be converted to a number
             name.textContent = BattleLogs.Utils.formatNumber(object[key]);
         } else {
@@ -244,6 +243,7 @@ class BattleLogsStatsAccount {
         "account": {
             "id": "account",
             "time": new Date().toISOString(),
+            "worth": 0,
             "alopiece": 0,
             "ticket": 0,
             "armes": {
@@ -262,7 +262,6 @@ class BattleLogsStatsAccount {
                 "total": 0,
                 "owned": 0
             },
-            "worth": 0,
         },
     }
 }
