@@ -160,7 +160,6 @@ class BattleLogsStatsAccount {
         if (BattleLogs.Update.Armes.length === 0
             || BattleLogs.Update.Items.length === 0
             || BattleLogs.Update.Calvs.length === 0
-            || BattleLogs.Update.Costumes.length === 0
         ) return;
         let cheveuxCost = {0: 2000, 1: 5000, 2: 10000, 3: 30000, 4: 100000, 5: 300000, 6: 300000}
         let oeufsCost = {1: 2000, 2: 10000, 3: 20000, 4: 40000}
