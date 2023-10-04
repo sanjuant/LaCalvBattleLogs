@@ -25,11 +25,18 @@ class BattleLogsMenu {
         if (initStep !== BattleLogs.InitSteps.BuildMenu) return;
 
         // Create general container
+
+        // <div id="menu-container">
+        //     <div id="menu" className="draggable resizable">
+        const menuContainer = document.createElement("div");
+        menuContainer.id = "menu-container";
         this.__internal__battleLogsContainer = document.createElement("div");
-        this.__internal__battleLogsContainer.id = "battleLogsContainer";
+        this.__internal__battleLogsContainer.id = "menu"
+        this.__internal__battleLogsContainer.classList.add("draggable")
+        menuContainer.appendChild(this.__internal__battleLogsContainer)
 
         // Append menu
-        document.body.appendChild(this.__internal__battleLogsContainer);
+        document.body.appendChild(menuContainer);
 
         // Set default settings
         this.__internal__setDefaultSettingValues();
@@ -51,24 +58,86 @@ class BattleLogsMenu {
         this.__internal__battleLogsConsole = document.getElementById(
             "battlelogs-console"
         );
-        this.__internal__battleLogsConsole.style.width = BattleLogs.Utils
-            .LocalStorage.getValue(
-                this.Settings.MenuWidth
-            );
 
-        // Add resize element
-        this.__internal_addResizeElement(
-            this.Settings.MenuWidth,
-            this.__internal__battleLogsConsole
-        );
+        const menu = document.getElementById('menu');
+        const toggleButton = document.getElementById('toggle-button');
+        const content = document.querySelector('.content');
+        let isDragging = false;
+        let mouseMoved = false;
+        let offsetX, offsetY;
 
-        // Add header actions
-        const headerButtons = document.getElementById(
-            "battlelogs-console_header-buttons"
-        );
-        this.__internal__addDockSideButton(this.Settings.MenuSide, headerButtons);
-        this.__internal__addExpandButton(this.Settings.MenuExpanded,
-            headerButtons);
+        toggleButton.addEventListener('click', mouseClick)
+
+        function mouseClick() {
+            if (!mouseMoved) {
+                menu.classList.toggle('open');
+                if (menu.classList.contains('open')) {
+                    toggleButton.innerHTML = 'X';
+                    content.style.display = 'block';
+                    menu.classList.add("resizable")
+                } else {
+                    toggleButton.innerHTML = '';
+                    content.style.display = 'none';
+                    menu.classList.remove("resizable")
+                }
+            }
+            mouseMoved = false;
+            adjustMenuPosition()
+        }
+
+        function mouseMove(e) {
+            toggleButton.removeEventListener('click', mouseClick);
+            if (isDragging) {
+                menu.style.left = (e.clientX - offsetX) + 'px';
+                menu.style.top = (e.clientY - offsetY) + 'px';
+            }
+            mouseMoved = true
+        }
+
+        function adjustMenuPosition() {
+            const menu = document.getElementById('menu');
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            const menuWidth = menu.offsetWidth;
+            const menuHeight = menu.offsetHeight;
+
+            const menuLeft = parseInt(menu.style.left, 10);
+            const menuTop = parseInt(menu.style.top, 10);
+
+            if (menuLeft + menuWidth > viewportWidth) {
+                menu.style.left = (viewportWidth - menuWidth) + 'px';
+            }
+
+            if (menuTop + menuHeight > viewportHeight) {
+                menu.style.top = (viewportHeight - menuHeight) + 'px';
+            }
+            if (menuLeft < 0) {
+                menu.style.left = '0';
+            }
+
+            if (menuTop < 0) {
+                menu.style.top = '0';
+            }
+        }
+
+        toggleButton.addEventListener('mousedown', function(e) {
+            document.addEventListener('mousemove', mouseMove);
+            isDragging = true;
+            document.querySelector("#GameDiv").classList.add("pointer-none");
+            offsetX = e.clientX - menu.offsetLeft;
+            offsetY = e.clientY - menu.offsetTop;
+        });
+
+        toggleButton.addEventListener('mouseup', function() {
+            isDragging = false;
+            document.removeEventListener('mousemove', mouseMove);
+            document.querySelector("#GameDiv").classList.remove("pointer-none");
+            adjustMenuPosition()
+            toggleButton.addEventListener('click', mouseClick)
+        });
+
+        window.addEventListener('resize', adjustMenuPosition);
 
         // If user is on phone
         if (this.__internal__isPhone) {
@@ -306,281 +375,281 @@ class BattleLogsMenu {
         this.__internal__battleLogsConsole.classList.add("phone");
     }
 
-    /**
-     * @desc Add an Expand button element
-     *
-     * @param {string} id: The button id
-     * @param {Element} containingDiv: The div element to append the button to
-     */
-    static __internal__addExpandButton(id, containingDiv) {
-        const buttonElem = document.createElement("button");
-        buttonElem.id = id;
+    // /**
+    //  * @desc Add an Expand button element
+    //  *
+    //  * @param {string} id: The button id
+    //  * @param {Element} containingDiv: The div element to append the button to
+    //  */
+    // static __internal__addExpandButton(id, containingDiv) {
+    //     const buttonElem = document.createElement("button");
+    //     buttonElem.id = id;
+    //
+    //     let isExpanded = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
+    //     if (this.__internal__isPhone) {
+    //         buttonElem.classList.add("svg_chevron-left");
+    //         buttonElem.title = "Réduire";
+    //     } else if (isExpanded) {
+    //         this.__internal__battleLogsConsole.classList.add("expanded");
+    //         buttonElem.classList.add("svg_chevron-up");
+    //         buttonElem.title = "Réduire";
+    //     } else {
+    //         buttonElem.classList.add("svg_chevron-down");
+    //         buttonElem.title = "Développer";
+    //     }
+    //     buttonElem.onclick = () => {
+    //         if (this.__internal__isPhone) {
+    //             this.__internal__battleLogsConsole.classList.add("hidden");
+    //             return;
+    //         }
+    //         const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
+    //             "true");
+    //         if (newStatus) {
+    //             // Only update the class if the console was not expanded
+    //             if (!this.__internal__battleLogsConsole.classList.contains(
+    //                 "expanded")) {
+    //                 buttonElem.classList.remove("svg_chevron-down");
+    //                 buttonElem.classList.add("svg_chevron-up");
+    //                 buttonElem.title = "Réduire";
+    //                 this.__internal__battleLogsConsole.classList.add("expanded");
+    //             }
+    //         } else {
+    //             // Only update the class if the console expanded
+    //             if (this.__internal__battleLogsConsole.classList.contains(
+    //                 "expanded")) {
+    //                 buttonElem.classList.remove("svg_chevron-up");
+    //                 buttonElem.classList.add("svg_chevron-down");
+    //                 buttonElem.title = "Développer";
+    //                 this.__internal__battleLogsConsole.classList.remove("expanded");
+    //             }
+    //         }
+    //
+    //         BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, newStatus);
+    //     };
+    //
+    //     containingDiv.appendChild(buttonElem);
+    // }
 
-        let isExpanded = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
-        if (this.__internal__isPhone) {
-            buttonElem.classList.add("svg_chevron-left");
-            buttonElem.title = "Réduire";
-        } else if (isExpanded) {
-            this.__internal__battleLogsConsole.classList.add("expanded");
-            buttonElem.classList.add("svg_chevron-up");
-            buttonElem.title = "Réduire";
-        } else {
-            buttonElem.classList.add("svg_chevron-down");
-            buttonElem.title = "Développer";
-        }
-        buttonElem.onclick = () => {
-            if (this.__internal__isPhone) {
-                this.__internal__battleLogsConsole.classList.add("hidden");
-                return;
-            }
-            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
-                "true");
-            if (newStatus) {
-                // Only update the class if the console was not expanded
-                if (!this.__internal__battleLogsConsole.classList.contains(
-                    "expanded")) {
-                    buttonElem.classList.remove("svg_chevron-down");
-                    buttonElem.classList.add("svg_chevron-up");
-                    buttonElem.title = "Réduire";
-                    this.__internal__battleLogsConsole.classList.add("expanded");
-                }
-            } else {
-                // Only update the class if the console expanded
-                if (this.__internal__battleLogsConsole.classList.contains(
-                    "expanded")) {
-                    buttonElem.classList.remove("svg_chevron-up");
-                    buttonElem.classList.add("svg_chevron-down");
-                    buttonElem.title = "Développer";
-                    this.__internal__battleLogsConsole.classList.remove("expanded");
-                }
-            }
+    // /**
+    //  * @desc Add dock side button element
+    //  *
+    //  * @param {string} id: The button id
+    //  * @param {Element} containingDiv: The div element to append the button to
+    //  */
+    // static __internal__addDockSideButton(id, containingDiv) {
+    //     let buttonElem = document.createElement("button");
+    //     buttonElem.id = id;
+    //
+    //     let sideRight = BattleLogs.Utils.LocalStorage.getValue(id) === "right";
+    //     if (sideRight) {
+    //         buttonElem.classList.add("svg_dock-left");
+    //         buttonElem.title = "Ancrer à gauche";
+    //         this.__internal__battleLogsConsole.classList.add("side-right");
+    //         this.__internal_changeGameSide("right");
+    //     } else {
+    //         buttonElem.classList.add("svg_dock-right");
+    //         buttonElem.title = "Ancrer à droite";
+    //         this.__internal__battleLogsConsole.classList.add("side-left");
+    //         this.__internal_changeGameSide("left");
+    //     }
+    //
+    //     buttonElem.onclick = () => {
+    //         const newSide = BattleLogs.Utils.LocalStorage.getValue(id) ===
+    //         "right" ? "left" : "right";
+    //         if (newSide === "right") {
+    //             if (!this.__internal__battleLogsConsole.classList.contains(
+    //                 "side-right")) {
+    //                 buttonElem.classList.remove("svg_dock-right");
+    //                 buttonElem.classList.add("svg_dock-left");
+    //                 buttonElem.title = "Ancrer à gauche";
+    //                 this.__internal__battleLogsConsole.classList.remove("side-left");
+    //                 this.__internal__battleLogsConsole.classList.add("side-right");
+    //                 this.__internal__battleLogsResizeElement.classList.remove(
+    //                     "side-right");
+    //                 this.__internal__battleLogsResizeElement.classList.add(
+    //                     "side-left");
+    //                 this.__internal_changeGameSide(newSide);
+    //             }
+    //         } else {
+    //             if (!this.__internal__battleLogsConsole.classList.contains(
+    //                 "side-left")) {
+    //                 buttonElem.classList.remove("svg_dock-left");
+    //                 buttonElem.classList.add("svg_dock-right");
+    //                 buttonElem.title = "Ancrer à droite";
+    //                 this.__internal__battleLogsConsole.classList.remove("side-right");
+    //                 this.__internal__battleLogsConsole.classList.add("side-left");
+    //                 this.__internal__battleLogsResizeElement.classList.remove(
+    //                     "side-left");
+    //                 this.__internal__battleLogsResizeElement.classList.add(
+    //                     "side-right");
+    //                 this.__internal_changeGameSide(newSide);
+    //             }
+    //         }
+    //
+    //         BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, newSide);
+    //     };
+    //
+    //     containingDiv.appendChild(buttonElem);
+    //     this.__internal__battleLogsDockSideElement = buttonElem;
+    // }
 
-            BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, newStatus);
-        };
+    // /**
+    //  * @desc Change game side
+    //  *
+    //  * @param {string} side: Side of console element
+    //  */
+    // static __internal_changeGameSide(side) {
+    //     const rightBar = document.querySelector("#rightBar")
+    //     const gameOut = document.querySelector(".game-out")
+    //     const game = document.querySelector(".game");
+    //     const menuSettings = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Option.Settings.MenuSettings);
+    //     const hiddenByBattleLogs = menuSettings ? menuSettings["display-hiddenByBattleLogs"] : null;
+    //     const chatHidden = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true"
+    //     if (!game)
+    //         return;
+    //     if (!(side === "right")) {
+    //         game.style.margin = "unset"
+    //         game.style.marginLeft = "auto";
+    //         if (hiddenByBattleLogs && chatHidden) {
+    //             rightBar.style.left = "0";
+    //             rightBar.style.removeProperty("right")
+    //             rightBar.style.height = "calc(100vh - 34px)"
+    //             rightBar.style.top = "34px"
+    //             gameOut.style.marginLeft = "unset"
+    //             gameOut.style.marginRight = "0";
+    //         } else {
+    //             rightBar.style.right = "0";
+    //             rightBar.style.removeProperty("left")
+    //             rightBar.style.height = "100vh"
+    //             rightBar.style.top = "0"
+    //             gameOut.style.marginLeft = "unset"
+    //             gameOut.style.marginRight = chatHidden ? "0" : "18%";
+    //         }
+    //     } else {
+    //         game.style.margin = "unset"
+    //         game.style.marginRight = "auto";
+    //         if (hiddenByBattleLogs && chatHidden) {
+    //             rightBar.style.right = "0";
+    //             rightBar.style.removeProperty("left")
+    //             rightBar.style.height = "calc(100vh - 34px)"
+    //             rightBar.style.top = "34px"
+    //             gameOut.style.marginRight = "unset"
+    //             gameOut.style.marginLeft = "0";
+    //         } else {
+    //             rightBar.style.left = "0";
+    //             rightBar.style.removeProperty("right")
+    //             rightBar.style.height = "100vh"
+    //             rightBar.style.top = "0"
+    //             gameOut.style.marginRight = "unset"
+    //             gameOut.style.marginLeft = chatHidden ? "0" : "18%";
+    //         }
+    //     }
+    // }
 
-        containingDiv.appendChild(buttonElem);
-    }
+    // /**
+    //  * @desc Add resize element
+    //  *
+    //  * @param {string} id: The button id
+    //  * @param {Element} containingDiv: The div element to append the button to
+    //  */
+    // static __internal_addResizeElement(id, containingDiv) {
+    //     const divElem = document.createElement("div");
+    //     divElem.id = id;
+    //     divElem.classList.add("console-resize");
+    //
+    //     let sideLeft = BattleLogs.Utils.LocalStorage.getValue(
+    //         BattleLogs.Menu.Settings.MenuSide
+    //     ) === "left";
+    //     if (sideLeft) {
+    //         divElem.classList.add("side-right");
+    //     } else {
+    //         divElem.classList.add("side-left");
+    //     }
+    //
+    //     divElem.onmousedown = (e) => {
+    //         BattleLogsMenu.__internal__battleLogsPosition = e.x;
+    //         if (!divElem.classList.contains("side-right")) {
+    //             document.addEventListener(
+    //                 "mousemove",
+    //                 BattleLogs.Menu.__internal_resizeRight,
+    //                 false
+    //             );
+    //         } else {
+    //             document.addEventListener(
+    //                 "mousemove",
+    //                 BattleLogs.Menu.__internal_resizeLeft,
+    //                 false
+    //             );
+    //         }
+    //     };
+    //
+    //     containingDiv.appendChild(divElem);
+    //     this.__internal__battleLogsResizeElement = divElem;
+    // }
 
-    /**
-     * @desc Add dock side button element
-     *
-     * @param {string} id: The button id
-     * @param {Element} containingDiv: The div element to append the button to
-     */
-    static __internal__addDockSideButton(id, containingDiv) {
-        let buttonElem = document.createElement("button");
-        buttonElem.id = id;
-
-        let sideRight = BattleLogs.Utils.LocalStorage.getValue(id) === "right";
-        if (sideRight) {
-            buttonElem.classList.add("svg_dock-left");
-            buttonElem.title = "Ancrer à gauche";
-            this.__internal__battleLogsConsole.classList.add("side-right");
-            this.__internal_changeGameSide("right");
-        } else {
-            buttonElem.classList.add("svg_dock-right");
-            buttonElem.title = "Ancrer à droite";
-            this.__internal__battleLogsConsole.classList.add("side-left");
-            this.__internal_changeGameSide("left");
-        }
-
-        buttonElem.onclick = () => {
-            const newSide = BattleLogs.Utils.LocalStorage.getValue(id) ===
-            "right" ? "left" : "right";
-            if (newSide === "right") {
-                if (!this.__internal__battleLogsConsole.classList.contains(
-                    "side-right")) {
-                    buttonElem.classList.remove("svg_dock-right");
-                    buttonElem.classList.add("svg_dock-left");
-                    buttonElem.title = "Ancrer à gauche";
-                    this.__internal__battleLogsConsole.classList.remove("side-left");
-                    this.__internal__battleLogsConsole.classList.add("side-right");
-                    this.__internal__battleLogsResizeElement.classList.remove(
-                        "side-right");
-                    this.__internal__battleLogsResizeElement.classList.add(
-                        "side-left");
-                    this.__internal_changeGameSide(newSide);
-                }
-            } else {
-                if (!this.__internal__battleLogsConsole.classList.contains(
-                    "side-left")) {
-                    buttonElem.classList.remove("svg_dock-left");
-                    buttonElem.classList.add("svg_dock-right");
-                    buttonElem.title = "Ancrer à droite";
-                    this.__internal__battleLogsConsole.classList.remove("side-right");
-                    this.__internal__battleLogsConsole.classList.add("side-left");
-                    this.__internal__battleLogsResizeElement.classList.remove(
-                        "side-left");
-                    this.__internal__battleLogsResizeElement.classList.add(
-                        "side-right");
-                    this.__internal_changeGameSide(newSide);
-                }
-            }
-
-            BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, newSide);
-        };
-
-        containingDiv.appendChild(buttonElem);
-        this.__internal__battleLogsDockSideElement = buttonElem;
-    }
-
-    /**
-     * @desc Change game side
-     *
-     * @param {string} side: Side of console element
-     */
-    static __internal_changeGameSide(side) {
-        const rightBar = document.querySelector("#rightBar")
-        const gameOut = document.querySelector(".game-out")
-        const game = document.querySelector(".game");
-        const menuSettings = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Option.Settings.MenuSettings);
-        const hiddenByBattleLogs = menuSettings ? menuSettings["display-hiddenByBattleLogs"] : null;
-        const chatHidden = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Option.Settings.OptionChatHidden) === "true"
-        if (!game)
-            return;
-        if (!(side === "right")) {
-            game.style.margin = "unset"
-            game.style.marginLeft = "auto";
-            if (hiddenByBattleLogs && chatHidden) {
-                rightBar.style.left = "0";
-                rightBar.style.removeProperty("right")
-                rightBar.style.height = "calc(100vh - 34px)"
-                rightBar.style.top = "34px"
-                gameOut.style.marginLeft = "unset"
-                gameOut.style.marginRight = "0";
-            } else {
-                rightBar.style.right = "0";
-                rightBar.style.removeProperty("left")
-                rightBar.style.height = "100vh"
-                rightBar.style.top = "0"
-                gameOut.style.marginLeft = "unset"
-                gameOut.style.marginRight = chatHidden ? "0" : "18%";
-            }
-        } else {
-            game.style.margin = "unset"
-            game.style.marginRight = "auto";
-            if (hiddenByBattleLogs && chatHidden) {
-                rightBar.style.right = "0";
-                rightBar.style.removeProperty("left")
-                rightBar.style.height = "calc(100vh - 34px)"
-                rightBar.style.top = "34px"
-                gameOut.style.marginRight = "unset"
-                gameOut.style.marginLeft = "0";
-            } else {
-                rightBar.style.left = "0";
-                rightBar.style.removeProperty("right")
-                rightBar.style.height = "100vh"
-                rightBar.style.top = "0"
-                gameOut.style.marginRight = "unset"
-                gameOut.style.marginLeft = chatHidden ? "0" : "18%";
-            }
-        }
-    }
-
-    /**
-     * @desc Add resize element
-     *
-     * @param {string} id: The button id
-     * @param {Element} containingDiv: The div element to append the button to
-     */
-    static __internal_addResizeElement(id, containingDiv) {
-        const divElem = document.createElement("div");
-        divElem.id = id;
-        divElem.classList.add("console-resize");
-
-        let sideLeft = BattleLogs.Utils.LocalStorage.getValue(
-            BattleLogs.Menu.Settings.MenuSide
-        ) === "left";
-        if (sideLeft) {
-            divElem.classList.add("side-right");
-        } else {
-            divElem.classList.add("side-left");
-        }
-
-        divElem.onmousedown = (e) => {
-            BattleLogsMenu.__internal__battleLogsPosition = e.x;
-            if (!divElem.classList.contains("side-right")) {
-                document.addEventListener(
-                    "mousemove",
-                    BattleLogs.Menu.__internal_resizeRight,
-                    false
-                );
-            } else {
-                document.addEventListener(
-                    "mousemove",
-                    BattleLogs.Menu.__internal_resizeLeft,
-                    false
-                );
-            }
-        };
-
-        containingDiv.appendChild(divElem);
-        this.__internal__battleLogsResizeElement = divElem;
-    }
-
-    /**
-     * @desc Resize console side right
-     *
-     * @param {Event} e: Event passed in argument
-     */
-    static __internal_resizeRight(e) {
-        const resizeElem = document.getElementById(BattleLogs.Menu.Settings
-            .MenuWidth);
-        const parent = resizeElem.parentNode;
-        const dx = BattleLogs.Menu.__internal__battleLogsPosition - e.x;
-        BattleLogs.Menu.__internal__battleLogsPosition = e.x;
-        BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
-            "disable-select");
-        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none");
-        document.querySelector("#GameDiv").classList.add("pointer-none");
-        parent.style.width = parseInt(getComputedStyle(parent, "").width) + dx +
-            "px";
-        document.onmouseup = () => {
-            document.removeEventListener(
-                "mousemove",
-                BattleLogs.Menu.__internal_resizeRight
-            );
-            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
-                "disable-select"
-            );
-            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none");
-            document.querySelector("#GameDiv").classList.remove("pointer-none");
-            BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
-                .width);
-        };
-    }
-
-    /**
-     * @desc Resize console side right
-     *
-     * @param {Event} e: Event passed in argument
-     */
-    static __internal_resizeLeft(e) {
-        const resizeElem = document.getElementById(BattleLogs.Menu.Settings
-            .MenuWidth);
-        const parent = resizeElem.parentNode;
-        const dx = BattleLogs.Menu.__internal__battleLogsPosition - e.x;
-        BattleLogs.Menu.__internal__battleLogsPosition = e.x;
-        BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
-            "disable-select");
-        BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none");
-        document.querySelector("#GameDiv").classList.add("pointer-none");
-        parent.style.width = parseInt(getComputedStyle(parent, "").width) - dx +
-            "px";
-        document.onmouseup = () => {
-            document.removeEventListener(
-                "mousemove",
-                BattleLogs.Menu.__internal_resizeLeft
-            );
-            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
-                "disable-select"
-            );
-            BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none");
-            document.querySelector("#GameDiv").classList.remove("pointer-none");
-            BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
-                .width);
-        };
-    }
+    // /**
+    //  * @desc Resize console side right
+    //  *
+    //  * @param {Event} e: Event passed in argument
+    //  */
+    // static __internal_resizeRight(e) {
+    //     const resizeElem = document.getElementById(BattleLogs.Menu.Settings
+    //         .MenuWidth);
+    //     const parent = resizeElem.parentNode;
+    //     const dx = BattleLogs.Menu.__internal__battleLogsPosition - e.x;
+    //     BattleLogs.Menu.__internal__battleLogsPosition = e.x;
+    //     BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
+    //         "disable-select");
+    //     BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none");
+    //     document.querySelector("#GameDiv").classList.add("pointer-none");
+    //     parent.style.width = parseInt(getComputedStyle(parent, "").width) + dx +
+    //         "px";
+    //     document.onmouseup = () => {
+    //         document.removeEventListener(
+    //             "mousemove",
+    //             BattleLogs.Menu.__internal_resizeRight
+    //         );
+    //         BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
+    //             "disable-select"
+    //         );
+    //         BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none");
+    //         document.querySelector("#GameDiv").classList.remove("pointer-none");
+    //         BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
+    //             .width);
+    //     };
+    // }
+    //
+    // /**
+    //  * @desc Resize console side right
+    //  *
+    //  * @param {Event} e: Event passed in argument
+    //  */
+    // static __internal_resizeLeft(e) {
+    //     const resizeElem = document.getElementById(BattleLogs.Menu.Settings
+    //         .MenuWidth);
+    //     const parent = resizeElem.parentNode;
+    //     const dx = BattleLogs.Menu.__internal__battleLogsPosition - e.x;
+    //     BattleLogs.Menu.__internal__battleLogsPosition = e.x;
+    //     BattleLogs.Menu.__internal__battleLogsConsole.classList.add(
+    //         "disable-select");
+    //     BattleLogs.Menu.__internal__battleLogsConsole.classList.add("pointer-none");
+    //     document.querySelector("#GameDiv").classList.add("pointer-none");
+    //     parent.style.width = parseInt(getComputedStyle(parent, "").width) - dx +
+    //         "px";
+    //     document.onmouseup = () => {
+    //         document.removeEventListener(
+    //             "mousemove",
+    //             BattleLogs.Menu.__internal_resizeLeft
+    //         );
+    //         BattleLogs.Menu.__internal__battleLogsConsole.classList.remove(
+    //             "disable-select"
+    //         );
+    //         BattleLogs.Menu.__internal__battleLogsConsole.classList.remove("pointer-none");
+    //         document.querySelector("#GameDiv").classList.remove("pointer-none");
+    //         BattleLogs.Utils.LocalStorage.setValue(resizeElem.id, parent.style
+    //             .width);
+    //     };
+    // }
 
     /**
      * @desc Injects the battle logs menu html to the document body

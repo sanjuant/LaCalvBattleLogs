@@ -22,7 +22,7 @@ class BattleLogs
     static Csv = BattleLogsCsv;
     static Sound = BattleLogsSound;
     static Battlewbtry = BattleLogsBattlewbtry;
-    static Video = BattleLogsVideo;
+    // static Video = BattleLogsVideo;
     static Survie = BattleLogsSurvie;
     static Option = BattleLogsOption;
     static Glossary = BattleLogsGlossary;
@@ -83,7 +83,7 @@ class BattleLogs
             // Additionnal components
             this.Csv.initialize(initStep);
             this.Sound.initialize(initStep);
-            this.Video.initialize(initStep);
+            // this.Video.initialize(initStep);
             this.Glossary.initialize(initStep);
             this.Stats.initialize(initStep);
             this.Option.initialize(initStep);

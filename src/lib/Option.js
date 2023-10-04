@@ -23,8 +23,7 @@ class BattleLogsOption {
                 this.__internal__optionSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
                 BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
 
-                // Add CSV button
-                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Video.BattleLogsVideoButton);
+                // this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Video.BattleLogsVideoButton);
 
                 this.__internal__addKonamiCode()
 
