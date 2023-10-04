@@ -17,7 +17,8 @@ class BattleLogsSummarize {
             Logs: "x100-Logs",
             Type: "x100",
             Count: 100
-        }
+        },
+        Limit: 100
     };
 
     static LogsArray = {
@@ -125,7 +126,8 @@ class BattleLogsSummarize {
         this.LogsArray[summarizeType].push(log);
         BattleLogs.Utils.LocalStorage.setComplexValue(
             this.Settings[summarizeType].Logs,
-            log
+            log,
+            this.Settings.Limit
         );
         return log;
     }
