@@ -14,6 +14,9 @@ class BattleLogsMenu {
     static BattleLogsSettingsFooterLeft;
     static BattleLogsSettingsFooterRight;
 
+    static ToggleButton
+    static Menu
+
     /**
      * @desc Builds the menu container, inside of which any interface element should be placed.
      *        It creates the `BattleLogs` menu panel as well.
@@ -26,17 +29,22 @@ class BattleLogsMenu {
 
         // Create general container
 
-        // <div id="menu-container">
-        //     <div id="menu" className="draggable resizable">
         const menuContainer = document.createElement("div");
         menuContainer.id = "menu-container";
         this.__internal__battleLogsContainer = document.createElement("div");
         this.__internal__battleLogsContainer.id = "menu"
         this.__internal__battleLogsContainer.classList.add("draggable")
         menuContainer.appendChild(this.__internal__battleLogsContainer)
+        this.Menu = this.__internal__battleLogsContainer
+
+        this.ToggleButton = document.createElement("button")
+        this.ToggleButton.id = "toggle-button";
+        this.ToggleButton.classList.add("toggle-button")
 
         // Append menu
         document.body.appendChild(menuContainer);
+        // Append toggle button
+        document.body.appendChild(this.ToggleButton);
 
         // Set default settings
         this.__internal__setDefaultSettingValues();
@@ -59,20 +67,19 @@ class BattleLogsMenu {
             "battlelogs-console"
         );
 
-        const menu = document.getElementById('menu');
-        const toggleButton = document.getElementById('toggle-button');
+        const menu = this.Menu
+        const toggleButton = this.ToggleButton;
         const content = document.querySelector('.content');
         let isDragging = false;
         let mouseMoved = false;
         let offsetX, offsetY;
 
-        toggleButton.addEventListener('click', mouseClick)
 
         function mouseClick() {
             if (!mouseMoved) {
                 menu.classList.toggle('open');
                 if (menu.classList.contains('open')) {
-                    toggleButton.innerHTML = 'X';
+                    toggleButton.innerHTML = 'x';
                     content.style.display = 'block';
                     menu.classList.add("resizable")
                 } else {
@@ -82,62 +89,77 @@ class BattleLogsMenu {
                 }
             }
             mouseMoved = false;
-            adjustMenuPosition()
+            BattleLogs.Menu.adjustMenuPosition()
         }
 
-        function mouseMove(e) {
+        toggleButton.addEventListener('click', mouseClick)
+
+        let timeout;
+
+        function toggleButtonMove(e) {
             toggleButton.removeEventListener('click', mouseClick);
+            if (isDragging) {
+                toggleButton.style.left = (e.clientX - offsetX) + 'px';
+                toggleButton.style.top = (e.clientY - offsetY) + 'px';
+            }
+            mouseMoved = true
+        }
+        function startDraggingToggleButton(e) {
+            document.addEventListener('mousemove', toggleButtonMove);
+            isDragging = true;
+            document.querySelector("#GameDiv").classList.add("pointer-none");
+            offsetX = e.clientX - toggleButton.offsetLeft;
+            offsetY = e.clientY - toggleButton.offsetTop;
+        }
+
+        toggleButton.addEventListener('mousedown', function(e) {
+            timeout = setTimeout(() => startDraggingToggleButton(e), 100);
+        });
+
+        toggleButton.addEventListener('mouseup', function() {
+            clearTimeout(timeout);
+            isDragging = false;
+            document.removeEventListener('mousemove', toggleButtonMove);
+            document.querySelector("#GameDiv").classList.remove("pointer-none");
+            toggleButton.addEventListener('click', mouseClick)
+        });
+
+
+        function menuMove(e) {
+            menu.removeEventListener('click', mouseClick);
             if (isDragging) {
                 menu.style.left = (e.clientX - offsetX) + 'px';
                 menu.style.top = (e.clientY - offsetY) + 'px';
             }
             mouseMoved = true
         }
-
-        function adjustMenuPosition() {
-            const menu = document.getElementById('menu');
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-
-            const menuWidth = menu.offsetWidth;
-            const menuHeight = menu.offsetHeight;
-
-            const menuLeft = parseInt(menu.style.left, 10);
-            const menuTop = parseInt(menu.style.top, 10);
-
-            if (menuLeft + menuWidth > viewportWidth) {
-                menu.style.left = (viewportWidth - menuWidth) + 'px';
-            }
-
-            if (menuTop + menuHeight > viewportHeight) {
-                menu.style.top = (viewportHeight - menuHeight) + 'px';
-            }
-            if (menuLeft < 0) {
-                menu.style.left = '0';
-            }
-
-            if (menuTop < 0) {
-                menu.style.top = '0';
-            }
-        }
-
-        toggleButton.addEventListener('mousedown', function(e) {
-            document.addEventListener('mousemove', mouseMove);
+        function startDraggingMenu(e) {
+            document.addEventListener('mousemove', menuMove);
             isDragging = true;
             document.querySelector("#GameDiv").classList.add("pointer-none");
             offsetX = e.clientX - menu.offsetLeft;
             offsetY = e.clientY - menu.offsetTop;
+        }
+
+        menu.addEventListener('mousedown', function(e) {
+            timeout = setTimeout(() => startDraggingMenu(e), 100);
         });
 
-        toggleButton.addEventListener('mouseup', function() {
+        menu.addEventListener('mouseup', function() {
+            clearTimeout(timeout);
             isDragging = false;
-            document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('mousemove', menuMove);
             document.querySelector("#GameDiv").classList.remove("pointer-none");
-            adjustMenuPosition()
-            toggleButton.addEventListener('click', mouseClick)
         });
 
-        window.addEventListener('resize', adjustMenuPosition);
+
+        window.addEventListener('resize', this.adjustMenuPosition);
+
+        // Add header actions
+        const headerButtons = document.getElementById(
+            "battlelogs-console_header-buttons"
+        );
+        this.__internal__addExpandButton(this.Settings.MenuExpanded, headerButtons);
 
         // If user is on phone
         if (this.__internal__isPhone) {
@@ -161,6 +183,69 @@ class BattleLogsMenu {
         this.BattleLogsSettings = document.createElement("div");
         this.BattleLogsSettings.id = "battlelogs-menu_settings";
         this.BattleLogsWrapper.appendChild(this.BattleLogsSettings);
+    }
+
+
+    static moveToggleButtonByMenuPosition() {
+        const menu = document.getElementById('menu');
+        const toggleButton = document.getElementById('toggle-button');
+        const rect = menu.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        const middleX = rect.left + (rect.width / 2);
+        const middleY = rect.top + (rect.height / 2);
+
+        // if (middleX < windowWidth / 2) {
+        //     if (middleY < windowHeight / 2) {
+        //         toggleButton.style.left = '0';
+        //         toggleButton.style.right = 'auto';
+        //         toggleButton.style.top = '0';
+        //         toggleButton.style.bottom = 'auto';
+        //     } else {
+        //         toggleButton.style.left = '0';
+        //         toggleButton.style.right = 'auto';
+        //         toggleButton.style.top = 'auto';
+        //         toggleButton.style.bottom = '0';
+        //     }
+        // } else {
+        //     if (middleY < windowHeight / 2) {
+        //         toggleButton.style.left = 'auto';
+        //         toggleButton.style.right = '0';
+        //         toggleButton.style.top = '0';
+        //         toggleButton.style.bottom = 'auto';
+        //     } else {
+        //         toggleButton.style.left = 'auto';
+        //         toggleButton.style.right = '0';
+        //         toggleButton.style.top = 'auto';
+        //         toggleButton.style.bottom = '0';
+        //     }
+        // }
+    }
+
+    static adjustMenuPosition() {
+        const menu = document.getElementById('menu');
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const menuWidth = menu.offsetWidth;
+        const menuHeight = menu.offsetHeight;
+
+        const menuLeft = parseInt(menu.style.left, 10);
+        const menuTop = parseInt(menu.style.top, 10);
+
+        if (menuLeft + menuWidth > viewportWidth) {
+            menu.style.left = (viewportWidth - menuWidth) + 'px';
+        }
+        if (menuTop + menuHeight > viewportHeight) {
+            menu.style.top = (viewportHeight - menuHeight) + 'px';
+        }
+        if (menuLeft < 0) {
+            menu.style.left = '0';
+        }
+        if (menuTop < 0) {
+            menu.style.top = '0';
+        }
+        // this.moveToggleButtonByMenuPosition();
     }
 
     /**
@@ -306,6 +391,48 @@ class BattleLogsMenu {
     static __internal__isPhone = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     static __internal__inputsSettings = [];
     static __internal__delayUpdate = null;
+
+
+    /**
+     * @desc Add an Expand button element
+     *
+     * @param {string} id: The button id
+     * @param {Element} containingDiv: The div element to append the button to
+     */
+    static __internal__addExpandButton(id, containingDiv) {
+        const buttonElem = document.createElement("button");
+        buttonElem.id = id;
+
+        const toggleButton = document.getElementById('toggle-button');
+        const content = document.querySelector('.content');
+        const menu = document.getElementById('menu');
+
+        let isExpanded = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
+        if (this.__internal__isPhone) {
+            buttonElem.classList.add("svg_chevron-left");
+            buttonElem.title = "Réduire";
+        } else if (isExpanded) {
+            buttonElem.classList.add("svg_chevron-up");
+            buttonElem.title = "Réduire";
+        } else {
+            buttonElem.classList.add("svg_chevron-down");
+            buttonElem.title = "Développer";
+        }
+        buttonElem.onclick = () => {
+            if (this.__internal__isPhone) {
+                this.__internal__battleLogsConsole.classList.add("hidden");
+                return;
+            }
+            content.style.display = 'none';
+            toggleButton.classList.remove("hidden")
+            menu.classList.remove('open');
+            menu.classList.remove("resizable")
+            // this.adjustMenuPosition()
+        };
+
+        containingDiv.appendChild(buttonElem);
+    }
+
 
     /**
      * @desc Set input settings value in local storage on update
