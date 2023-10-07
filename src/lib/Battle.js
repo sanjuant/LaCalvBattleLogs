@@ -1463,9 +1463,9 @@ class BattleLogsBattle {
     static __internal__incrementHemorragie(user, opponent, action, event) {
         if ("change" in event && event["change"]["new"] - event["change"]["old"] < 0) {
             if (event.target.includes(user.name)) {
-                user.hemorragie -= event["change"]["new"] - event["change"]["old"];
-            } else if (event.target.includes(opponent.name)) {
                 opponent.hemorragie -= event["change"]["new"] - event["change"]["old"];
+            } else if (event.target.includes(opponent.name)) {
+                user.hemorragie -= event["change"]["new"] - event["change"]["old"];
             }
         }
     }
