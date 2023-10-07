@@ -68,6 +68,7 @@ class BattleLogsMenu {
         );
 
         const menu = this.Menu
+        const menuHeader = document.getElementById("menu-header")
         const toggleButton = this.ToggleButton;
         const content = document.querySelector('.content');
         let isDragging = false;
@@ -126,7 +127,7 @@ class BattleLogsMenu {
 
 
         function menuMove(e) {
-            menu.removeEventListener('click', mouseClick);
+            menuHeader.removeEventListener('click', mouseClick);
             if (isDragging) {
                 menu.style.left = (e.clientX - offsetX) + 'px';
                 menu.style.top = (e.clientY - offsetY) + 'px';
@@ -141,15 +142,16 @@ class BattleLogsMenu {
             offsetY = e.clientY - menu.offsetTop;
         }
 
-        menu.addEventListener('mousedown', function(e) {
+        menuHeader.addEventListener('mousedown', function(e) {
             timeout = setTimeout(() => startDraggingMenu(e), 100);
         });
 
-        menu.addEventListener('mouseup', function() {
+        menuHeader.addEventListener('mouseup', function() {
             clearTimeout(timeout);
             isDragging = false;
             document.removeEventListener('mousemove', menuMove);
             document.querySelector("#GameDiv").classList.remove("pointer-none");
+            BattleLogs.Menu.adjustMenuPosition()
         });
 
 

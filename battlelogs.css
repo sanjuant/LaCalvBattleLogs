@@ -25,6 +25,7 @@ body{
 #menu-container {
     top:0;
     position: absolute;
+
 }
 #menu {
     position: absolute;
@@ -37,6 +38,8 @@ body{
     display: flex;
     justify-content: center;
     align-items: center; /* Nouvelle ligne pour centrer le bouton */
+    max-width: 90vw;
+    max-height: 100vh;
 }
 
 .toggle-button {
