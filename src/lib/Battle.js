@@ -1206,16 +1206,12 @@ class BattleLogsBattle {
      */
     static __internal__incrementVdv(user, opponent, action) {
         if (action["attacker"]["name"] === user.name) {
-            if ("vdv" in action["attacker"]["computed"]) {
-                if (! "hemorragied" in action["attacker"]["computed"]){
-                    user.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
-                }
+            if ("vdv" in action["attacker"]["computed"] && action["attacker"]["computed"]["vdv"][0]["value"] > 0) {
+                user.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
             }
         } else if (action["attacker"]["name"] === opponent.name) {
-            if ("vdv" in action["attacker"]["computed"]) {
-                if (! "hemorragied" in action["attacker"]["computed"]){
-                    opponent.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
-                }
+            if ("vdv" in action["attacker"]["computed"] && action["attacker"]["computed"]["vdv"][0]["value"] > 0) {
+                opponent.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
             }
         }
     }
@@ -1465,8 +1461,12 @@ class BattleLogsBattle {
                 }
             }
         })
-        if ("vdv" in action.attacker.computed && "hemorragied" in action.attacker.computed) {
-             opponent.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
+        if ("vdv" in action.attacker.computed && ("hemorragied" in action.attacker.computed || action["attacker"]["computed"]["vdv"][0]["value"] < 0)) {
+            if(action["attacker"]["name"] === user.name){
+                opponent.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
+            }else{
+                user.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
+            }
         }
     }
 
