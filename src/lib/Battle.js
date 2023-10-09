@@ -97,6 +97,7 @@ class BattleLogsBattle {
                         if (event.name.toLowerCase() === "attaque" ) {
                             this.__internal__incrementEsquive(user, opponent, action, event);
                             this.__internal__incrementDmg(user, opponent, action, event);
+                            this.__internal__incrementExecution(user, opponent, action, event);
                         } else if (event.name.toLowerCase()  === "bloquage" ) {
                             this.__internal__incrementStun(user, opponent, action);
                         } else if (event.name.toLowerCase()  === "saignement" ) {
@@ -517,6 +518,17 @@ class BattleLogsBattle {
             text: "Dégâts d'hémorragie",
             type: "checkbox"
         },
+        execution: {
+            name: {
+                normal: "Exécution",
+                short: "Exec",
+                list: "Exécution"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts d'exécution",
+            type: "checkbox"
+        },
         result: {
             name: {
                 normal: "Résultat",
@@ -932,8 +944,8 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      */
     static __internal__setDmgTotal(user, opponent) {
-        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.intimidation + user.venin + user.electrocution + user.hemorragie + user.famDmg + user.famRenvoi;
-        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.intimidation + opponent.venin + opponent.electrocution + opponent.hemorragie + opponent.famDmg + opponent.famRenvoi;
+        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.intimidation + user.venin + user.electrocution + user.hemorragie + user.execution + user.famDmg + user.famRenvoi;
+        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.intimidation + opponent.venin + opponent.electrocution + opponent.hemorragie + opponent.execution + opponent.famDmg + opponent.famRenvoi;
     }
 
     /**
@@ -1471,6 +1483,24 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment dommage of execute
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: Event of battle
+     */
+    static __internal__incrementExecution(user, opponent, action, event) {
+        if(event.change.old === 0) {
+            if (event.target === opponent.name) {
+                user.execution = opponent.lastHealth;
+            }else if (event.target === user.name) {
+                opponent.execution = user.lastHealth;
+            }
+        }
+    }
+
+    /**
      * @desc Sets the Menu settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
@@ -1509,6 +1539,7 @@ class BattleLogsBattle {
         player.intimidation = 0;
         player.paralysie = 0;
         player.hemorragie = 0;
+        player.execution = 0;
         player.lastHealth = 0;
         player.famTour = 0;
         player.famVie = 0;
