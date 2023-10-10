@@ -123,7 +123,7 @@ class BattleLogsOption {
         const chatDiv = document.querySelector("#rightBar")
         const gameOutDiv = document.querySelector(".game-out")
         const hiddenByBattleLogs = this.__internal__optionSettings["display-hiddenByBattleLogs"]
-        const side = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuSide)
+        const side = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuOpacity)
         if (display) {
             chatDiv.style.display = "block";
             chatDiv.style.height = "100vh"
