@@ -27,7 +27,7 @@ body{
     position: absolute;
 
 }
-#menu {
+#Menu-Position {
     position: absolute;
     /*background-color: #f1f1f1;*/
     /*border: 1px solid #ccc;*/
@@ -43,17 +43,21 @@ body{
 }
 
 .toggle-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #007bff;
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
     border: none;
     color: #fff;
     font-size: 20px;
     cursor: pointer;
     position: absolute;
-    top: 0; /* Distance du haut */
-    left: 0; /* Distance de la droite */
+    top: 10px; /* Distance du haut */
+    left: 10px; /* Distance de la droite */
+    background: url('data:image/svg+xml,<svg width="56" height="56" viewBox="0 0 56 56" fill="%23FFF" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.667 16.333A11.667 11.667 0 0 1 16.333 4.667h23.333a11.667 11.667 0 0 1 11.667 11.666v23.333a11.667 11.667 0 0 1-11.666 11.667H16.334A11.667 11.667 0 0 1 4.667 39.667V16.334Zm11.666-7a7 7 0 0 0-7 7v23.333a7 7 0 0 0 7 7.001h23.333a7 7 0 0 0 7.001-7V16.334a7 7 0 0 0-7-7.001H16.334Zm0 30.333a2.333 2.333 0 0 1 2.334-2.333h18.667a2.333 2.333 0 1 1 0 4.667H18.667a2.333 2.333 0 0 1-2.333-2.333Zm3.983-22.65a2.333 2.333 0 1 0-3.299 3.299l5.351 5.351-5.351 5.351a2.333 2.333 0 1 0 3.299 3.299l7-7a2.333 2.333 0 0 0 0-3.299l-7-7Z"/></svg>') no-repeat center;
+}
+
+.toggle-button.enable {
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 .resizable {
@@ -65,7 +69,7 @@ body{
     display: none;
 }
 
-#menu.open .content {
+#Menu-Position.open .content {
     display: block;
     width: 100%;
     height: 100%;
