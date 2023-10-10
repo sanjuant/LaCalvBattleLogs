@@ -402,11 +402,10 @@ class BattleLogsMenu {
         const content = document.querySelector('.content');
         const menu = document.getElementById(this.Settings.MenuPosition);
 
-        let isExpanded = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
         if (this.__internal__isPhone) {
             buttonElem.classList.add("svg_chevron-left");
             buttonElem.title = "Réduire";
-        } else if (isExpanded) {
+        } else {
             buttonElem.classList.add("svg_chevron-up");
             buttonElem.title = "Réduire";
         }
