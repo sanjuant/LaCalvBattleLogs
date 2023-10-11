@@ -29,8 +29,6 @@ body{
 }
 #Menu-Position {
     position: absolute;
-    /*background-color: #f1f1f1;*/
-    /*border: 1px solid #ccc;*/
     background-color: transparent;
     border: none;
     width: 375px;
@@ -40,6 +38,7 @@ body{
     align-items: center; /* Nouvelle ligne pour centrer le bouton */
     max-width: 90vw;
     max-height: 100vh;
+    z-index: -1;
 }
 
 .toggle-button {
@@ -67,6 +66,10 @@ body{
 
 .content {
     display: none;
+}
+
+#Menu-Position.open {
+    z-index: 9999;
 }
 
 #Menu-Position.open .content {

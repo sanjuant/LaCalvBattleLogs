@@ -219,15 +219,34 @@ class BattleLogsMenu {
     }
 
     static adjustMenuPosition() {
-        const menu = document.getElementById(this.Settings.MenuPosition);
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+
+        const toggleButton = document.getElementById(BattleLogs.Menu.Settings.ToggleButtonPosition);
+        const toggleButtonWidth = toggleButton.offsetWidth;
+        const toggleButtonHeight = toggleButton.offsetHeight;
+
+        const toggleButtonLeft = parseInt(toggleButton.style.left, 10);
+        const toggleButtonTop = parseInt(toggleButton.style.top, 10);
+        if (toggleButtonLeft + toggleButtonWidth > viewportWidth) {
+            toggleButton.style.left = (viewportWidth - toggleButtonWidth) + 'px';
+        }
+        if (toggleButtonTop + toggleButtonHeight > viewportHeight) {
+            toggleButton.style.top = (viewportHeight - toggleButtonHeight) + 'px';
+        }
+        if (toggleButtonLeft < 0) {
+            toggleButton.style.left = '0';
+        }
+        if (toggleButtonTop < 0) {
+            toggleButton.style.top = '0';
+        }
+        BattleLogs.Utils.LocalStorage.setValue(toggleButton.id, toggleButton.style.cssText);
+
+        const menu = document.getElementById(BattleLogs.Menu.Settings.MenuPosition);
         const menuWidth = menu.offsetWidth;
         const menuHeight = menu.offsetHeight;
-
         const menuLeft = parseInt(menu.style.left, 10);
         const menuTop = parseInt(menu.style.top, 10);
-
         if (menuLeft + menuWidth > viewportWidth) {
             menu.style.left = (viewportWidth - menuWidth) + 'px';
         }
@@ -240,7 +259,6 @@ class BattleLogsMenu {
         if (menuTop < 0) {
             menu.style.top = '0';
         }
-
         BattleLogs.Utils.LocalStorage.setValue(menu.id, menu.style.cssText);
     }
 
