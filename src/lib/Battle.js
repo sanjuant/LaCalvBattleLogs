@@ -85,6 +85,7 @@ class BattleLogsBattle {
 
             this.__internal__incrementDoubleCoup(user, opponent, action);
             this.__internal__incrementVdv(user, opponent, action);
+            this.__internal__incrementHemorragie(user, opponent, action);
             this.__internal__incrementErosion(user, opponent, action);
             this.__internal__incrementRenvoi(user, opponent, action);
             this.__internal__incrementTour(user, opponent, action);
@@ -96,6 +97,7 @@ class BattleLogsBattle {
                         if (event.name.toLowerCase() === "attaque" ) {
                             this.__internal__incrementEsquive(user, opponent, action, event);
                             this.__internal__incrementDmg(user, opponent, action, event);
+                            this.__internal__incrementExecution(user, opponent, action, event);
                         } else if (event.name.toLowerCase()  === "bloquage" ) {
                             this.__internal__incrementStun(user, opponent, action);
                         } else if (event.name.toLowerCase()  === "saignement" ) {
@@ -103,18 +105,14 @@ class BattleLogsBattle {
                         } else if (event.name.toLowerCase()  === "paralysie" ) {
                             this.__internal__incrementParalysie(user, opponent, action);
                         }
+                    }else if (event.name.toLowerCase() === "heal") {
+                        this.__internal__incrementVieGain(user, opponent, action, event);
                     } else if (event.type.toLowerCase() === "chaque début de tour") {
-                        if (event.name.toLowerCase() === "heal") {
-                            this.__internal__incrementVieGain(user, opponent, action, event);
-                        }
+                        //pass
                     } else if (event.type.toLowerCase() === "une fois par combat") {
-                        if (event.name.toLowerCase() === "heal") {
-                            this.__internal__incrementVieGain(user, opponent, action, event);
-                        }
+                        //pass
                     } else if (event.type.toLowerCase() === "un sort lancé par un monstre ou un familier") {
-                        if (event.name.toLowerCase() === "heal") {
-                            this.__internal__incrementVieGain(user, opponent, action, event);
-                        }
+                        //pass
                     } else if (event.type.toLowerCase() === "électrocuté" && event.name.toLowerCase() === "électrocuté") {
                         this.__internal__incrementElectrocution(user, opponent, action, event);
                     } else if (event.type.toLowerCase()  === "brûlé" && event.name.toLowerCase()  === "brulé") {
@@ -507,6 +505,28 @@ class BattleLogsBattle {
             display: false,
             setting: true,
             text: "Nombre de paralysie",
+            type: "checkbox"
+        },
+        hemorragie: {
+            name: {
+                normal: "Hémorragie",
+                short: "Hemo",
+                list: "Hémorragie"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts d'hémorragie",
+            type: "checkbox"
+        },
+        execution: {
+            name: {
+                normal: "Exécution",
+                short: "Exec",
+                list: "Exécution"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts d'exécution",
             type: "checkbox"
         },
         result: {
@@ -924,8 +944,8 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      */
     static __internal__setDmgTotal(user, opponent) {
-        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.intimidation + user.famDmg + user.famRenvoi;
-        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.intimidation + opponent.famDmg + opponent.famRenvoi;
+        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.intimidation + user.venin + user.electrocution + user.hemorragie + user.execution + user.famDmg + user.famRenvoi;
+        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.intimidation + opponent.venin + opponent.electrocution + opponent.hemorragie + opponent.execution + opponent.famDmg + opponent.famRenvoi;
     }
 
     /**
@@ -1076,6 +1096,8 @@ class BattleLogsBattle {
                 user.vieBase = action["pvs"]["A"];
                 opponent.vieBase = action["pvs"]["B"];
             }
+            user.lastHealth = user.vie;
+            opponent.lastHealth = opponent.vie;
             user.vie = action["pvs"]["A"];
             user.famVie = action["pvs"]["fA"];
             opponent.vie = action["pvs"]["B"];
@@ -1196,11 +1218,11 @@ class BattleLogsBattle {
      */
     static __internal__incrementVdv(user, opponent, action) {
         if (action["attacker"]["name"] === user.name) {
-            if ("vdv" in action["attacker"]["computed"]) {
+            if ("vdv" in action["attacker"]["computed"] && action["attacker"]["computed"]["vdv"][0]["value"] > 0) {
                 user.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
             }
         } else if (action["attacker"]["name"] === opponent.name) {
-            if ("vdv" in action["attacker"]["computed"]) {
+            if ("vdv" in action["attacker"]["computed"] && action["attacker"]["computed"]["vdv"][0]["value"] > 0) {
                 opponent.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
             }
         }
@@ -1351,25 +1373,23 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVieGain(user, opponent, action, event) {
-        if (event.target.includes(user.name)) {
-            if (action["attacker"]["name"] === user.name) {
-                if ("change" in event) {
-                    user.vieGain += event["change"]["new"] - event["change"]["old"];
-                }
-            } else if (action["attacker"]["name"] === user.famName) {
-                if ("change" in event && "old" in event.change && "new" in event.change) {
-                    user.famVieGain += event["change"]["new"] - event["change"]["old"];
-                }
-            }
-        } else if (event.target.includes(opponent.name)) {
-            if (action["attacker"]["name"] === opponent.name) {
-                if ("change" in event) {
-                    opponent.vieGain += event["change"]["new"] - event["change"]["old"];
-                }
-            } else if (action["attacker"]["name"] === opponent.famName) {
-                if ("change" in event && "old" in event.change && "new" in event.change) {
-                    opponent.famVieGain += event["change"]["new"] - event["change"]["old"];
-                }
+        if( (event.target === user.name && user.lastHealth === user.vieBase) ||
+            (event.target === opponent.name && opponent.lastHealth === opponent.vieBase)) return;
+        let diffHealth = event["change"]["new"] - event["change"]["old"];
+        if (diffHealth > 0){
+            switch (action["attacker"]["name"]) {
+                case user.name:
+                    user.vieGain += user.vieBase - user.lastHealth >= event.change.new - event.change.old ? diffHealth : user.vieBase - user.lastHealth;
+                    break;
+                case user.famName:
+                    user.famVieGain += user.vieBase - user.lastHealth >= event.change.new - event.change.old ? diffHealth : user.vieBase - user.lastHealth;
+                    break;
+                case opponent.name:
+                    opponent.vieGain += opponent.vieBase - opponent.lastHealth >= event.change.new - event.change.old ? diffHealth : opponent.vieBase - opponent.lastHealth;
+                    break;
+                case opponent.famName:
+                    opponent.famVieGain += opponent.vieBase - opponent.lastHealth >= event.change.new - event.change.old ? diffHealth : opponent.vieBase - opponent.lastHealth;
+                    break;
             }
         }
     }
@@ -1435,6 +1455,52 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment hemorragie of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     */
+    static __internal__incrementHemorragie(user, opponent, action) {
+        action.events.forEach(event => {
+            if (event.name.toLowerCase() === "heal") {
+                if ("change" in event && event["change"]["new"] - event["change"]["old"] < 0) {
+                    if (event.target === user.name) {
+                        opponent.hemorragie -= user.lastHealth >= -(event["change"]["new"] - event["change"]["old"]) ? event["change"]["new"] - event["change"]["old"] : -user.lastHealth;
+                    } else if (event.target === opponent.name) {
+                        user.hemorragie -= opponent.lastHealth >= -(event["change"]["new"] - event["change"]["old"]) ? event["change"]["new"] - event["change"]["old"] : -opponent.lastHealth;
+                    }
+                }
+            }
+        })
+        if ("vdv" in action.attacker.computed && ("hemorragied" in action.attacker.computed || action["attacker"]["computed"]["vdv"][0]["value"] < 0)) {
+            if(action["attacker"]["name"] === user.name){
+                opponent.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
+            }else{
+                user.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
+            }
+        }
+    }
+
+    /**
+     * @desc Increment dommage of execute
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: Event of battle
+     */
+    static __internal__incrementExecution(user, opponent, action, event) {
+        if(event.change.old === 0) {
+            if (event.target === opponent.name) {
+                user.execution = opponent.lastHealth;
+            }else if (event.target === user.name) {
+                opponent.execution = user.lastHealth;
+            }
+        }
+    }
+
+    /**
      * @desc Sets the Menu settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
@@ -1471,7 +1537,10 @@ class BattleLogsBattle {
         player.maraboutage = 0;
         player.saignement = 0;
         player.intimidation = 0;
-        player.paralysie = 0
+        player.paralysie = 0;
+        player.hemorragie = 0;
+        player.execution = 0;
+        player.lastHealth = 0;
         player.famTour = 0;
         player.famVie = 0;
         player.famDmg = 0;
@@ -1573,3 +1642,4 @@ class BattleLogsBattle {
         }
     }
 }
+
