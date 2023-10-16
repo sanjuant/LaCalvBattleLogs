@@ -48,6 +48,10 @@ class BattleLogsMenu {
         this.ToggleButton.style.cssText = BattleLogs.Utils.LocalStorage.getValue(
             BattleLogs.Menu.Settings.ToggleButtonPosition
         )
+        let btnImg = document.createElement("img")
+        btnImg.src = BattleLogsComponentLoader.__baseUrl + "images/bl_icon.png";
+        this.ToggleButton.appendChild(btnImg)
+
 
         // Append menu
         document.body.appendChild(menuContainer);
