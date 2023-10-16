@@ -812,6 +812,7 @@ class BattleLogsBattle {
             stats: Object.assign({}, this.__internal__misc)
         }
     }
+    static __internal__lastHealth = {};
 
     /**
      * @desc Convert attributes of objects in message
@@ -1096,13 +1097,53 @@ class BattleLogsBattle {
                 user.vieBase = action["pvs"]["A"];
                 opponent.vieBase = action["pvs"]["B"];
             }
-            user.lastHealth = user.vie;
-            opponent.lastHealth = opponent.vie;
+            this.__internal__lastHealth[user.name] = user.vie;
+            this.__internal__lastHealth[user.famName] = user.famVie;
+            this.__internal__lastHealth[opponent.name] = opponent.vie;
+            this.__internal__lastHealth[opponent.famName] = opponent.famVie;
+        
             user.vie = action["pvs"]["A"];
             user.famVie = action["pvs"]["fA"];
             opponent.vie = action["pvs"]["B"];
             opponent.famVie = action["pvs"]["fB"];
         }
+    }
+
+    /**
+     * @desc update a given attribute
+     *
+     * @param {String} targetName: name of target of event
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {Number} attribute: attribute to update
+     * @param {Number} [incrementValue=0]: value to add
+     */
+    static __internal__updateAttribute(targetName, user, opponent, attribute, incrementValue = 0) {
+        const mappings = {
+            [user.name]: { obj: user, attr: attribute },
+            [user.famName]: { obj: user, attr: `fam${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` },
+            [opponent.name]: { obj: opponent, attr: attribute },
+            [opponent.famName]: { obj: opponent, attr: `fam${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` }
+        };
+    
+        const target = mappings[targetName];
+        if (target) {
+            target.obj[target.attr] += incrementValue;
+        }
+    }
+
+    /**
+     * @desc Update a given attribute of a player when the event has not taken place on his turn
+     *
+     * @param {String} targetName: Name of target
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {String} attribute: Attribute to update
+     * @param {Number} valeurAttr: value to add
+     */
+    static __internal__updateOppositePlayerAttr(targetName, user, opponent, attribute, valeurAttr) {
+        const attrUser = targetName === user.name ? opponent : user;
+        attrUser[attribute] += valeurAttr;
     }
 
     /**
@@ -1113,15 +1154,7 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementTour(user, opponent, action) {
-        if (action["attacker"]["name"] === user.name) {
-            user.tour += 1;
-        } else if (action["attacker"]["name"] === user.famName) {
-            user.famTour += 1;
-        } else if (action["attacker"]["name"] === opponent.name) {
-            opponent.tour += 1;
-        } else if (action["attacker"]["name"] === opponent.famName) {
-            opponent.famTour += 1;
-        }
+        this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "tour", 1);
     }
 
     /**
@@ -1132,17 +1165,9 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      * @param {JSON} event: Event of battle
      */
-    static __internal__incrementEsquive(user, opponent, action, event) {
+    static __internal__incrementEsquive(user, opponent, _, event) {
         if ("esquived" in event && event.esquived) {
-            if (event.target === user.name) {
-                user.esquive += 1;
-            } else if (event.target === user.famName) {
-                user.famEsquive += 1;
-            } else if (event.target === opponent.name) {
-                opponent.esquive += 1;
-            } else if (event.target === opponent.famName) {
-                opponent.famEsquive += 1;
-            }
+            this.__internal__updateAttribute(event.target, user, opponent, "esquive", 1);
         }
     }
 
@@ -1155,19 +1180,8 @@ class BattleLogsBattle {
      * @param {JSON} event: Event of battle
      */
     static __internal__incrementDmg(user, opponent, action, event) {
-        if (event.target.includes(opponent.name)) {
-            if (action["attacker"]["name"] === user.name) {
-                if ("change" in event && "old" in event.change && "new" in event.change) user.dmg += event.change["old"] - event.change["new"];
-            } else if (action["attacker"]["name"] === user.famName) {
-                if ("change" in event && "old" in event.change && "new" in event.change) user.famDmg += event.change["old"] - event.change["new"];
-            }
-        } else if (event.target.includes(user.name)) {
-            if (action["attacker"]["name"] === opponent.name) {
-                if ("change" in event && "old" in event.change && "new" in event.change) opponent.dmg += event.change["old"] - event.change["new"];
-            } else if (action["attacker"]["name"] === opponent.famName) {
-                if ("change" in event && "old" in event.change && "new" in event.change) opponent.famDmg += event.change["old"] - event.change["new"];
-            }
-        }
+        const dmgIncrement = event.change["old"] - event.change["new"];
+        this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "dmg", dmgIncrement);
     }
 
     /**
@@ -1179,15 +1193,8 @@ class BattleLogsBattle {
      * @param {JSON} event: Event of battle
      */
     static __internal__incrementSaignement(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.saignement += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.saignement += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const saignementIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "saignement", saignementIncrement);
     }
 
     /**
@@ -1198,14 +1205,8 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementDoubleCoup(user, opponent, action) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
-                user.dc += 1;
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
-                opponent.dc += 1;
-            }
+        if ("doubleCoup" in action["attacker"]["computed"] && action["attacker"]["computed"]["doubleCoup"] === true) {
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "dc", 1);
         }
     }
 
@@ -1217,14 +1218,9 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementVdv(user, opponent, action) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("vdv" in action["attacker"]["computed"] && action["attacker"]["computed"]["vdv"][0]["value"] > 0) {
-                user.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("vdv" in action["attacker"]["computed"] && action["attacker"]["computed"]["vdv"][0]["value"] > 0) {
-                opponent.vdv += action["attacker"]["computed"]["vdv"][0]["value"];
-            }
+        if (action["attacker"]["computed"]["vdv"]?.[0]["value"] > 0) {
+            const vdvIncrement = action["attacker"]["computed"]["vdv"][0]["value"];
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "vdv", vdvIncrement);
         }
     }
 
@@ -1236,14 +1232,9 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementErosion(user, opponent, action) {
-        if (action["defender"]["name"] === user.name) {
-            if ("eroded" in action["defender"]["computed"]) {
-                opponent.erosion = action["defender"]["computed"]["eroded"];
-            }
-        } else if (action["defender"]["name"] === opponent.name) {
-            if ("eroded" in action["defender"]["computed"]) {
-                user.erosion = action["defender"]["computed"]["eroded"];
-            }
+        if ("eroded" in action["defender"]["computed"]) {
+            const erosionIncrement = action["defender"]["computed"]["eroded"];
+            this.__internal__updateOppositePlayerAttr(action["defender"]["name"], user, opponent, "erosion", erosionIncrement);
         }
     }
 
@@ -1255,22 +1246,9 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementRenvoi(user, opponent, action) {
-        if (action["defender"]["name"] === user.name) {
-            if ("renvoi" in action["defender"]["computed"]) {
-                user.renvoi += action["defender"]["computed"]["renvoi"]["value"];
-            }
-        } else if (action["defender"]["name"] === opponent.name) {
-            if ("renvoi" in action["defender"]["computed"]) {
-                opponent.renvoi += action["defender"]["computed"]["renvoi"]["value"];
-            }
-        } else if (action["defender"]["name"] === user.famName) {
-            if ("renvoi" in action["defender"]["computed"]) {
-                user.famRenvoi += action["defender"]["computed"]["renvoi"]["value"];
-            }
-        } else if (action["defender"]["name"] === opponent.famName) {
-            if ("renvoi" in action["defender"]["computed"]) {
-                opponent.famRenvoi += action["defender"]["computed"]["renvoi"]["value"];
-            }
+        if ("renvoi" in action["defender"]["computed"]) {
+            const renvoiIncrement = action["defender"]["computed"]["renvoi"]["value"];
+            this.__internal__updateAttribute(action["defender"]["name"], user, opponent, "renvoi", renvoiIncrement);
         }
     }
 
@@ -1282,11 +1260,7 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementStun(user, opponent, action) {
-        if (action["attacker"]["name"] === user.name) {
-            opponent.stun += 1;
-        } else if (action["attacker"]["name"] === opponent.name) {
-            user.stun += 1;
-        }
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "stun", 1);
     }
 
     /**
@@ -1298,15 +1272,8 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementPoison(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.poison += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.poison += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const poisonIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "poison", poisonIncrement);
     }
 
     /**
@@ -1318,15 +1285,8 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVenin(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.venin += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.venin += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const veninIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "venin", veninIncrement);
     }
 
     /**
@@ -1338,15 +1298,8 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementIntimidation(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.intimidation += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.intimidation += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const intimidationIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "intimidation", intimidationIncrement);
     }
 
     /**
@@ -1357,11 +1310,7 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementParalysie(user, opponent, action) {
-        if (action["attacker"]["name"] === user.name) {
-            opponent.paralysie += 1;
-        } else if (action["attacker"]["name"] === opponent.name) {
-            user.paralysie += 1;
-        }
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "paralysie", 1);
     }
 
     /**
@@ -1373,24 +1322,18 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVieGain(user, opponent, action, event) {
-        if( (event.target === user.name && user.lastHealth === user.vieBase) ||
-            (event.target === opponent.name && opponent.lastHealth === opponent.vieBase)) return;
-        let diffHealth = event["change"]["new"] - event["change"]["old"];
+        if( (event["target"] === user.name && this.__internal__lastHealth[user.name] === user.vieBase) ||
+            (event["target"] === opponent.name && this.__internal__lastHealth[opponent.name] === opponent.vieBase)
+        ) return;
+
+        function getVieGain(user) {
+            return user.vieBase - this.__internal__lastHealth[user.name] >= event.change.new - event.change.old ? diffHealth : user.vieBase - this.__internal__lastHealth[user.name];
+        }
+
+        const diffHealth = event["change"]["new"] - event["change"]["old"];
         if (diffHealth > 0){
-            switch (action["attacker"]["name"]) {
-                case user.name:
-                    user.vieGain += user.vieBase - user.lastHealth >= event.change.new - event.change.old ? diffHealth : user.vieBase - user.lastHealth;
-                    break;
-                case user.famName:
-                    user.famVieGain += user.vieBase - user.lastHealth >= event.change.new - event.change.old ? diffHealth : user.vieBase - user.lastHealth;
-                    break;
-                case opponent.name:
-                    opponent.vieGain += opponent.vieBase - opponent.lastHealth >= event.change.new - event.change.old ? diffHealth : opponent.vieBase - opponent.lastHealth;
-                    break;
-                case opponent.famName:
-                    opponent.famVieGain += opponent.vieBase - opponent.lastHealth >= event.change.new - event.change.old ? diffHealth : opponent.vieBase - opponent.lastHealth;
-                    break;
-            }
+            const gainIncrement = getVieGain(event["target"] === user.name ? user : opponent);
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "vieGain", gainIncrement);
         }
     }
 
@@ -1403,15 +1346,8 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementElectrocution(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.electrocution += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.electrocution += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const electrocutionIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "electrocution", electrocutionIncrement);
     }
 
     /**
@@ -1423,15 +1359,8 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementBrulure(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.brulure += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.brulure += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const brulureIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "brulure", brulureIncrement);
     }
 
     /**
@@ -1443,15 +1372,8 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementMaraboutage(user, opponent, action, event) {
-        if (action["attacker"]["name"] === user.name) {
-            if ("change" in event) {
-                opponent.maraboutage += event["change"]["old"] - event["change"]["new"];
-            }
-        } else if (action["attacker"]["name"] === opponent.name) {
-            if ("change" in event) {
-                user.maraboutage += event["change"]["old"] - event["change"]["new"];
-            }
-        }
+        const maraboutageIncrement = event["change"]["old"] - event["change"]["new"];
+        this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "maraboutage", maraboutageIncrement);
     }
 
     /**
@@ -1462,23 +1384,22 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementHemorragie(user, opponent, action) {
-        action.events.forEach(event => {
-            if (event.name.toLowerCase() === "heal") {
-                if ("change" in event && event["change"]["new"] - event["change"]["old"] < 0) {
-                    if (event.target === user.name) {
-                        opponent.hemorragie -= user.lastHealth >= -(event["change"]["new"] - event["change"]["old"]) ? event["change"]["new"] - event["change"]["old"] : -user.lastHealth;
-                    } else if (event.target === opponent.name) {
-                        user.hemorragie -= opponent.lastHealth >= -(event["change"]["new"] - event["change"]["old"]) ? event["change"]["new"] - event["change"]["old"] : -opponent.lastHealth;
-                    }
-                }
-            }
-        })
-        if ("vdv" in action.attacker.computed && ("hemorragied" in action.attacker.computed || action["attacker"]["computed"]["vdv"][0]["value"] < 0)) {
-            if(action["attacker"]["name"] === user.name){
-                opponent.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
-            }else{
-                user.hemorragie -= action["attacker"]["computed"]["vdv"][0]["value"];
-            }
+        function getHemorragieValue(lastHealth, change) {
+            const difference = change["old"] - change["new"];
+            return difference < lastHealth ? difference : lastHealth;
+        }
+
+        action.events
+            .filter( event => event["name"].toLowerCase() === "heal" && event["change"]["new"] - event["change"]["old"] < 0)
+            .forEach(event => {
+                const hemorragieIncrement = getHemorragieValue(event.target === user.name ? this.__internal__lastHealth[user.name] : this.__internal__lastHealth[opponent.name], event["change"]);
+                const nameHemoUser = event.target === user.name ? opponent.name : user.name;
+                this.__internal__updateAttribute(nameHemoUser, user, opponent, "hemorragie", hemorragieIncrement);
+            })
+        
+        if (action["attacker"]["computed"]["vdv"]?.[0]["value"] < 0) {
+            const hemorragieIncrement = -(action["attacker"]["computed"]["vdv"][0]["value"]);
+            this.__internal__updateOppositePlayerAttr(action["attacker"]["name"], user, opponent, "hemorragie", hemorragieIncrement);
         }
     }
 
@@ -1491,12 +1412,15 @@ class BattleLogsBattle {
      * @param {JSON} event: Event of battle
      */
     static __internal__incrementExecution(user, opponent, action, event) {
-        if(event.change.old === 0) {
-            if (event.target === opponent.name) {
-                user.execution = opponent.lastHealth;
-            }else if (event.target === user.name) {
-                opponent.execution = user.lastHealth;
+        if(event["change"]["old"] === 0) {
+            const mappings = {
+                [user.name]: this.__internal__lastHealth[user.name], 
+                [user.famName]: this.__internal__lastHealth[user.famName],
+                [opponent.name]: this.__internal__lastHealth[opponent.name],
+                [opponent.famName]: this.__internal__lastHealth[opponent.famName]
             }
+            const executionIncrement = mappings[event.target];
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "execution", executionIncrement);
         }
     }
 
@@ -1540,7 +1464,6 @@ class BattleLogsBattle {
         player.paralysie = 0;
         player.hemorragie = 0;
         player.execution = 0;
-        player.lastHealth = 0;
         player.famTour = 0;
         player.famVie = 0;
         player.famDmg = 0;
