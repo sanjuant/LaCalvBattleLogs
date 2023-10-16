@@ -812,6 +812,7 @@ class BattleLogsBattle {
             stats: Object.assign({}, this.__internal__misc)
         }
     }
+    static __internal__lastHealth = {};
 
     /**
      * @desc Convert attributes of objects in message
@@ -1096,10 +1097,10 @@ class BattleLogsBattle {
                 user.vieBase = action["pvs"]["A"];
                 opponent.vieBase = action["pvs"]["B"];
             }
-            user.lastHealth = user.vie;
-            user.famLastHealth = user.famVie;
-            opponent.lastHealth = opponent.vie;
-            opponent.famLastHealth = opponent.famVie;
+            this.__internal__lastHealth[user.name] = user.vie;
+            this.__internal__lastHealth[user.famName] = user.famVie;
+            this.__internal__lastHealth[opponent.name] = opponent.vie;
+            this.__internal__lastHealth[opponent.famName] = opponent.famVie;
         
             user.vie = action["pvs"]["A"];
             user.famVie = action["pvs"]["fA"];
@@ -1132,7 +1133,7 @@ class BattleLogsBattle {
     }
 
     /**
-     * @desc Update attribute of opposite player
+     * @desc Update a given attribute of a player when the event has not taken place on his turn
      *
      * @param {String} targetName: Name of target
      * @param {Object} user: User of battle
@@ -1321,12 +1322,12 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVieGain(user, opponent, action, event) {
-        if( (event["target"] === user.name && user.lastHealth === user.vieBase) ||
-            (event["target"] === opponent.name && opponent.lastHealth === opponent.vieBase)
+        if( (event["target"] === user.name && this.__internal__lastHealth[user.name] === user.vieBase) ||
+            (event["target"] === opponent.name && this.__internal__lastHealth[opponent.name] === opponent.vieBase)
         ) return;
 
         function getVieGain(user) {
-            return user.vieBase - user.lastHealth >= event.change.new - event.change.old ? diffHealth : user.vieBase - user.lastHealth;
+            return user.vieBase - this.__internal__lastHealth[user.name] >= event.change.new - event.change.old ? diffHealth : user.vieBase - this.__internal__lastHealth[user.name];
         }
 
         const diffHealth = event["change"]["new"] - event["change"]["old"];
@@ -1391,7 +1392,7 @@ class BattleLogsBattle {
         action.events
             .filter( event => event["name"].toLowerCase() === "heal" && event["change"]["new"] - event["change"]["old"] < 0)
             .forEach(event => {
-                const hemorragieIncrement = getHemorragieValue(event.target === user.name ? user.lastHealth : opponent.lastHealth, event["change"]);
+                const hemorragieIncrement = getHemorragieValue(event.target === user.name ? this.__internal__lastHealth[user.name] : this.__internal__lastHealth[opponent.name], event["change"]);
                 const nameHemoUser = event.target === user.name ? opponent.name : user.name;
                 this.__internal__updateAttribute(nameHemoUser, user, opponent, "hemorragie", hemorragieIncrement);
             })
@@ -1413,10 +1414,10 @@ class BattleLogsBattle {
     static __internal__incrementExecution(user, opponent, action, event) {
         if(event["change"]["old"] === 0) {
             const mappings = {
-                [user.name]: user.lastHealth, 
-                [user.famName]: user.famLastHealth,
-                [opponent.name]: opponent.lastHealth,
-                [opponent.famName]: opponent.famLastHealth
+                [user.name]: this.__internal__lastHealth[user.name], 
+                [user.famName]: this.__internal__lastHealth[user.famName],
+                [opponent.name]: this.__internal__lastHealth[opponent.name],
+                [opponent.famName]: this.__internal__lastHealth[opponent.famName]
             }
             const executionIncrement = mappings[event.target];
             this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "execution", executionIncrement);
@@ -1463,12 +1464,10 @@ class BattleLogsBattle {
         player.paralysie = 0;
         player.hemorragie = 0;
         player.execution = 0;
-        player.lastHealth = 0;
         player.famTour = 0;
         player.famVie = 0;
         player.famDmg = 0;
         player.famVieBase = 0;
-        player.famLastHealth = 0;
         player.famEsquive = 0;
         player.famVieGain = 0;
         player.famRenvoi = 0;
