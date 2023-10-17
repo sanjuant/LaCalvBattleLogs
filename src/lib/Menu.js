@@ -554,7 +554,7 @@ class BattleLogsMenu {
         buttonElem.addEventListener('contextmenu', (e) => {
             e.preventDefault(); // Empêcher le menu contextuel de s'afficher
             opacity += 0.05; // Augmenter l'opacité de 5% sur le clic droit
-            if (opacity >= 1.0) {
+            if (opacity > 1.0) {
                 opacity = 0.1;
             }
             this.__internal__battleLogsConsole.style.opacity = opacity;
