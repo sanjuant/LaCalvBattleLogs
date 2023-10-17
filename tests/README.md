@@ -12,9 +12,13 @@ Pour écrire des tests unitaires pour la classe `Battle.js`, il serait utile d'u
    - Créez un nouveau fichier appelé `Battle.test.js` dans le même répertoire que `Battle.js`.
 
 3. **Importation de la classe `Battle`** :
+   - Dans `Battle.js`, ajouter l'export la classe en ajoutant la ligne suivante en bas du fichier :
+     ```javascript
+     module.exports = BattleLogsBattle;
+     ```
    - Dans `Battle.test.js`, importez la classe `Battle.js` en ajoutant la ligne suivante en haut du fichier :
      ```javascript
-     import { Battle } from './Battle.js';
+     const BattleLogsBattle = require('../src/lib/Battle.js');
      ```
 
 4. **Écriture des tests** :
