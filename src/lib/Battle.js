@@ -1566,3 +1566,4 @@ class BattleLogsBattle {
     }
 }
 
+module.exports = BattleLogsBattle;
