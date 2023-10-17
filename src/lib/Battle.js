@@ -1326,9 +1326,9 @@ class BattleLogsBattle {
             (event["target"] === opponent.name && this.__internal__lastHealth[opponent.name] === opponent.vieBase)
         ) return;
 
-        function getVieGain(user) {
+        let getVieGain = (user => {
             return user.vieBase - this.__internal__lastHealth[user.name] >= event.change.new - event.change.old ? diffHealth : user.vieBase - this.__internal__lastHealth[user.name];
-        }
+        })
 
         const diffHealth = event["change"]["new"] - event["change"]["old"];
         if (diffHealth > 0){
