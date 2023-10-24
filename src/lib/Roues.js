@@ -49,7 +49,9 @@ class BattleLogsRoues {
             return;
         }
 
-        if (xhr.responseURL === "https://lacalv.fr/play/roues") {
+        const gameUrl = BattleLogsComponentLoader.gameUrl;
+        const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
+        if (xhr.responseURL === baseUrl + "play/roues") {
             this.__internal__roues = BattleLogs.Utils.pakoUncompress(data["roues"]);
             this.Multiplier = data["multiplier"];
         } else {

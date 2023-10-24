@@ -58,13 +58,13 @@ body{
 }
 
 .toggle-button img {
-    width: 100px;
+    width: 80px;
     user-select: none;
     pointer-events: none;
 }
 
 .toggle-button:hover {
-    background-color: inherit;
+    background-color: transparent;
 }
 
 .toggle-button.enable img {
@@ -291,7 +291,7 @@ body{
     justify-content: space-between;
     gap: 8px;
 }
-.footer {
+.bl-footer {
     background-color: #0c0c0d;
     margin-top: auto;
     padding: 0.3em 0.6em;
@@ -299,7 +299,7 @@ body{
     align-items: center;
     justify-content: space-between;
 }
-.footer .settings-left {
+.bl-footer .settings-left {
     gap: 2px;
 }
 
