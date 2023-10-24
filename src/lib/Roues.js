@@ -289,16 +289,18 @@ class BattleLogsRoues {
      */
     static __internal__createRewardItemsArray(dataRewards) {
         let items = [];
-        dataRewards.forEach(reward => {
-            const type = reward[0];
-            const object = reward[1];
-            let existingItem = items.find(i => i.name === object["name"]);
-            if (existingItem === undefined) {
-                items.push({name: object["name"], count: 1, rarity: object["rarity"], type: type});
-            } else {
-                existingItem.count += 1
-            }
-        })
+        if (dataRewards) {
+            dataRewards.forEach(reward => {
+                const type = reward[0];
+                const object = reward[1];
+                let existingItem = items.find(i => i.name === object["name"]);
+                if (existingItem === undefined) {
+                    items.push({name: object["name"], count: 1, rarity: object["rarity"], type: type});
+                } else {
+                    existingItem.count += 1
+                }
+            })
+        }
 
         return items;
     }
