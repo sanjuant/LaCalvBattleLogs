@@ -85,7 +85,7 @@ body{
     overflow: auto;
 }
 
-.content {
+.bl-content {
     display: none;
 }
 
@@ -93,7 +93,7 @@ body{
     z-index: 9999;
 }
 
-#Menu-Position.open .content {
+#Menu-Position.open .bl-content {
     display: block;
     width: 100%;
     height: 100%;

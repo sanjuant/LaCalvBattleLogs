@@ -82,7 +82,7 @@ class BattleLogsMenu {
         const menu = this.Menu
         const menuHeader = document.getElementById("menu-header")
         const toggleButton = this.ToggleButton;
-        const content = document.querySelector('.content');
+        const content = document.querySelector('.bl-content');
         let isDragging = false;
         let mouseMoved = false;
         let offsetX, offsetY;
@@ -421,7 +421,7 @@ class BattleLogsMenu {
         const buttonElem = document.createElement("button");
         buttonElem.id = id;
 
-        const content = document.querySelector('.content');
+        const content = document.querySelector('.bl-content');
         const menu = document.getElementById(this.Settings.MenuPosition);
 
         if (this.__internal__isPhone) {
