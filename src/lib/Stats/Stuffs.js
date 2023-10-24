@@ -264,7 +264,7 @@ class BattleLogsStatsStuffs {
             if (this.__internal__stuffPaneAllowedKey.includes(key) || ["name", "update"].includes(key)) {
                 if (key === "wb") {
                     Object.keys(stuffData.wb).forEach((wbKey) => {
-                        const keyContainer = stuffContainerDiv.querySelector(`[data-key=${wbKey}]`)
+                        const keyContainer = stuffContainerDiv.querySelector(`[data-key="${wbKey}"]`)
                         if (keyContainer) {
                             Object.keys(stuffData.wb[wbKey]).forEach((subkey) => {
                                 this.__internal__updateAttributes(stuffData.wb, wbKey, subkey, keyContainer)
@@ -275,14 +275,14 @@ class BattleLogsStatsStuffs {
                         }
                     })
                 } else if (key === "name") {
-                    const spanName = stuffContainerDiv.querySelector(`[data-key=${key}]`)
+                    const spanName = stuffContainerDiv.querySelector(`[data-key="${key}"]`)
                     spanName.textContent = stuffData.customName ? stuffData.customName : stuffData[key];
                     spanName.title = `#${stuffData.slot} - ${stuffData.name}`;
                 } else if (key === "update") {
-                    const spanDate = stuffContainerDiv.querySelector(`[data-key=${key}]`)
+                    const spanDate = stuffContainerDiv.querySelector(`[data-key="${key}"]`)
                     spanDate.title = `Crée le: ${BattleLogs.Stats.formatStatsDate(stuffData)}, Mis à jour le: ${BattleLogs.Stats.formatStatsDate(stuffData, true, true)}`
                 } else {
-                    const keyContainer = stuffContainerDiv.querySelector(`[data-key=${key}]`)
+                    const keyContainer = stuffContainerDiv.querySelector(`[data-key="${key}"]`)
                     if (keyContainer) {
                         Object.keys(stuffData[key]).forEach((subkey) => {
                             this.__internal__updateAttributes(stuffData, key, subkey, keyContainer)
