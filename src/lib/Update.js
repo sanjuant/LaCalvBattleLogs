@@ -158,7 +158,7 @@ class BattleLogsUpdate {
             let request = new XMLHttpRequest();
             request.open(
                 method,
-                baseUrl + url,
+                baseUrl + "play/" + url,
                 true
             );
             let nounce = this.__internal__nounce
