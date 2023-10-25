@@ -856,7 +856,8 @@ class BattleLogsBattle {
                         } else {
                             const objectSpan = document.createElement("span");
                             objectSpan.classList.add("rarity-" + item.rarity);
-                            objectSpan.textContent = item.count > 1 ? `${item.name} (x${item.count})` : item.name;
+                            const itemName = item.type === "memoire" ? "Mémoire de " + item.name : item.name;
+                            objectSpan.textContent = item.count > 1 ? `${itemName} (x${item.count})` : itemName;
                             items.push(objectSpan.outerHTML)
                         }
                     })
@@ -1057,7 +1058,7 @@ class BattleLogsBattle {
                 }
             }
         }
-
+        
         return items;
     }
 
