@@ -87,6 +87,7 @@ class BattleLogsMenu {
         let mouseMoved = false;
         let offsetX, offsetY;
 
+        // Check if the menu should be expanded based on local storage value
         if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.MenuExpanded) === "true") {
             menu.classList.add('open');
             toggleButton.classList.add("enable");
@@ -95,6 +96,7 @@ class BattleLogsMenu {
         }
 
         function mouseClick() {
+            // Handle click event for toggling menu open/close
             if (!mouseMoved) {
                 menu.classList.toggle('open');
                 if (menu.classList.contains('open')) {
@@ -113,26 +115,36 @@ class BattleLogsMenu {
             BattleLogs.Menu.adjustMenuPosition()
         }
 
+        // Event listeners for toggle button
         toggleButton.addEventListener('click', mouseClick)
 
         let timeout;
 
+        // Convert pixel positions to percentages for responsive layout
+        function applyPercentagePosition(element, x, y) {
+            const widthPercentage = (x / window.innerWidth) * 100;
+            const heightPercentage = (y / window.innerHeight) * 100;
+            element.style.left = `${widthPercentage}%`;
+            element.style.top = `${heightPercentage}%`;
+        }
+
+        // Handle drag movement for the toggle button
         function toggleButtonMove(e) {
-            toggleButton.removeEventListener('click', mouseClick);
-            if (isDragging) {
-                toggleButton.style.left = (e.clientX - offsetX) + 'px';
-                toggleButton.style.top = (e.clientY - offsetY) + 'px';
-                BattleLogs.Utils.LocalStorage.setValue(toggleButton.id, toggleButton.style.cssText);
-            }
-            mouseMoved = true
+            if (!isDragging) return;
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+            applyPercentagePosition(toggleButton, x, y);
+            BattleLogs.Utils.LocalStorage.setValue(toggleButton.id, `${x}px,${y}px`);
+            mouseMoved = true;
         }
 
         function startDraggingToggleButton(e) {
             document.addEventListener('mousemove', toggleButtonMove);
             isDragging = true;
             document.querySelector("#GameDiv").classList.add("pointer-none");
-            offsetX = e.clientX - toggleButton.offsetLeft;
-            offsetY = e.clientY - toggleButton.offsetTop;
+            const rect = toggleButton.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
         }
 
         toggleButton.addEventListener('mousedown', function (e) {
@@ -147,23 +159,23 @@ class BattleLogsMenu {
             toggleButton.addEventListener('click', mouseClick)
         });
 
-
+        // Handle drag movement for the main menu
         function menuMove(e) {
-            menuHeader.removeEventListener('click', mouseClick);
-            if (isDragging) {
-                menu.style.left = (e.clientX - offsetX) + 'px';
-                menu.style.top = (e.clientY - offsetY) + 'px';
-                BattleLogs.Utils.LocalStorage.setValue(menu.id, menu.style.cssText);
-            }
-            mouseMoved = true
+            if (!isDragging) return;
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+            applyPercentagePosition(menu, x, y);
+            BattleLogs.Utils.LocalStorage.setValue(menu.id, `${x}px,${y}px`);
+            mouseMoved = true;
         }
 
         function startDraggingMenu(e) {
             document.addEventListener('mousemove', menuMove);
             isDragging = true;
             document.querySelector("#GameDiv").classList.add("pointer-none");
-            offsetX = e.clientX - menu.offsetLeft;
-            offsetY = e.clientY - menu.offsetTop;
+            const rect = menu.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
         }
 
         menuHeader.addEventListener('mousedown', function (e) {
@@ -178,27 +190,27 @@ class BattleLogsMenu {
             BattleLogs.Menu.adjustMenuPosition()
         });
 
-
+        // Adjust the menu position when the window is resized
         window.addEventListener('resize', this.adjustMenuPosition);
 
+        // Observer to save menu's position when it is resized
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.attributeName === 'style') {
-                    // La div a été redimensionnée
                     BattleLogs.Utils.LocalStorage.setValue(menu.id, menu.style.cssText);
                 }
             });
         });
         observer.observe(this.Menu, { attributes: true });
 
-        // Add header actions
+        // Add opacity and expand buttons to the header
         const headerButtons = document.getElementById(
             "battlelogs-console_header-buttons"
         );
         this.__internal__addOpacityButton(this.Settings.MenuOpacity, headerButtons);
         this.__internal__addExpandButton(this.Settings.MenuExpanded, headerButtons);
 
-        // If user is on phone
+        // If the user is on a phone, add special phone-related UI elements
         if (this.__internal__isPhone) {
             this.__internal__addPhoneElement(
                 "battlelogs-phone_expand",
@@ -206,7 +218,7 @@ class BattleLogsMenu {
             );
         }
 
-        // Set elements
+        // Set internal references to various UI elements
         this.BattleLogsWrapper = document.getElementById("battlelogs-wrapper");
         this.BattleLogsActions = document.getElementById("battlelogs-actions");
         this.BattleLogsSettingsFooterLeft = document.getElementById(
@@ -216,7 +228,7 @@ class BattleLogsMenu {
             "battlelogs-settings_footer-right"
         );
 
-        // Add settings container
+        // Add settings container to the UI
         this.BattleLogsSettings = document.createElement("div");
         this.BattleLogsSettings.id = "battlelogs-menu_settings";
         this.BattleLogsWrapper.appendChild(this.BattleLogsSettings);
