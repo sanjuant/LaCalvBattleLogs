@@ -45,6 +45,11 @@ class BattleLogsMessage {
             enable: true,
             group: 1
         },
+        Histoire: {
+            title: "Histoire",
+            enable: true,
+            group: 1
+        },
         Notif: {
             title: "Notif",
             enable: true,

@@ -24,6 +24,7 @@ class BattleLogs
     static Battlewbtry = BattleLogsBattlewbtry;
     // static Video = BattleLogsVideo;
     static Survie = BattleLogsSurvie;
+    static Histoire = BattleLogsHistoire;
     static Option = BattleLogsOption;
     static Glossary = BattleLogsGlossary;
     static Expedition = BattleLogsExpedition;
@@ -71,6 +72,7 @@ class BattleLogs
             this.Pvp.initialize(initStep);
             this.Tob.initialize(initStep);
             this.Survie.initialize(initStep);
+            this.Histoire.initialize(initStep);
             this.Summarize.initialize(initStep);
             this.Notif.initialize(initStep);
 

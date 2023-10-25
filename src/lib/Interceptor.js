@@ -75,6 +75,8 @@ class BattleLogsInterceptor {
             BattleLogs.Boss.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/battleDonjon")) {
             BattleLogs.Survie.parseResponse(xhr);
+        } else if (xhr.responseURL.startsWith(baseUrl + "play/battleHistoire")) {
+            BattleLogs.Histoire.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/roues")) {
             BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/shop")) {

@@ -57,6 +57,7 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Battlewbtry.js");
         // this.__addScript("src/lib/Video.js");
         this.__addScript("src/lib/Survie.js");
+        this.__addScript("src/lib/Histoire.js");
         this.__addScript("src/lib/Option.js");
         this.__addScript("src/lib/Glossary.js");
         this.__addScript("src/lib/Expedition.js");

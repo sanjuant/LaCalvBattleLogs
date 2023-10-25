@@ -1037,7 +1037,8 @@ class BattleLogsBattle {
             "item",
             "arme",
             "calv",
-            "object"
+            "object",
+            "memoire"
         ]
         let items = [];
         for (const type of rewardsType) {
