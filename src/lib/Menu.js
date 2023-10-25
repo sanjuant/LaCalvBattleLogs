@@ -30,16 +30,12 @@ class BattleLogsMenu {
         if (initStep !== BattleLogs.InitSteps.BuildMenu) return;
 
         // Create general container
-
-        const menuContainer = document.createElement("div");
-        menuContainer.id = "menu-container";
         this.__internal__battleLogsContainer = document.createElement("div");
         this.__internal__battleLogsContainer.id = this.Settings.MenuPosition;
         this.__internal__battleLogsContainer.classList.add("draggable")
         this.__internal__battleLogsContainer.style.cssText = BattleLogs.Utils.LocalStorage.getValue(
             BattleLogs.Menu.Settings.MenuPosition
         )
-        menuContainer.appendChild(this.__internal__battleLogsContainer)
         this.Menu = this.__internal__battleLogsContainer
 
         this.ToggleButton = document.createElement("button")
@@ -54,7 +50,7 @@ class BattleLogsMenu {
 
 
         // Append menu
-        document.body.appendChild(menuContainer);
+        document.body.appendChild(this.Menu);
         // Append toggle button
         document.body.appendChild(this.ToggleButton);
 
