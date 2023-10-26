@@ -1168,3 +1168,15 @@ button.svg_chat {
     }
 }
 
+/********************/
+/* CHAT             */
+/********************/
+#Option-Chat-Opacity {
+    position: absolute;
+    right: 45px;
+    top: 13px;
+    z-index: 983;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+}
