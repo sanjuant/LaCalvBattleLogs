@@ -29,6 +29,9 @@ class BattleLogsMenu {
         // Only consider the BuildMenu init step
         if (initStep !== BattleLogs.InitSteps.BuildMenu) return;
 
+        // Set default settings
+        this.__internal__setDefaultSettingValues();
+
         // Create general container
         this.__internal__battleLogsContainer = document.createElement("div");
         this.__internal__battleLogsContainer.id = this.Settings.MenuPosition;
@@ -53,9 +56,6 @@ class BattleLogsMenu {
         document.body.appendChild(this.Menu);
         // Append toggle button
         document.body.appendChild(this.ToggleButton);
-
-        // Set default settings
-        this.__internal__setDefaultSettingValues();
     }
 
     /**
