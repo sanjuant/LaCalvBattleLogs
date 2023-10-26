@@ -634,5 +634,9 @@ class BattleLogsMenu {
             this.Settings.MenuExpanded,
             "false"
         );
+        BattleLogs.Utils.LocalStorage.setDefaultValue(
+            this.Settings.MenuPosition,
+            "left: 10px; top: 10px;"
+        );
     }
 }
