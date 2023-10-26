@@ -35,6 +35,8 @@ body{
     max-height: 100vh;
     z-index: -1;
     border-radius: 10px;
+    left: 10px;
+    top: 10px;
 }
 
 .toggle-button {
