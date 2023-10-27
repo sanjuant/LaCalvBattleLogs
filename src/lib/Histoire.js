@@ -8,6 +8,12 @@ class BattleLogsHistoire extends BattleLogsSurvie {
         Limit: 500
     };
 
+    static Messages = {
+        normal: "Tu as {0} contre {1} ({2}/Zone&nbsp;{3}.{4}/{5}).",
+        short: "{0} contre {1}({2}/{3}.{4}/{5})",
+        list: "Tu as {0} contre {1} ({2}&nbsp;|&nbsp;Zone&nbsp;{3}.{4}&nbsp;|&nbsp;{5}).",
+    };
+
     static LogsArray = [];
 
     /**
@@ -39,9 +45,8 @@ class BattleLogsHistoire extends BattleLogsSurvie {
         }
 
         const url = new URL(xhr.responseURL);
-        const choice = new URLSearchParams(url.search)
-                        .get('id')
-                        .split("_")[0];
+        const choice = new URLSearchParams(url.search).get('id');
+                        
         const uid = crypto.randomUUID()
         for (const stat of stats) {
             const log = this.__internal__addLog(uid, choice, stat.user, stat.opponent, stat.rewards, stat.stuff);
@@ -60,9 +65,11 @@ class BattleLogsHistoire extends BattleLogsSurvie {
     static buildMessage(log) {
         let fragments = [];
         if (BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Battle.Settings.MenuSettings)["misc-summary"]) {
+            let choice, monde, zone, etape;
+            [choice, monde, zone, etape] = log.choice.split("_");
             fragments.push(
                 this.Messages[BattleLogs.Message.Settings.Format]
-                    .format(log.user.result === "winner" ? "gagné" : "perdu", log.opponent.name, this.__internal__getDifficultyByChoice(log.choice))
+                    .format(log.user.result === "winner" ? "gagné" : "perdu", log.opponent.name, BattleLogs.Load.Histoire[monde]?.name, +zone+1, +etape+1, this.__internal__getDifficultyByChoice(choice))
             );
         }
         fragments.push(BattleLogs.Battle.buildBattleMessage(log));
