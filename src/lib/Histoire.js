@@ -1,5 +1,5 @@
 /**
- * @class The BattleLogsSurvie regroups the Survie logs functionalities
+ * @class The BattleLogsHistoire regroups the Histoire logs functionalities
  */
 class BattleLogsHistoire extends BattleLogsSurvie {
     static Settings = {
