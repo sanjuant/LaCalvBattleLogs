@@ -47,25 +47,27 @@ class BattleLogsUtils {
      *
      * @param {Number} number: The number to abbreviate
      *
-     * @return The abbreviated number with one decimal point and "M" or "B" suffix
+     * @return The abbreviated number with "M" or "B" suffix
      */
     static formatNumber(number) {
         const million = 1000000;
         const billion = 1000000000;
-        if (number >= billion) {
-            const integerPart = Math.floor(number / billion);
-            return `${integerPart}B`;
-        } else if (number >= million) {
-            const integerPart = Math.floor(number / million);
-            const decimalPart = (number % million).toString().slice(0, 3)
-            if (decimalPart.length > 0) {
-                return `${integerPart}M${decimalPart}`;
-            } else {
-                return `${integerPart}M`;
-            }
+        const absoluteNumber = Math.abs(number);
+        const sign = number < 0 ? '-' : '';
+
+        if (absoluteNumber >= billion) {
+            const billions = Math.floor(absoluteNumber / billion);
+            const remainder = absoluteNumber - billions * billion;
+            const millions = Math.floor(remainder / million).toString().padStart(3, '0');
+            return `${sign}${billions}B${millions}`;
+        } else if (absoluteNumber >= million) {
+            const millions = Math.floor(absoluteNumber / million);
+            const remainder = absoluteNumber - millions * million;
+            const thousands = Math.floor(remainder / 1000).toString().padStart(3, '0');
+            return `${sign}${millions}M${thousands}`;
         } else {
             // Add space separator for thousands
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return sign + absoluteNumber.toLocaleString();
         }
     }
 

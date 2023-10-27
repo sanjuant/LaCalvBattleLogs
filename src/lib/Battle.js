@@ -1235,8 +1235,8 @@ class BattleLogsBattle {
      */
     static __internal__incrementErosion(user, opponent, action) {
         if ("eroded" in action["defender"]["computed"]) {
-            const erosionIncrement = action["defender"]["computed"]["eroded"];
-            this.__internal__updateOppositePlayerAttr(action["defender"]["name"], user, opponent, "erosion", erosionIncrement);
+            const attrUser = action["defender"]["name"] === user.name ? opponent : user;
+            attrUser["erosion"] = action["defender"]["computed"]["eroded"];
         }
     }
 
