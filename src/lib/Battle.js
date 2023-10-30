@@ -1324,18 +1324,11 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVieGain(user, opponent, action, event) {
-        if( (event["target"] === user.name && this.__internal__lastHealth[user.name] === user.vieBase) ||
-            (event["target"] === opponent.name && this.__internal__lastHealth[opponent.name] === opponent.vieBase)
-        ) return;
-
-        let getVieGain = (user => {
-            return user.vieBase - this.__internal__lastHealth[user.name] >= event.change.new - event.change.old ? diffHealth : user.vieBase - this.__internal__lastHealth[user.name];
-        })
+        if( event["change"]["old"] === event["change"]["new"]) return;
 
         const diffHealth = event["change"]["new"] - event["change"]["old"];
         if (diffHealth > 0){
-            const gainIncrement = getVieGain(event["target"] === user.name ? user : opponent);
-            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "vieGain", gainIncrement);
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "vieGain", diffHealth);
         }
     }
 
