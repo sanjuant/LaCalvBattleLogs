@@ -178,22 +178,14 @@ class BattleLogsSurvie {
     };
 
     static __internal__getDifficultyByChoice(choice) {
-        if (choice === "2") {
-            return "Normal"
-        } else if (choice === "3") {
-            return "Difficile"
-        } else {
-            return "Facile"
-        }
+        if (choice === "2") return "Normal";
+        if (choice === "3") return "Difficile";
+        return "Facile";
     }
 
     static __internal__getScoreByChoice(choice) {
-        if (choice === "2") {
-            return "3"
-        } else if (choice === "3") {
-            return "5"
-        } else {
-            return "1"
-        }
+        if (choice === "2") return "3";
+        if (choice === "3") return "5";
+        return "1";
     }
 }

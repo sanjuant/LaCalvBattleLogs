@@ -80,12 +80,8 @@ class BattleLogsHistoire extends BattleLogsSurvie {
     }
 
     static __internal__getDifficultyByChoice(choice) {
-        if (choice === "normal") {
-            return "Normal"
-        } else if (choice === "easy") {
-            return "Facile"
-        } else {
-            return "Difficile"
-        }
+        if (choice === "normal") return "Normal";
+        if (choice === "hard") return "Difficile";
+        return "Facile";
     }
 }
