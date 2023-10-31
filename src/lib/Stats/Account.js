@@ -58,7 +58,7 @@ class BattleLogsStatsAccount {
         this.__internal__updateStatsProperty('armes', Update.Armes, Load.Armes, 1);
         this.__internal__updateStatsProperty('calvs', Update.Calvs, Load.Calvs, 1);
         this.__internal__updateStatsProperty('items', Update.Items, Load.Items);
-        this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, 5);
+        this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, 6);
 
         statsData.worth = this.__internal__calculateAccountValue() > 0 ? this.__internal__calculateAccountValue() : statsData.worth;
 
