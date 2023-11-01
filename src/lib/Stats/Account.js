@@ -49,18 +49,19 @@ class BattleLogsStatsAccount {
      * @desc Updates the account stats
      */
     static updateStats() {
+        const { Update, Load } = BattleLogs;
         const statsData = this.Data["account"];
-        statsData.alopiece = BattleLogs.Update.Alopiece;
-        statsData.ticket = BattleLogs.Update.Tickets;
-        statsData.armes.owned = BattleLogs.Update.Armes.length > statsData.armes.owned ? BattleLogs.Update.Armes.length : statsData.armes.owned;
-        statsData.armes.total = BattleLogs.Load.Armes.length - 1 > statsData.armes.total ? BattleLogs.Load.Armes.length - 1 : statsData.armes.total;
-        statsData.calvs.owned = BattleLogs.Update.Calvs.length > statsData.calvs.owned ? BattleLogs.Update.Calvs.length : statsData.calvs.owned;
-        statsData.calvs.total = BattleLogs.Load.Calvs.length - 1 > statsData.calvs.total ? BattleLogs.Load.Calvs.length - 1 : statsData.calvs.total;
-        statsData.items.owned = BattleLogs.Update.Items.length > statsData.items.owned ? BattleLogs.Update.Items.length : statsData.items.owned;
-        statsData.items.total = BattleLogs.Load.Items.length > statsData.items.total ? BattleLogs.Load.Items.length : statsData.items.total;
-        statsData.familiers.owned = BattleLogs.Update.Familiers.length > statsData.familiers.owned ? BattleLogs.Update.Familiers.length : statsData.familiers.owned;
-        statsData.familiers.total = BattleLogs.Load.Familiers.length - 1 > statsData.familiers.total ? BattleLogs.Load.Familiers.length - 1 : statsData.familiers.total;
+
+        statsData.alopiece = Update.Alopiece;
+        statsData.ticket = Update.Tickets;
+
+        this.__internal__updateStatsProperty('armes', Update.Armes, Load.Armes, 1);
+        this.__internal__updateStatsProperty('calvs', Update.Calvs, Load.Calvs, 1);
+        this.__internal__updateStatsProperty('items', Update.Items, Load.Items);
+        this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, 6);
+
         statsData.worth = this.__internal__calculateAccountValue() > 0 ? this.__internal__calculateAccountValue() : statsData.worth;
+
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsAccount, this.Data);
         this.__internal__updateAttributes(statsData);
     }
@@ -155,6 +156,14 @@ class BattleLogsStatsAccount {
         })
     }
 
+    static __internal__updateStatsProperty(property, updateValue, loadValue, subtract = 0) {
+        const statsData = this.Data["account"];
+        const owned = statsData[property].owned;
+        const total = statsData[property].total;
+
+        statsData[property].owned = updateValue.length > owned ? updateValue.length : owned;
+        statsData[property].total = loadValue.length - subtract > 0 ? loadValue.length - subtract : total;
+    }
 
     static __internal__calculateAccountValue() {
         if (BattleLogs.Update.Armes.length === 0

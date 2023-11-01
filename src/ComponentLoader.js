@@ -6,6 +6,7 @@
  */
 class BattleLogsComponentLoader
 {
+    static gameUrl = "https://lacalv.fr/";
     static __baseUrl = null;
     static __loadingList = [];
     static __loadingProgressTable = {};
@@ -20,12 +21,15 @@ class BattleLogsComponentLoader
      */
     static loadFromUrl(baseUrl)
     {
+        const locationHref = window.location.href;
+        const escapedGameUrl = this.gameUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`^${escapedGameUrl}(?:/m|/soon|/)?$`, 'i');
+
         // Don't load script on subpage
-        const locationHref = window.location.href.endsWith("/") ? window.location.href.slice(0,-1) : window.location.href;
-        if (locationHref !== "https://lacalv.fr" && locationHref !== "https://lacalv.fr/m" && locationHref !== "https://lacalv.fr/soon") return;
+        if (!regex.test(locationHref)) return;
 
         this.__baseUrl = baseUrl;
-        
+
         // From the least dependant, to the most dependent
         this.__addScript("src/lib/Utils/LocalStorage.js");
         this.__addScript("src/lib/Stats/Roues.js");
@@ -51,12 +55,15 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Csv.js");
         this.__addScript("src/lib/Sound.js");
         this.__addScript("src/lib/Battlewbtry.js");
-        this.__addScript("src/lib/Video.js");
+        // this.__addScript("src/lib/Video.js");
         this.__addScript("src/lib/Survie.js");
         this.__addScript("src/lib/Option.js");
         this.__addScript("src/lib/Glossary.js");
         this.__addScript("src/lib/Expedition.js");
         this.__addScript("src/lib/Stats.js");
+
+        this.__loadingOrder += 1;
+        this.__addScript("src/lib/Histoire.js");
 
         this.__loadingOrder += 1;
         this.__addScript("src/BattleLogs.js");

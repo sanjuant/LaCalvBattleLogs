@@ -4,8 +4,7 @@
 
 class BattleLogsOption {
     static Settings = {
-        MenuSettings: "Option-Settings",
-        OptionChatHidden: "Option-Chat-Hidden",
+        OptionChatOpacity: "Option-Chat-Opacity",
         Type: "Option",
     }
 
@@ -14,18 +13,13 @@ class BattleLogsOption {
      *
      * @param initStep: The current battle logs init step
      */
-    static initialize(initStep) {
+    static async initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
-            let twitch = document.querySelector(".nav-page > .container-fluid > .row");
+            let twitch = document.querySelector(".modal iframe");
             if (twitch) {
+                this.__internal__chat = document.querySelector(".modal");
                 // Set default settings
-                this.__internal__setDefaultSettingsValues()
-                this.__internal__optionSettings = BattleLogs.Utils.LocalStorage.getComplexValue(this.Settings.MenuSettings)
-                BattleLogs.Menu.addSettings(this.__internal__menuSettings, this.__internal__optionSettings, "Option");
-
-                // Add CSV button
-                this.__internal__addChatButton(this.Settings.OptionChatHidden, BattleLogs.Video.BattleLogsVideoButton);
-
+                this.__internal__addOpacityButton(this.Settings.OptionChatOpacity, this.__internal__chat);
                 this.__internal__addKonamiCode()
 
             }
@@ -45,20 +39,8 @@ class BattleLogsOption {
      /*********************************************************************/
 
     static __internal__optionSettings = null;
-    static __internal__menuSettings = {
-        display: {
-            title: "Option du chat Twitch",
-            stats: {
-                hiddenByBattleLogs: {
-                    name: "Masquer sous le BattleLogs",
-                    display: true,
-                    setting: true,
-                    text: "Masquer sous le BattleLogs",
-                    type: "checkbox"
-                },
-            }
-        }
-    }
+    static __internal__chat = null;
+
     // Konami Code sequence to be entered by the user
     static __internal__konamiCode = [
         "ArrowUp",
@@ -85,83 +67,36 @@ class BattleLogsOption {
      * @param {string} id: The button id
      * @param {Element} containingDiv: The div element to append the separator to
      */
-    static __internal__addChatButton(id, containingDiv) {
-        // Add messages container to battle logs menu
-        const chatButton = document.createElement("button");
-        chatButton.id = id;
-        chatButton.classList.add("svg_chat");
+    static __internal__addOpacityButton(id, containingDiv) {
+        let buttonElem = document.createElement("button");
+        buttonElem.id = id;
+        buttonElem.classList.add("svg_opacity");
+        buttonElem.title = "Réduire l'opacité";
 
-        let chatHidden = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
-        if (chatHidden) {
-            // Si le chat est affiché, on le masque
-            this.__internal__toggleChat(false)
-            chatButton.classList.add("selected");
-            chatButton.title = "Afficher le chat Twitch";
-        } else {
-            chatButton.title = "Masquer le chat Twitch";
-        }
-        chatButton.onclick = () => {
-            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
-            if (newStatus) {
-                // Si le chat est affiché, on le masque
-                this.__internal__toggleChat(false)
-                chatButton.classList.add("selected");
-                chatButton.title = "Afficher le chat Twitch";
-            } else {
-                // Si le chat est masqué, on l'affiche
-                this.__internal__toggleChat(true)
-                chatButton.classList.remove("selected");
-                chatButton.title = "Masquer le chat Twitch";
+        let opacity = BattleLogs.Utils.tryParseFloat(BattleLogs.Utils.LocalStorage.getValue(id), 1.0); // Ajout de cette variable pour suivre l'opacité actuelle
+        containingDiv.style.opacity = opacity; // Définir l'opacité initiale
+
+        buttonElem.onclick = () => {
+            opacity -= 0.05; // Réduire l'opacité de 5% à chaque clic
+            if (opacity <= 0.1) {
+                opacity = 1.0; // Si l'opacité atteint 10%, réinitialiser à 100%
             }
-
-            BattleLogs.Utils.LocalStorage.setValue(chatButton.id, newStatus);
+            containingDiv.style.opacity = opacity; // Appliquer la nouvelle opacité
+            BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, opacity);
         };
 
-        containingDiv.insertAdjacentElement("afterend", chatButton);
-    }
-
-    static __internal__toggleChat(display) {
-        const chatDiv = document.querySelector("#rightBar")
-        const gameOutDiv = document.querySelector(".game-out")
-        const hiddenByBattleLogs = this.__internal__optionSettings["display-hiddenByBattleLogs"]
-        const side = BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuSide)
-        if (display) {
-            chatDiv.style.display = "block";
-            chatDiv.style.height = "100vh"
-            chatDiv.style.top = "0"
-            if (!(side === "left")) {
-                gameOutDiv.style.marginRight = "unset";
-                gameOutDiv.style.marginLeft = "18%";
-                chatDiv.style.left = "0";
-                chatDiv.style.removeProperty("right")
-            } else {
-                gameOutDiv.style.marginLeft = "unset";
-                gameOutDiv.style.marginRight = "18%";
-                chatDiv.style.right = "0";
-                chatDiv.style.removeProperty("left")
+        buttonElem.addEventListener('contextmenu', (e) => {
+            e.preventDefault(); // Empêcher le menu contextuel de s'afficher
+            opacity += 0.05; // Augmenter l'opacité de 5% sur le clic droit
+            if (opacity > 1.0) {
+                opacity = 0.1;
             }
-        } else if (hiddenByBattleLogs) {
-            chatDiv.style.display = "block";
-            chatDiv.style.height = "calc(100vh - 34px)"
-            chatDiv.style.top = "34px"
-            if (side === "left") {
-                chatDiv.style.left = "0";
-                chatDiv.style.removeProperty("right")
-            } else {
-                chatDiv.style.right = "0";
-                chatDiv.style.removeProperty("left")
-            }
-            gameOutDiv.style.marginRight = "0";
-            gameOutDiv.style.marginLeft = "0";
-        } else {
-            chatDiv.style.display = "none";
-            chatDiv.style.height = "100vh"
-            chatDiv.style.top = "0"
-            gameOutDiv.style.marginRight = "0";
-            gameOutDiv.style.marginLeft = "0";
-        }
-    }
+            containingDiv.style.opacity = opacity;
+            BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, opacity);
+        });
 
+        containingDiv.querySelector(".close-button").insertAdjacentElement("beforebegin", buttonElem);
+    }
 
     static __internal__resetKonamiIndex() {
         this.__internal__konamiIndex = 0;
@@ -300,12 +235,5 @@ class BattleLogsOption {
         typeEffectivenessChart.classList.add("dynamic-image");
         typeEffectivenessContainer.appendChild(typeEffectivenessChart);
         BattleLogs.Glossary.GlossaryPanel.appendChild(typeEffectivenessContainer);
-    }
-
-    /**
-     * @desc Sets the Menu settings default values in the local storage
-     */
-    static __internal__setDefaultSettingsValues() {
-        BattleLogs.Utils.LocalStorage.setDefaultComplexValue(this.Settings.MenuSettings, {});
     }
 }

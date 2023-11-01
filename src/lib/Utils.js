@@ -101,6 +101,19 @@ class BattleLogsUtils {
     }
 
     /**
+     * @brief Converts the string representation of a number to its float equivalent
+     *
+     * @param {string} str: The string to parse
+     * @param {number} defaultValue: The default value (in case the string was not representing a float)
+     *
+     * @returns The float value if the string could be parsed, the default value otherwise
+     */
+    static tryParseFloat(str, defaultValue = 0.0) {
+        let result = parseFloat(str);
+        return isNaN(result) ? defaultValue : result;
+    }
+
+    /**
      * @desc Parse date and return date object
      *
      * @param {string, Date} time: Date in string or date format

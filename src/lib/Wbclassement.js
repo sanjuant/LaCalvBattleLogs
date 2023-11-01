@@ -105,7 +105,7 @@ class BattleLogsWbclassement {
      */
     static __internal__buildWbClassementMessage(dateString) {
         const user = this.__internal__user
-        let message = "Classement Worldboss {0}/{1} ({2})&nbsp;:".format(user.classement + 1, user.max + 1, dateString);
+        let message = "Classement Worldboss {0}/{1} ({2})&nbsp;:".format(user.classement + 1, user.max, dateString);
         for (let i = 0; i < this.__internal__top.length; i++) {
             let user = this.__internal__top[i];
             message += "\n";

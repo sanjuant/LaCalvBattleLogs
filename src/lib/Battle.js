@@ -856,7 +856,8 @@ class BattleLogsBattle {
                         } else {
                             const objectSpan = document.createElement("span");
                             objectSpan.classList.add("rarity-" + item.rarity);
-                            objectSpan.textContent = item.count > 1 ? `${item.name} (x${item.count})` : item.name;
+                            const itemName = item.type === "memoire" ? "Mémoire de " + item.name : item.name;
+                            objectSpan.textContent = item.count > 1 ? `${itemName} (x${item.count})` : itemName;
                             items.push(objectSpan.outerHTML)
                         }
                     })
@@ -1037,7 +1038,8 @@ class BattleLogsBattle {
             "item",
             "arme",
             "calv",
-            "object"
+            "object",
+            "memoire"
         ]
         let items = [];
         for (const type of rewardsType) {
@@ -1056,7 +1058,7 @@ class BattleLogsBattle {
                 }
             }
         }
-
+        
         return items;
     }
 
@@ -1322,18 +1324,11 @@ class BattleLogsBattle {
      * @param {JSON} event: event of battle
      */
     static __internal__incrementVieGain(user, opponent, action, event) {
-        if( (event["target"] === user.name && this.__internal__lastHealth[user.name] === user.vieBase) ||
-            (event["target"] === opponent.name && this.__internal__lastHealth[opponent.name] === opponent.vieBase)
-        ) return;
-
-        let getVieGain = (user => {
-            return user.vieBase - this.__internal__lastHealth[user.name] >= event.change.new - event.change.old ? diffHealth : user.vieBase - this.__internal__lastHealth[user.name];
-        })
+        if( event["change"]["old"] === event["change"]["new"]) return;
 
         const diffHealth = event["change"]["new"] - event["change"]["old"];
         if (diffHealth > 0){
-            const gainIncrement = getVieGain(event["target"] === user.name ? user : opponent);
-            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "vieGain", gainIncrement);
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "vieGain", diffHealth);
         }
     }
 

@@ -153,10 +153,12 @@ class BattleLogsUpdate {
          * @param {string} method: Http method
          */
         static queryUrl(url, method = "GET") {
+            const gameUrl = BattleLogsComponentLoader.gameUrl;
+            const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
             let request = new XMLHttpRequest();
             request.open(
                 method,
-                "https://lacalv.fr/play/" + url,
+                baseUrl + "play/" + url,
                 true
             );
             let nounce = this.__internal__nounce

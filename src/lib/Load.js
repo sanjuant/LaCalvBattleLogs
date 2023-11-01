@@ -6,6 +6,7 @@ class BattleLogsLoad {
     static Calvs = [];
     static Items = [];
     static Familiers = [];
+    static Histoire = [];
 
     /**
      * @desc Parse XMLHttpRequest response
@@ -24,6 +25,7 @@ class BattleLogsLoad {
         this.Armes = BattleLogs.Utils.pakoUncompress(data["armes"]);
         this.Calvs = BattleLogs.Utils.pakoUncompress(data["calvs"]);
         this.Familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
+        this.Histoire = BattleLogs.Utils.pakoUncompress(data["histoire"]);
         this.__internal__expeditions = BattleLogs.Utils.pakoUncompress(data["expeditions"]);
         this.__internal__familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
 

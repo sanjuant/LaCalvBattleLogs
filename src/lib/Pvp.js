@@ -5,7 +5,7 @@ class BattleLogsPvp {
     static Settings = {
         Logs: "Pvp-Logs",
         Type: "Pvp",
-        Limit: 1000
+        Limit: 500
     };
 
     static Messages = {
