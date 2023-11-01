@@ -133,8 +133,8 @@ class BattleLogsUpdate {
         // Play sound when boss fight is available
         if (this.Streaming && !BattleLogs.Sound.SoundEmitted.bossAvailable && !BattleLogs.Sound.SoundEmitted.bossFightAvailable
             && this.Wb > 0
-            && ((BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 290 && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 300)
-                || BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 300 && BattleLogs.Battlewbtry.SecRemaining <= 10)
+            && ((BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 890 && BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) < 900)
+                || BattleLogs.Utils.secElapsedBetweenDate(BattleLogs.Boss.LastBattle, new Date()) > 900 && BattleLogs.Battlewbtry.SecRemaining <= 10)
         ) {
             BattleLogs.Sound.notifWhenBossFightAvailable();
         }
