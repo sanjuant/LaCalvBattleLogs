@@ -100,6 +100,15 @@ body{
     height: 100%;
 }
 
+#Menu-Position.open.battlelogs-locked {
+    pointer-events: none;
+}
+
+#Menu-Position.open.battlelogs-locked #Menu-Lock {
+    pointer-events: initial;
+    background-color: #58585c;
+}
+
 .console {
     width: 100%;
     height: 100%;
@@ -1047,6 +1056,13 @@ button.svg_chat {
 }
 .svg_lock {
     background: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 0.72 0.72" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M.36.06a.15.15 0 0 1 .15.143V.3A.09.09 0 0 1 .6.39v.18a.09.09 0 0 1-.09.09h-.3A.09.09 0 0 1 .12.57V.39A.09.09 0 0 1 .21.3V.21A.15.15 0 0 1 .36.06Zm.15.3h-.3a.03.03 0 0 0-.03.03v.18A.03.03 0 0 0 .21.6h.3A.03.03 0 0 0 .54.57V.39A.03.03 0 0 0 .51.36ZM.365.12H.36a.09.09 0 0 0-.09.085V.3h.18V.21A.09.09 0 0 0 .365.12H.36h.005Z"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
+
+.svg_lock_white {
+    background: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 0.72 0.72" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" fill="%23fff" d="M.36.06a.15.15 0 0 1 .15.143V.3A.09.09 0 0 1 .6.39v.18a.09.09 0 0 1-.09.09h-.3A.09.09 0 0 1 .12.57V.39A.09.09 0 0 1 .21.3V.21A.15.15 0 0 1 .36.06Zm.15.3h-.3a.03.03 0 0 0-.03.03v.18A.03.03 0 0 0 .21.6h.3A.03.03 0 0 0 .54.57V.39A.03.03 0 0 0 .51.36ZM.365.12H.36a.09.09 0 0 0-.09.085V.3h.18V.21A.09.09 0 0 0 .365.12H.36h.005Z"/></svg>') no-repeat center;
     display: inline-block;
     width: 24px;
     height: 24px;

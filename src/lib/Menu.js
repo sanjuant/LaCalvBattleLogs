@@ -7,7 +7,8 @@ class BattleLogsMenu {
         MenuExpanded: "Menu-Expanded",
         MenuWidth: "Menu-Width",
         ToggleButtonPosition: "ToggleButton-Position",
-        MenuPosition: "Menu-Position"
+        MenuPosition: "Menu-Position",
+        MenuLock: "Menu-Lock",
     };
 
     static BattleLogsActions;
@@ -51,6 +52,9 @@ class BattleLogsMenu {
         btnImg.src = BattleLogsComponentLoader.__baseUrl + "images/bl_icon.png";
         this.ToggleButton.appendChild(btnImg)
 
+        if(BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuLock) === "true") {
+            this.__internal__battleLogsContainer.classList.add('battlelogs-locked')
+        }
 
         // Append menu
         document.body.appendChild(this.Menu);
@@ -203,6 +207,7 @@ class BattleLogsMenu {
         const headerButtons = document.getElementById(
             "battlelogs-console_header-buttons"
         );
+        this.__internal__addLockButton(this.Settings.MenuLock, headerButtons);
         this.__internal__addOpacityButton(this.Settings.MenuOpacity, headerButtons);
         this.__internal__addExpandButton(this.Settings.MenuExpanded, headerButtons);
 
@@ -568,6 +573,28 @@ class BattleLogsMenu {
             this.__internal__battleLogsConsole.style.opacity = opacity;
             BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, opacity);
         });
+
+        containingDiv.appendChild(buttonElem);
+        this.__internal__battleLogsDockSideElement = buttonElem;
+    }
+
+    /**
+     * @desc Add lock button element
+     *
+     * @param {string} id: The button id
+     * @param {Element} containingDiv: The div element to append the button to
+     */
+    static __internal__addLockButton(id, containingDiv) {
+        let buttonElem = document.createElement("button");
+        buttonElem.id = id;
+        buttonElem.classList.add("svg_lock_white");
+        buttonElem.title = "Verrouiller la disposition";
+
+        buttonElem.onclick = () => {
+            let menu = document.getElementById(this.Settings.MenuPosition);
+            menu.classList.contains('battlelogs-locked') ? menu.classList.remove('battlelogs-locked') : menu.classList.add('battlelogs-locked');
+            BattleLogs.Utils.LocalStorage.setValue(buttonElem.id, menu.classList.contains('battlelogs-locked') ? "true": "false");
+        };
 
         containingDiv.appendChild(buttonElem);
         this.__internal__battleLogsDockSideElement = buttonElem;
