@@ -251,7 +251,7 @@ class BattleLogsStats {
         // Add settings container
         this.StatsPanel = document.createElement("div");
         this.StatsPanel.id = "battlelogs-stats_panel";
-        this.StatsPanel.classList.add("stats")
+        this.StatsPanel.classList.add("stats", "unlocked");
         if (!(BattleLogs.Utils.LocalStorage.getValue(this.Settings.StatsEnable) === "true")) {
             this.StatsPanel.classList.add("hidden")
         }
