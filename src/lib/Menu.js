@@ -89,7 +89,6 @@ class BattleLogsMenu {
             toggleButton.classList.add("enable");
             content.style.display = 'block';
             menu.classList.add("resizable");
-            BattleLogs.Message.scrollDownMessages();
         }
 
         function mouseClick() {

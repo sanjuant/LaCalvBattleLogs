@@ -133,9 +133,7 @@ class BattleLogsMessage {
         this.__internal__messagesContainer.appendChild(pElem);
 
         // Scroll wrapper to bottom
-        if (!this.__internal__messagesContainer.classList.contains("hidden")) {
-            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-        }
+        this.scrollDownMessages();
     }
 
     /**
