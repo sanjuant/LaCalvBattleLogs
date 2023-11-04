@@ -54,6 +54,7 @@ class BattleLogsGlossary {
         // Add settings container
         this.GlossaryPanel = document.createElement("div");
         this.GlossaryPanel.id = "battlelogs-glossary_panel";
+        this.GlossaryPanel.classList.add('unlocked');
         if (!(BattleLogs.Utils.LocalStorage.getValue(this.Settings.GlossaryEnable) === "true")) {
             this.GlossaryPanel.classList.add("hidden")
         }

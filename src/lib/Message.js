@@ -116,11 +116,17 @@ class BattleLogsMessage {
         // Create span element for type
         const spanTypeEl = document.createElement("span");
         const subSpan = document.createElement("span");
-        spanTypeEl.classList.add("type");
-        subSpan.innerHTML = type;
-        spanTypeEl.onclick = () => {
+        const label = document.createElement("span");
+
+        spanTypeEl.classList.add("type", "unlocked");
+        subSpan.classList.add("type-label");
+
+        label.innerHTML = type;
+        subSpan.onclick = () => {
             this.deleteMessage(pElem)
         }
+
+        subSpan.appendChild(label);
         spanTypeEl.appendChild(subSpan)
         pElem.appendChild(spanTypeEl);
 

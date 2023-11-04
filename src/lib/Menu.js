@@ -232,6 +232,7 @@ class BattleLogsMenu {
         // Add settings container to the UI
         this.BattleLogsSettings = document.createElement("div");
         this.BattleLogsSettings.id = "battlelogs-menu_settings";
+        this.BattleLogsSettings.classList.add('unlocked');
         this.BattleLogsWrapper.appendChild(this.BattleLogsSettings);
     }
 
@@ -597,7 +598,6 @@ class BattleLogsMenu {
         };
 
         containingDiv.appendChild(buttonElem);
-        this.__internal__battleLogsDockSideElement = buttonElem;
     }
 
     /**

@@ -104,8 +104,15 @@ body{
     pointer-events: none;
 }
 
-#Menu-Position.open.battlelogs-locked #Menu-Lock {
+#Menu-Position.open.battlelogs-locked .header-buttons button,
+#Menu-Position.open.battlelogs-locked .actions button,
+#Menu-Position.open.battlelogs-locked .bl-footer button,
+#Menu-Position.open.battlelogs-locked .unlocked
+{
     pointer-events: initial;
+}
+
+#Menu-Position.open.battlelogs-locked #Menu-Lock {
     background-color: #58585c;
 }
 
@@ -359,21 +366,30 @@ body{
 /* Sélectionne le span avec la classe "type" */
 
 .type {
-    position: relative; /* ajoute une position relative pour le span */
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    min-width: 40px;
 }
-.type:hover::before {
+
+.type:hover .type-label::before {
     content: url("data:image/svg+xml, %3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor' color='%23959595'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'%3E%3C/path%3E%3C/svg%3E");
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    position: relative;
+    left: calc(50% - 8px);
+    top: 8px;
+    width: 0;
     text-align: center;
     color: white;
     cursor: pointer;
 }
 
-.type:hover > span {
+.type > span {
+    margin: 0 auto;
+}
+
+.type:hover .type-label > span {
     visibility: hidden;
+    margin: 0 -8px;
 }
 
 /*********************/
