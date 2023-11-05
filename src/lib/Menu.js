@@ -92,7 +92,7 @@ class BattleLogsMenu {
             menu.classList.add('open');
             toggleButton.classList.add("enable");
             content.style.display = 'block';
-            menu.classList.add("resizable")
+            menu.classList.add("resizable");
         }
 
         function mouseClick() {
@@ -104,6 +104,7 @@ class BattleLogsMenu {
                     content.style.display = 'block';
                     menu.classList.add("resizable")
                     BattleLogs.Utils.LocalStorage.setValue(BattleLogs.Menu.Settings.MenuExpanded, "true");
+                    BattleLogs.Message.scrollDownMessages();
                 } else {
                     toggleButton.classList.remove("enable");
                     content.style.display = 'none';
