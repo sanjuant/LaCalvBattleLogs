@@ -1041,7 +1041,7 @@ class BattleLogsStatsStuffs {
      * @returns {string} - Formatted string detailing properties like 'Calv', 'Arme', 'Items', 'FamAtk', and 'FamDef'.
      */
     static __internal__getFormattedStuffLoadoutString(statsData) {
-        return `${statsData.arme.name}\t${statsData.calv.name}\t${statsData.items.map(item => item.name).join("\t")}\t${statsData.famAtk.name}\t${statsData.famDef.name}`;
+        return `${statsData.arme.name}|${statsData.calv.name}|${statsData.items.map(item => item.name).join("|")}|${statsData.famAtk.name}|${statsData.famDef.name}`;
     }
 
 
