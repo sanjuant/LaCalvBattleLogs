@@ -139,9 +139,7 @@ class BattleLogsMessage {
         this.__internal__messagesContainer.appendChild(pElem);
 
         // Scroll wrapper to bottom
-        if (!this.__internal__messagesContainer.classList.contains("hidden")) {
-            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-        }
+        this.scrollDownMessages();
     }
 
     /**
@@ -158,7 +156,7 @@ class BattleLogsMessage {
             }
         });
         BattleLogs.Menu.BattleLogsWrapper.classList.remove("hidden");
-        this.__internal__scrollDownMessages();
+        this.scrollDownMessages();
     }
 
     /**
@@ -220,6 +218,16 @@ class BattleLogsMessage {
         }
     }
 
+    /**
+     * @desc Scroll down the wrapper to visualise last commited messages first
+     */
+    static scrollDownMessages() {
+        // Scroll wrapper to bottom
+        if (!this.__internal__messagesContainer.classList.contains("hidden")) {
+            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+        }
+    }
+    
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
     /*********************************************************************/
@@ -547,16 +555,6 @@ class BattleLogsMessage {
         if (format !== null) {
             this.__internal__format[format].selected = true;
             this.Settings.Format = format;
-        }
-    }
-
-    /**
-     * @desc Scroll down the wrapper to visualise last commited messages first
-     */
-    static __internal__scrollDownMessages() {
-        // Scroll wrapper to bottom
-        if (!this.__internal__messagesContainer.classList.contains("hidden")) {
-            BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
         }
     }
 
