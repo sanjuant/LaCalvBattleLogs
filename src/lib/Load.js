@@ -7,6 +7,11 @@ class BattleLogsLoad {
     static Items = [];
     static Familiers = [];
     static Histoire = [];
+    static Effects = [];
+    static EffectsData = [];
+    static Expeditions = [];
+    static Sorts = [];
+    static Panos = [];
 
     /**
      * @desc Parse XMLHttpRequest response
@@ -26,8 +31,11 @@ class BattleLogsLoad {
         this.Calvs = BattleLogs.Utils.pakoUncompress(data["calvs"]);
         this.Familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
         this.Histoire = BattleLogs.Utils.pakoUncompress(data["histoire"]);
-        this.__internal__expeditions = BattleLogs.Utils.pakoUncompress(data["expeditions"]);
-        this.__internal__familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
+        this.Effects = BattleLogs.Utils.pakoUncompress(data["effectsv2"]);
+        this.EffectsData = BattleLogs.Utils.pakoUncompress(data["effectsData"]);
+        this.Expeditions = BattleLogs.Utils.pakoUncompress(data["expeditions"]);
+        this.Sorts = BattleLogs.Utils.pakoUncompress(data["sorts"]);
+        this.Panos = BattleLogs.Utils.pakoUncompress(data["panos"]);
 
         BattleLogs.Message.updateMessages()
     }
@@ -60,13 +68,13 @@ class BattleLogsLoad {
             this.Items,
             this.Armes,
             this.Calvs,
-            this.__internal__familiers
+            this.Familiers
         ];
         return [].concat(...internalArrays)
     }
 
     static getExpedition(id) {
-        let foundObject = this.__internal__expeditions.find(item => {
+        let foundObject = this.Expeditions.find(item => {
             return item.id === id
         });
         if (foundObject) {
@@ -76,7 +84,7 @@ class BattleLogsLoad {
     }
 
     static getFamilier(shortName) {
-        let foundObject = this.__internal__familiers.find(item => {
+        let foundObject = this.Familiers.find(item => {
             return item.short === shortName
         });
         if (foundObject) {
@@ -89,6 +97,4 @@ class BattleLogsLoad {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__expeditions = [];
-    static __internal__familiers = [];
 }
