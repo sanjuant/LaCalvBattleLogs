@@ -81,12 +81,12 @@ class BattleLogsBattle {
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
             this.__internal__setHealth(user, opponent, action);
+            this.__internal__incrementErosion(user, opponent, action);
             if (action.turn === 0) continue;
 
             this.__internal__incrementDoubleCoup(user, opponent, action);
             this.__internal__incrementVdv(user, opponent, action);
             this.__internal__incrementHemorragie(user, opponent, action);
-            this.__internal__incrementErosion(user, opponent, action);
             this.__internal__incrementRenvoi(user, opponent, action);
             this.__internal__incrementTour(user, opponent, action);
 
@@ -942,12 +942,22 @@ class BattleLogsBattle {
     /**
      * @desc Set total dmg of battle
      *
+     * @param {Object} player: player of battle
+     */
+    static calculateTotalDamage(player) {
+        const damageTypes = ['dmg', 'brulure', 'maraboutage', 'poison', 'saignement', 'renvoi', 'intimidation', 'venin', 'electrocution', 'hemorragie', 'execution', 'famDmg', 'famRenvoi'];
+        return damageTypes.reduce((total, type) => total + player[type], 0);
+    }
+
+    /**
+     * @desc Set total dmg of battle
+     *
      * @param {Object} user: User of battle
      * @param {Object} opponent: Opponent of battle
      */
     static __internal__setDmgTotal(user, opponent) {
-        user.dmgTotal = user.dmg + user.brulure + user.maraboutage + user.poison + user.saignement + user.renvoi + user.intimidation + user.venin + user.electrocution + user.hemorragie + user.execution + user.famDmg + user.famRenvoi;
-        opponent.dmgTotal = opponent.dmg + opponent.brulure + opponent.maraboutage + opponent.poison + opponent.saignement + opponent.renvoi + opponent.intimidation + opponent.venin + opponent.electrocution + opponent.hemorragie + opponent.execution + opponent.famDmg + opponent.famRenvoi;
+        user.dmgTotal = this.calculateTotalDamage(user);
+        opponent.dmgTotal = this.calculateTotalDamage(opponent);
     }
 
     /**
@@ -1119,8 +1129,9 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      * @param {Number} attribute: attribute to update
      * @param {Number} [incrementValue=0]: value to add
+     * @param {boolean} overwrite: overwrite existing value or not
      */
-    static __internal__updateAttribute(targetName, user, opponent, attribute, incrementValue = 0) {
+    static __internal__updateAttribute(targetName, user, opponent, attribute, incrementValue = 0, overwrite = false) {
         const mappings = {
             [user.name]: { obj: user, attr: attribute },
             [user.famName]: { obj: user, attr: `fam${attribute.charAt(0).toUpperCase() + attribute.slice(1)}` },
@@ -1130,7 +1141,11 @@ class BattleLogsBattle {
     
         const target = mappings[targetName];
         if (target) {
-            target.obj[target.attr] += incrementValue;
+            if (overwrite) {
+                target.obj[target.attr] = incrementValue;
+            } else {
+                target.obj[target.attr] += incrementValue;
+            }
         }
     }
 
@@ -1142,10 +1157,15 @@ class BattleLogsBattle {
      * @param {Object} opponent: Opponent of battle
      * @param {String} attribute: Attribute to update
      * @param {Number} valeurAttr: value to add
+     * @param {boolean} overwrite: overwrite existing value or not
      */
-    static __internal__updateOppositePlayerAttr(targetName, user, opponent, attribute, valeurAttr) {
+    static __internal__updateOppositePlayerAttr(targetName, user, opponent, attribute, valeurAttr, overwrite = false) {
         const attrUser = targetName === user.name ? opponent : user;
-        attrUser[attribute] += valeurAttr;
+        if (overwrite) {
+            attrUser[attribute] = valeurAttr;
+        }else {
+            attrUser[attribute] += valeurAttr;
+        }
     }
 
     /**
@@ -1234,11 +1254,20 @@ class BattleLogsBattle {
      * @param {JSON} action: Action of battle
      */
     static __internal__incrementErosion(user, opponent, action) {
+        if (action["turn"] === 0) {
+            this.__internal__incrementErosion.damages = {
+                [user.name] : {},
+                [opponent.name] : {}
+            };
+            return;
+        }
         if ("eroded" in action["defender"]["computed"]) {
-            const attrUser = action["defender"]["name"] === user.name ? opponent : user;
-            attrUser["erosion"] = action["defender"]["computed"]["eroded"];
+            const attrUser = action["defender"]["name"].includes(user.name) ? opponent : user;
+            this.__internal__incrementErosion.damages[attrUser.name][action["defender"]["name"]] = action["defender"]["computed"]["eroded"];
+            attrUser["erosion"] = Object.values(this.__internal__incrementErosion.damages[attrUser.name]).reduce((sum, e) => sum + e)
         }
     }
+
 
     /**
      * @desc Increment renvoi of battle
