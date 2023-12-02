@@ -73,7 +73,7 @@ class BattleLogsTob {
             opponent,
             rewards,
             stuff
-        } = BattleLogs.Battle.getStatsFromData(data);
+        } = BattleLogs.Battle.getStatsFromData(data[0]);
         const url = new URL(xhr.responseURL);
         const stage = new URLSearchParams(url.search).get('step');
         const log = this.__internal__addLog(user, opponent, rewards, stage, stuff);
