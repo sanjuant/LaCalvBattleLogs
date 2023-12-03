@@ -25,6 +25,7 @@ class BattleLogs
     // static Video = BattleLogsVideo;
     static Survie = BattleLogsSurvie;
     static Histoire = BattleLogsHistoire;
+    //static MultiHistoire = BattleLogsMultiHistoire;
     static Option = BattleLogsOption;
     static Glossary = BattleLogsGlossary;
     static Expedition = BattleLogsExpedition;
