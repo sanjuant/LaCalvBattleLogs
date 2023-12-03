@@ -25,6 +25,7 @@ class BattleLogs
     // static Video = BattleLogsVideo;
     static Survie = BattleLogsSurvie;
     static Histoire = BattleLogsHistoire;
+    static MultiHistoire = BattleLogsMultiHistoire;
     static Option = BattleLogsOption;
     static Glossary = BattleLogsGlossary;
     static Expedition = BattleLogsExpedition;
@@ -73,6 +74,7 @@ class BattleLogs
             this.Tob.initialize(initStep);
             this.Survie.initialize(initStep);
             this.Histoire.initialize(initStep);
+            this.MultiHistoire.initialize(initStep);
             this.Summarize.initialize(initStep);
             this.Notif.initialize(initStep);
 

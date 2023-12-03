@@ -66,6 +66,9 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Histoire.js");
 
         this.__loadingOrder += 1;
+        this.__addScript("src/lib/MultiHistoire.js");
+
+        this.__loadingOrder += 1;
         this.__addScript("src/BattleLogs.js");
 
         this.__setupBattleLogsRunner();
