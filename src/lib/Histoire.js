@@ -46,7 +46,7 @@ class BattleLogsHistoire extends BattleLogsSurvie {
                 stats.push({user, opponent, rewards, stuff, nbBattle})
             }
         }
-        console.log(stats);
+
         const url = new URL(xhr.responseURL);
         const choice = new URLSearchParams(url.search).get('id');
                         
