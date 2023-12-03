@@ -6,7 +6,8 @@
  */
 class BattleLogsComponentLoader
 {
-    static gameUrl = "https://lacalv.fr/";
+    //static gameUrl = "https://lacalv.fr/";
+    static gameUrl = "https://seragoniadev.ovh/";
     static __baseUrl = null;
     static __loadingList = [];
     static __loadingProgressTable = {};
@@ -64,9 +65,6 @@ class BattleLogsComponentLoader
 
         this.__loadingOrder += 1;
         this.__addScript("src/lib/Histoire.js");
-
-        this.__loadingOrder += 1;
-        this.__addScript("src/lib/MultiHistoire.js");
 
         this.__loadingOrder += 1;
         this.__addScript("src/BattleLogs.js");

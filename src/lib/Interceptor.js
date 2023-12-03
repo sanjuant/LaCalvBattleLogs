@@ -78,7 +78,7 @@ class BattleLogsInterceptor {
         } else if (xhr.responseURL.startsWith(baseUrl + "play/battleHistoire")) {
             BattleLogs.Histoire.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/multiBattleHistoire")) {
-            BattleLogs.MultiHistoire.parseResponse(xhr);
+            BattleLogs.Histoire.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/roues")) {
             BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/shop")) {

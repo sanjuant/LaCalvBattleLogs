@@ -96,6 +96,20 @@ class BattleLogsSummarize {
         return message.format(win * 100 / total, loose * 100 / total)
     }
 
+    /**
+     * @desc Summarize logs for external use
+     *
+     * @param {Object} logs: logs to summarize
+     */
+    static customSummarize(logs) {
+        const user = this.__internal__summarizeAttributes("user", logs);
+        const opponent = this.__internal__summarizeAttributes("opponent", logs);
+        return {
+            user,
+            opponent
+        };
+    }
+    
     /*********************************************************************\
     /***    Internal members, should never be used by other classes    ***\
     /*********************************************************************/
