@@ -69,7 +69,7 @@ class BattleLogsInterceptor {
             BattleLogs.Battlewbtry.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/battle?opponent")) {
             BattleLogs.Pvp.parseResponse(xhr);
-        } else if (xhr.responseURL.startsWith(baseUrl + "play/battlepve")) {
+        } else if (xhr.responseURL.match(new RegExp(`^${baseUrl}play/(battlepve|multibattlepve)\\?step`))) {
             BattleLogs.Tob.parseResponse(xhr);
         } else if (xhr.responseURL === baseUrl + "play/battlewb") {
             BattleLogs.Boss.parseResponse(xhr);

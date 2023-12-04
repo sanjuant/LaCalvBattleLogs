@@ -68,35 +68,41 @@ class BattleLogsTob {
             return
         }
 
-        const {
-            user,
-            opponent,
-            rewards,
-            stuff
-        } = BattleLogs.Battle.getStatsFromData(data[0]);
-        const url = new URL(xhr.responseURL);
-        const stage = new URLSearchParams(url.search).get('step');
-        const log = this.__internal__addLog(user, opponent, rewards, stage, stuff);
-        this.appendMessage(log);
-        if (this.LogsArray.length % BattleLogs.Summarize.Settings.x10.Count === 0) {
-            BattleLogs.Summarize.addLog(
-                this.Settings.Type,
-                BattleLogs.Summarize.Settings.x10.Type
-            );
-        }
-        if (this.LogsArray.length % BattleLogs.Summarize.Settings.x50.Count === 0) {
-            BattleLogs.Summarize.addLog(
-                this.Settings.Type,
-                BattleLogs.Summarize.Settings.x50.Type
-            );
-        }
-        if (this.LogsArray.length % BattleLogs.Summarize.Settings.x100.Count === 0) {
-            BattleLogs.Summarize.addLog(
-                this.Settings.Type,
-                BattleLogs.Summarize.Settings.x100.Type
-            );
-        }
-        BattleLogs.Stats.Stuffs.updateStats(this.Settings.Type, stuff, user);
+        data.forEach((battleData, i) => {
+            let {
+                user,
+                opponent,
+                rewards,
+                stuff
+            } = BattleLogs.Battle.getStatsFromData(battleData);
+            const url = new URL(xhr.responseURL);
+            const stage = Number(new URLSearchParams(url.search).get('step')) + i;
+            if (i + 1 !== data.length) {
+                rewards = []
+            }
+            const log = this.__internal__addLog(user, opponent, rewards, stage, stuff);
+            this.appendMessage(log);
+            if (this.LogsArray.length % BattleLogs.Summarize.Settings.x10.Count === 0) {
+                BattleLogs.Summarize.addLog(
+                    this.Settings.Type,
+                    BattleLogs.Summarize.Settings.x10.Type
+                );
+            }
+            if (this.LogsArray.length % BattleLogs.Summarize.Settings.x50.Count === 0) {
+                BattleLogs.Summarize.addLog(
+                    this.Settings.Type,
+                    BattleLogs.Summarize.Settings.x50.Type
+                );
+            }
+            if (this.LogsArray.length % BattleLogs.Summarize.Settings.x100.Count === 0) {
+                BattleLogs.Summarize.addLog(
+                    this.Settings.Type,
+                    BattleLogs.Summarize.Settings.x100.Type
+                );
+            }
+            BattleLogs.Stats.Stuffs.updateStats(this.Settings.Type, stuff, user);
+        })
+
     }
 
     /**
