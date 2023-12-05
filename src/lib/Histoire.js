@@ -56,15 +56,6 @@ class BattleLogsHistoire extends BattleLogsSurvie {
         }
 
         const lastBattle = stats[stats.length - 1];
-        if (data["results"].length > 1) {
-            const {
-                user,
-                opponent
-            } = BattleLogs.Summarize.customSummarize(stats.slice(0,-1));
-            user.result = data["lost"] ? "looser" : "winner";
-            const sublog = this.__internal__addLog(uid, choice, user, opponent, BattleLogs.Battle.createRewards(), lastBattle.stuff, lastBattle.nbBattle);
-            //this.appendMessage(sublog);
-        }
         
         const log = this.__internal__addLog(uid, choice, lastBattle.user, lastBattle.opponent, lastBattle.rewards, lastBattle.stuff, lastBattle.nbBattle);
         this.appendMessage(log);
