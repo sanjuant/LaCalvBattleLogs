@@ -194,7 +194,11 @@ class BattleLogsExpedition {
             let name;
             let count;
             let rarity;
-            if (!isNaN(parseInt(object["value"], 10))) {
+            if (type === "event") {
+                name = BattleLogs.Load.Event["loot"] ? BattleLogs.Load.Event["loot"]["name"] : type
+                count = object["count"]
+                rarity = BattleLogs.Load.Event["loot"] ? BattleLogs.Load.Event["loot"]["rarity"] : 3
+            } else if (!isNaN(parseInt(object["value"], 10))) {
                 name = type === "alopiece" ? "Alopièce" : object["value"]
                 count = object["value"]
                 rarity = object["rarity"] ? object["rarity"] : 4
