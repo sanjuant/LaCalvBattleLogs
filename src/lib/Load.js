@@ -12,6 +12,7 @@ class BattleLogsLoad {
     static Expeditions = [];
     static Sorts = [];
     static Panos = [];
+    static Event = [];
 
     /**
      * @desc Parse XMLHttpRequest response
@@ -36,6 +37,7 @@ class BattleLogsLoad {
         this.Expeditions = BattleLogs.Utils.pakoUncompress(data["expeditions"]);
         this.Sorts = BattleLogs.Utils.pakoUncompress(data["sorts"]);
         this.Panos = BattleLogs.Utils.pakoUncompress(data["panos"]);
+        this.Event = BattleLogs.Utils.pakoUncompress(data["event"]);
 
         BattleLogs.Message.updateMessages()
     }
