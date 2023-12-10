@@ -95,6 +95,9 @@ class BattleLogsLoad {
         return shortName;
     }
 
+    static getEventLoot() {
+        return this.Event["loot"];
+    }
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
