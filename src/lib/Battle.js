@@ -1160,7 +1160,7 @@ class BattleLogsBattle {
      * @param {boolean} overwrite: overwrite existing value or not
      */
     static __internal__updateOppositePlayerAttr(targetName, user, opponent, attribute, valeurAttr, overwrite = false) {
-        const attrUser = targetName === user.name ? opponent : user;
+        const attrUser = targetName.includes(user.name) ? opponent : user;
         if (overwrite) {
             attrUser[attribute] = valeurAttr;
         }else {
