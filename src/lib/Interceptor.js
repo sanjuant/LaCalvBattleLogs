@@ -87,7 +87,7 @@ class BattleLogsInterceptor {
             || xhr.responseURL.match(new RegExp(`^${baseUrl}play/(coquille_c|coquille_d|coquille_r|coquille_re)\\?count`))
             || xhr.responseURL.startsWith(baseUrl + "play/exclusive")) {
             BattleLogs.Roues.parseResponse(xhr)
-        } else if (xhr.responseURL.startsWith(baseUrl + "play/stopexpedition")) {
+        } else if (xhr.responseURL.startsWith(baseUrl + "play/stopexpeditions")) {
             BattleLogs.Expedition.parseResponse(xhr)
         }
     }
