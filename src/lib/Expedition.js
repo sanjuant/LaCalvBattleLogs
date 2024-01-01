@@ -9,9 +9,9 @@ class BattleLogsExpedition {
     };
 
     static Messages = {
-        normal: "{0} : {1} terminée.",
-        short: "{0} : {1} terminée",
-        list: "{0} : {1} terminée.",
+        normal: "Expédition {1} de {0}.",
+        short: "{1} / {0}",
+        list: "Expédition {1} de {0}.",
         item: {
             normal: "{0}",
             short: "{0}",
