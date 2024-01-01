@@ -9,9 +9,9 @@ class BattleLogsExpedition {
     };
 
     static Messages = {
-        normal: "Expédition {0} de {1}.",
-        short: "{0} / {1}",
-        list: "Expédition {0} de {1}.",
+        normal: "Expédition {1} de {0}.",
+        short: "{1} / {0}",
+        list: "Expédition {1} de {0}.",
         item: {
             normal: "{0}",
             short: "{0}",
@@ -125,7 +125,7 @@ class BattleLogsExpedition {
                 )
             );
         })
-        const message = "{0}|{1}".format(expeditionObject["name"], familierObjects.map(familierObject => familierObject["name"]).join(", "));
+        const message = "{0}|{1}".format(familierObjects.map(familierObject => familierObject["name"]).join(", "), expeditionObject["name"]);
         const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray);
         BattleLogs.Notif.appendNotif(log);
     }
