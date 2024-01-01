@@ -9,9 +9,9 @@ class BattleLogsExpedition {
     };
 
     static Messages = {
-        normal: "{0} a terminé {1}.",
-        short: "{0} a terminé {1}",
-        list: "{0} a terminé {1}.",
+        normal: "{0} : {1} terminée.",
+        short: "{0} : {1} terminée",
+        list: "{0} : {1} terminée.",
         item: {
             normal: "{0}",
             short: "{0}",
@@ -46,9 +46,9 @@ class BattleLogsExpedition {
             return;
         }
         const url = new URL(xhr.responseURL);
-        const fam = new URLSearchParams(url.search).get('fam');
+        const fams = JSON.parse(new URLSearchParams(url.search).get('fam'));
         const expedition = +(new URLSearchParams(url.search).get('expedition')); // Using the unary plus operator to convert to an integer
-        this.__internal__addExpeditionToLog(fam, expedition, data["rewards"]);
+        this.__internal__addExpeditionToLog(fams, expedition, data["rewards"]);
     }
 
     /**
@@ -109,18 +109,23 @@ class BattleLogsExpedition {
     /**
      * @desc Add expeditions to log
      *
-     * @param {string} fam: Fam of expedition
+     * @param {string} fams: Fams of expedition
      * @param {Number} expedition: Number of expedition
      * @param {Array} dataItems: Array of items
      *
      */
-    static __internal__addExpeditionToLog(fam, expedition, dataItems) {
+    static __internal__addExpeditionToLog(fams, expedition, dataItems) {
         let expeditionObject = BattleLogs.Load.getExpedition(expedition);
-        let familierObject = BattleLogs.Load.getFamilier(fam);
-        const itemsArray = this.__internal__createRewardItemsArray(dataItems, familierObject["rarity"] - 1);
-
-        const message = "{0}|{1}".format(familierObject["name"], expeditionObject["name"]);
-
+        let familierObjects = fams.map(fam => BattleLogs.Load.getFamilier(fam));
+        let itemsArray = [];
+        familierObjects.forEach(fam => {
+            itemsArray.push(...this.__internal__createRewardItemsArray(
+                    dataItems.filter(item => item[1]["fami"] === fam["short"]), 
+                    fam["rarity"] - 1
+                )
+            );
+        })
+        const message = "{0}|{1}".format(familierObjects.map(familierObject => familierObject["name"]).join(", "), expeditionObject["name"]);
         const log = new this.Log(BattleLogs.Notif.Settings.Type, this.Settings.Type, message, itemsArray);
         BattleLogs.Notif.appendNotif(log);
     }
