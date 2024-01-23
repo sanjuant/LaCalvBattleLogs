@@ -76,7 +76,17 @@ class BattleLogsBattle {
         let actions = data["data"];
         this.__internal__setResults(user, opponent, data);
         this.__internal__setRewards(rewards, data, user.result)
-        this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
+        switch (data["type"]) {
+            case "PVP":
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
+                break;
+            case "WB":
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffWB, BattleLogs.Update.stuffsWB)
+                break;
+            case "PVE":
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffsPVE)
+
+        }
 
         for (let [, action] of actions.entries()) {
             this.__internal__setShields(user, opponent, action);
