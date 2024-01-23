@@ -84,6 +84,7 @@ class BattleLogsBattle {
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffWB, BattleLogs.Update.stuffsWB)
                 break;
             case "PVE":
+            case "HISTOIRE":
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffsPVE)
 
         }
