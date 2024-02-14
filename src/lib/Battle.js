@@ -1060,12 +1060,18 @@ class BattleLogsBattle {
             "arme",
             "calv",
             "object",
-            "memoire"
+            "memoire",
+            "gemme"
         ]
         let items = [];
+
         for (const type of rewardsType) {
             if (type in dataRewards) {
                 for (const item of dataRewards[type]) {
+                    if (type === "gemme") {
+                        items.push({name: `gemme ${item.value}`, count: item.count, rarity: item.rarity, type: type});
+                        continue;
+                    }
                     let object = BattleLogs.Utils.getObjectByShortName(item.value);
                     if (typeof object === "string") {
                         object = {name: item.value, count: item.count, rarity: -1, type: type};
