@@ -18,6 +18,7 @@ class BattleLogsUpdate {
     static Armes = [];
     static Objects = [];
     static Familiers = [];
+    static Gems = [];
     static Costumes = [];
 
     /**
@@ -97,6 +98,9 @@ class BattleLogsUpdate {
         }
         if (data["familiers"]) {
             this.Familiers = data["familiers"]
+        }
+        if (data["gems"]) {
+            this.Gems = data["gems"]
         }
         if (data["event_costumes"]) {
             this.Costumes = data["event_costumes"]
@@ -180,6 +184,11 @@ class BattleLogsUpdate {
                 request.send();
             }
         }
+
+        static getGemById(id) {
+            return this.Gems.find(item => item.id === id);
+        }
+
 
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\

@@ -1060,12 +1060,24 @@ class BattleLogsBattle {
             "arme",
             "calv",
             "object",
-            "memoire"
+            "memoire",
+            "gemme"
         ]
         let items = [];
+
+        if("gemme" in dataRewards) {
+            BattleLogs.Update.queryUrl("update?refresh=true", "GET");
+        }
+
         for (const type of rewardsType) {
             if (type in dataRewards) {
                 for (const item of dataRewards[type]) {
+                    if (type === "gemme") {
+                        let gemme = undefined;
+                        gemme = BattleLogs.Update.getGemById(item.gemID);
+                        items.push({name: `gemme ${item.value}`, count: item.count, rarity: (gemme !== undefined ? gemme.rarity : 0), type: type});
+                        continue;
+                    }
                     let object = BattleLogs.Utils.getObjectByShortName(item.value);
                     if (typeof object === "string") {
                         object = {name: item.value, count: item.count, rarity: -1, type: type};
