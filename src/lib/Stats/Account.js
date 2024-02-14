@@ -212,13 +212,11 @@ class BattleLogsStatsAccount {
 
         BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
-            let cost;
+            let cost = 0;
             if ("cost" in obj && obj["cost"] === 0 && obj["oeuf"]) {
                 cost = oeufsCost[obj["rarity"]] * (Math.floor(object["count"] / obj["needed"])); // coquilles
             } else if ("cost" in obj) {
                 cost = obj["cost"] * object["count"];
-            } else {
-                cost = cheveuxCost[obj["rarity"]] * object["count"];
             }
 
             countAlopiece += cost;
