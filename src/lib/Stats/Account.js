@@ -210,14 +210,12 @@ class BattleLogsStatsAccount {
         processItems(BattleLogs.Update.Items);
         processItems(BattleLogs.Update.Calvs);
 
-        BattleLogs.Update.Objects
-            .filter( object => "cost" in object)
-            .forEach(object => {
+        BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
-            let cost;
-            if (obj["cost"] === 0 && obj["oeuf"]) {
+            let cost = 0;
+            if ("cost" in obj && obj["cost"] === 0 && obj["oeuf"]) {
                 cost = oeufsCost[obj["rarity"]] * (Math.floor(object["count"] / obj["needed"])); // coquilles
-            } else {
+            } else if ("cost" in obj) {
                 cost = obj["cost"] * object["count"];
             }
 
