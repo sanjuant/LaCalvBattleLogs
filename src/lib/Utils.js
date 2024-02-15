@@ -200,6 +200,7 @@ class BattleLogsUtils {
      * @return object uncompressed
      */
     static pakoUncompress(compressedData) {
+        if (compressedData === null) return [];
         let pako;
         if (window.pako) {
             pako = window.pako;

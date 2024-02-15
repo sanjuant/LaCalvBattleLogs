@@ -13,6 +13,7 @@ class BattleLogsLoad {
     static Sorts = [];
     static Panos = [];
     static Event = [];
+    static Gems = [];
 
     /**
      * @desc Parse XMLHttpRequest response
@@ -38,6 +39,7 @@ class BattleLogsLoad {
         this.Sorts = BattleLogs.Utils.pakoUncompress(data["sorts"]);
         this.Panos = BattleLogs.Utils.pakoUncompress(data["panos"]);
         this.Event = BattleLogs.Utils.pakoUncompress(data["event"]);
+        this.Gems = BattleLogs.Utils.pakoUncompress(data["gemmes"]);
 
         BattleLogs.Message.updateMessages()
     }
@@ -97,6 +99,10 @@ class BattleLogsLoad {
 
     static getEventLoot() {
         return this.Event["loot"];
+    }
+
+    static getGemByName(name) {
+        return this.Gems[name];
     }
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
