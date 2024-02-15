@@ -189,7 +189,36 @@ class BattleLogsUpdate {
             return this.Gems.find(item => item.id === id);
         }
 
-
+        static gemQuality(gem) {
+            let rarityName = ["common", "atypique", "rare", "epique", "legendaire"]
+            let gemInfos = BattleLogs.Load.getGemByName(gem.name);
+    
+            const processProba = (base, upgrade, data) => {
+                let stat = +(base[0]) + data[0][0] * (+(base[1]) - +(base[0])); // minBase + probaBase (maxBase - minBase)
+                if(data.length > 1){
+                    const leftProba = data.slice(1).reduce((sum, proba) => +(proba[0]) + +(sum));
+                    stat += +(upgrade[0]) * (data.length - 1) + leftProba * (+(upgrade[1]) - +(upgrade[0])); // minUpgrade * (n-1) + sum(probaUpgrade) (maxUpgrade - minUpgrade)
+                }
+                const maxStat = +(base[1]) + (data.length - 1) * +(upgrade[1]);
+                return stat/maxStat;
+            }
+    
+            const mainProba = processProba(
+                gemInfos.mainStat[rarityName[gem.rarity]].base,
+                gemInfos.mainStat[rarityName[gem.rarity]].upgrade,
+                gem.mg.data
+            )
+            let subProba = 0;
+            gem.sg.forEach(statProba => {
+                subProba += processProba(
+                    gemInfos.infos.subStatRange[statProba.name][rarityName[gem.rarity]].base,
+                    gemInfos.infos.subStatRange[statProba.name][rarityName[gem.rarity]].upgrade,
+                    statProba.data
+                )
+            });
+            subProba = gem.sg.length > 0 ? subProba / gem.sg.length : 1;
+            return (mainProba+subProba)/2;
+        }
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/

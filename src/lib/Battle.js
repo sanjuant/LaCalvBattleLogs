@@ -1069,7 +1069,7 @@ class BattleLogsBattle {
             if (type in dataRewards) {
                 for (const item of dataRewards[type]) {
                     if (type === "gemme") {
-                        items.push({name: `gemme ${item.value}`, count: item.count, rarity: item.rarity, type: type});
+                        items.push({name: `Gemme ${item.value}`, count: item.count, rarity: item.rarity, type: type});
                         continue;
                     }
                     let object = BattleLogs.Utils.getObjectByShortName(item.value);

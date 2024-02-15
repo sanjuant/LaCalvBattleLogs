@@ -188,6 +188,19 @@ class BattleLogsStatsAccount {
             13: 0.01,
             14: 0.003
         }
+        let gemsCost = {
+            "dureté" : 750000,
+            "herculéenne" : 1500000,
+            "gavage" : 500000,
+            "dévouement" : 500000,
+            "dressage" : 500000,
+            "soutien" : 1000000,
+            "vitalité" : 1000000,
+            "guérison" : 1425000,
+            "blockhaus" : 1250000,
+            "hivernale" : 3125000,
+        }
+        let gemRateByRarity = {0: 1/10, 1: 2/10, 2: 4/10, 3: 7/10, 4: 1}
         let countAlopiece = 0
         const processItems = (items) => {
             items.forEach(item => {
@@ -238,6 +251,10 @@ class BattleLogsStatsAccount {
             if (obj["cost"]) countAlopiece += obj["cost"];
         })
 
+
+        BattleLogs.Update.Gems.forEach(gem => {
+            countAlopiece += Math.round(gemsCost[gem.name] * gemRateByRarity[gem.rarity] * BattleLogs.Update.gemQuality(gem))
+        });
         return countAlopiece
     }
 
