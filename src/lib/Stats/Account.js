@@ -16,6 +16,7 @@ class BattleLogsStatsAccount {
             items: "Items possédés",
             familiers: "Familiers possédés",
             worth: "Valeur du compte",
+            equipment: "Valeur de l'équipement"
         },
     };
 
@@ -61,7 +62,6 @@ class BattleLogsStatsAccount {
         this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, 6);
 
         statsData.worth = this.__internal__calculateAccountValue() > 0 ? this.__internal__calculateAccountValue() : statsData.worth;
-
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsAccount, this.Data);
         this.__internal__updateAttributes(statsData);
     }
@@ -81,7 +81,7 @@ class BattleLogsStatsAccount {
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
 
-    static __internal__statsAllowedKey = ["worth", "alopiece", "ticket", "armes", "calvs", "items", "familiers"];
+    static __internal__statsAllowedKey = ["worth", "equipment", "alopiece", "ticket", "armes", "calvs", "items", "familiers"];
     static __internal__statsBlockValue = null;
 
     /**
@@ -222,6 +222,7 @@ class BattleLogsStatsAccount {
         processItems(BattleLogs.Update.Armes);
         processItems(BattleLogs.Update.Items);
         processItems(BattleLogs.Update.Calvs);
+        this.Data["account"].equipment = countAlopiece;
 
         BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
@@ -267,6 +268,7 @@ class BattleLogsStatsAccount {
             "id": "account",
             "time": new Date().toISOString(),
             "worth": 0,
+            "equipment": 0,
             "alopiece": 0,
             "ticket": 0,
             "armes": {
