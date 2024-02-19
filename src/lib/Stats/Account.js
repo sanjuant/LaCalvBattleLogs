@@ -165,6 +165,18 @@ class BattleLogsStatsAccount {
         statsData[property].total = loadValue.length - subtract > 0 ? loadValue.length - subtract : total;
     }
 
+    static __internal__gemUpCostByRarity(rarity, level) {
+        if (level < 2) return 0;
+        const costByRarity= {
+            0: [100, 150, 200, 250, 500, 750, 1000, 1250, 1500, 2500, 3500, 4500, 5500, 7500],
+            1: [120, 180, 240, 300, 600, 900, 1200, 1500, 1800, 3000, 4200, 5400, 6600, 9000],
+            2: [140, 210, 280, 350, 700, 1050, 1400, 1750, 2100, 3500, 4900, 6300, 7700, 10500],
+            3: [160, 240, 320, 400, 800, 1200, 1600, 2000, 2400, 4000, 5600, 7200, 8800, 12000],
+            4: [200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 5000, 7000, 9000, 11000, 15000] 
+        }
+        return costByRarity[rarity].slice(0, level-1).reduce((sum, e) => sum + e);
+    }
+
     static __internal__calculateAccountValue() {
         if (BattleLogs.Update.Armes.length === 0
             || BattleLogs.Update.Items.length === 0
@@ -200,7 +212,7 @@ class BattleLogsStatsAccount {
             "blockhaus" : 1250000,
             "hivernale" : 3125000,
         }
-        let gemRateByRarity = {0: 1/10, 1: 2/10, 2: 4/10, 3: 7/10, 4: 1}
+        let gemRateByRarity = {0: 0.01, 1: 0.02, 2: 0.1, 3: 0.5, 4: 1}
         let countAlopiece = 0
         const processItems = (items) => {
             items.forEach(item => {
@@ -254,9 +266,10 @@ class BattleLogsStatsAccount {
 
 
         BattleLogs.Update.Gems.forEach(gem => {
-            countAlopiece += Math.round(gemsCost[gem.name] * gemRateByRarity[gem.rarity] * BattleLogs.Update.gemQuality(gem))
+            countAlopiece += Math.round(gemsCost[gem.name] * gemRateByRarity[gem.rarity] * BattleLogs.Update.gemQuality(gem));
+            countAlopiece += this.__internal__gemUpCostByRarity(gem.rarity, gem.level);
         });
-        return countAlopiece
+        return countAlopiece;
     }
 
     /**
