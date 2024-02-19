@@ -1083,7 +1083,12 @@ button.svg_chat {
     width: 24px;
     height: 24px;
 }
-
+.svg_builder  {
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="%23000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.168 3.333H3.333a1.667 1.667 0 0 0 -1.667 1.667v11.668A1.667 1.667 0 0 0 3.333 18.335h11.667a1.667 1.667 0 0 0 1.667 -1.667v-5.833"/><path d="M15.418 2.083a1.768 1.768 0 0 1 2.5 2.5L10 12.5l-3.333 0.833L7.5 10l7.917 -7.917z"/></svg>') no-repeat center;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+}
 /********************/
 /* Phone            */
 /********************/
