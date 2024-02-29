@@ -104,8 +104,9 @@ class BattleLogsGlossary {
             const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
                 "true");
             if (newStatus) {
-                BattleLogs.Message.resetSelectedSettings()
-                BattleLogs.Stats.resetSelected()
+                BattleLogs.Message.resetSelectedSettings();
+                BattleLogs.Stats.resetSelected();
+                BattleLogs.Builder.resetSelected();
                 BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
                 BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
                 this.GlossaryPanel.classList.remove("hidden");

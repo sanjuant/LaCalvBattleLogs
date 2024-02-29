@@ -63,6 +63,7 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Stats.js");
 
         this.__loadingOrder += 1;
+        this.__addScript("src/lib/Builder.js");
         this.__addScript("src/lib/Histoire.js");
 
         this.__loadingOrder += 1;

@@ -20,6 +20,8 @@ class BattleLogsUpdate {
     static Familiers = [];
     static Gems = [];
     static Costumes = [];
+    static BaseStats = undefined;
+    static Level = 1;
 
     /**
      * @desc Initialize Class
@@ -35,6 +37,18 @@ class BattleLogsUpdate {
         }
     }
 
+
+    /**
+     * @desc Return true if update has loaded
+     *
+     * @return true if load objects has loaded else false
+     */
+    static hasLoaded() {
+        if (this.BaseStats === undefined) {
+            return false;
+        }
+        return true;
+    }
     /**
      * @desc Parse XMLHttpRequest response
      *
@@ -68,6 +82,12 @@ class BattleLogsUpdate {
         }
         if (data["player"] && data["player"]["notifs"]) {
             this.__internal__playerNotifs = data["player"]["notifs"];
+        }
+        if (data["player"] && data["player"]["stats"]) {
+            this.BaseStats = data["player"]["stats"];
+        }
+        if (data["player"] && data["player"]["level"]) {
+            this.Level = data["player"]["level"];
         }
         if (data["nounce"]) {
             this.__internal__nounce = data["nounce"];
@@ -218,6 +238,10 @@ class BattleLogsUpdate {
             });
             subProba = gem.sg.length > 0 ? subProba / gem.sg.length : 1;
             return (mainProba+subProba)/2;
+        }
+
+        static getPlayerBaseStats(){
+            return this.BaseStats;
         }
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\

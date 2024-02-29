@@ -31,6 +31,7 @@ class BattleLogs
     static Expedition = BattleLogsExpedition;
     // static StatsOld = BattleLogsStatsOld;
     static Stats = BattleLogsStats;
+    static Builder = BattleLogsBuilder;
 
     static InitSteps = class BattleLogsInitSteps
     {
@@ -90,6 +91,7 @@ class BattleLogs
             this.Glossary.initialize(initStep);
             this.Stats.initialize(initStep);
             this.Option.initialize(initStep);
+            this.Builder.initialize(initStep);
         }
 
         console.log(`%cBattleLogs started`, "color:#00A7FF;font-weight:900;");
