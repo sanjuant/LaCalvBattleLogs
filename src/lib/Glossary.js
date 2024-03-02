@@ -25,7 +25,15 @@ class BattleLogsGlossary {
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             // Add CSV button
             this.__internal__addGlossaryPanel()
-            this.__internal__addGlossaryButton(this.Settings.GlossaryEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            //this.__internal__addGlossaryButton(this.Settings.GlossaryEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            this.GlossaryButton = BattleLogs.Menu.createMenuButton(
+                "Glossary",
+                this.Settings.GlossaryEnable, 
+                "svg_glossary",
+                this.GlossaryPanel,
+                "Afficher le Glossaire",
+                "Masquer le Glossaire"
+            )
         }
     }
 
@@ -77,67 +85,6 @@ class BattleLogsGlossary {
         glossaryIframes.appendChild(this.IframeComparaison)
         this.GlossaryPanel.appendChild(glossaryIframes)
         BattleLogs.Menu.BattleLogsWrapper.appendChild(this.GlossaryPanel);
-    }
-
-    /**
-     * @desc Add Sound button
-     *
-     * @param {string} id: The button id
-     * @param {Element} containingDiv: The div element to append the separator to
-     */
-    static __internal__addGlossaryButton(id, containingDiv) {
-        // Add messages container to battle logs menu
-        this.GlossaryButton = document.createElement("button");
-        this.GlossaryButton.id = id;
-        this.GlossaryButton.classList.add("svg_glossary");
-
-        let inStats = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
-        if (inStats) {
-            BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
-            BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
-            this.GlossaryButton.classList.add("selected");
-            this.GlossaryButton.title = "Masquer le glossaire";
-        } else {
-            this.GlossaryButton.title = "Afficher le glossaire";
-        }
-        this.GlossaryButton.onclick = () => {
-            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
-                "true");
-            if (newStatus) {
-                BattleLogs.Message.resetSelectedSettings();
-                BattleLogs.Stats.resetSelected();
-                BattleLogs.Builder.resetSelected();
-                BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
-                BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
-                this.GlossaryPanel.classList.remove("hidden");
-                this.GlossaryButton.classList.add("selected");
-                this.GlossaryButton.title = "Masquer le glossaire";
-            } else {
-                BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
-                BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
-                this.GlossaryPanel.classList.add("hidden")
-                this.GlossaryButton.classList.remove("selected");
-                this.GlossaryButton.title = "Afficher le glossaire";
-                BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-            }
-
-            BattleLogs.Utils.LocalStorage.setValue(this.GlossaryButton.id, newStatus);
-        };
-
-        this.GlossaryButton.oncontextmenu = () => {
-            this.__internal__toggleGlossaryComparaison()
-            return false;
-        };
-
-        this.GlossaryButton.onmouseup = (e) => {
-            // Check whether the wheel button has been clicked (central mouse button).
-            if (e.which === 2 || e.button === 4) {
-                const urlNewTab = "https://lacalv.fr/stats/";
-                window.open(urlNewTab, '_blank');
-            }
-        };
-
-        containingDiv.appendChild(this.GlossaryButton);
     }
 
     static __internal__toggleGlossaryComparaison() {

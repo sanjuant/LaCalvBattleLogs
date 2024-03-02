@@ -206,7 +206,7 @@ class BattleLogsMessage {
     /**
      * Reset selected status and update elements accordingly
      */
-    static resetSelectedSettings() {
+    static resetSelected() {
         if (this.SettingsButton) {
             BattleLogs.Utils.LocalStorage.setValue(BattleLogs.Menu.BattleLogsSettings.id, "false");
             BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
@@ -278,10 +278,19 @@ class BattleLogsMessage {
         const buttonsGroup = BattleLogs.Menu.addButtonsGroup(
             BattleLogs.Menu.BattleLogsSettingsFooterLeft
         );
-        this.__internal__addSettingsButton(
+        /*this.__internal__addSettingsButton(
             this.Settings.MessageSettingsOpen,
             buttonsGroup
-        );
+        );*/
+        this.SettingsButton = BattleLogs.Menu.createMenuButton(
+            "Message",
+            this.Settings.MessageSettingsOpen,
+            "svg_settings",
+            BattleLogs.Menu.BattleLogsSettings,
+            "Afficher les Paramètres ",
+            "Masquer les Paramètres",
+            buttonsGroup
+        )
         BattleLogs.Menu.addSeparator(buttonsGroup);
         this.__internal__addFormatButtons(buttonsGroup);
     }
@@ -405,53 +414,6 @@ class BattleLogsMessage {
             // Append button to group
             buttonsGroup.appendChild(formatButton);
         });
-    }
-
-    /**
-     * @desc Add a Settings button element
-     *
-     * @param {string} id: The button id (that will be used for the corresponding local storage item id as well)
-     * @param {Element} containingDiv: The div element to append the button to
-     */
-    static __internal__addSettingsButton(id, containingDiv) {
-        this.SettingsButton = document.createElement("button");
-        this.SettingsButton.id = id;
-        this.SettingsButton.classList.add("svg_settings");
-
-        let inSettings = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
-        if (inSettings) {
-            this.__internal__messagesContainer.classList.add("hidden");
-            this.__internal__messagesActions.classList.add("hidden");
-            BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
-            this.SettingsButton.classList.add("selected");
-            this.SettingsButton.title = "Logs";
-        } else {
-            BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
-            this.SettingsButton.title = "Paramètres";
-        }
-        this.SettingsButton.onclick = () => {
-            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
-            if (newStatus) {
-                BattleLogs.Glossary.resetSelected()
-                BattleLogs.Stats.resetSelected()
-                BattleLogs.Menu.BattleLogsSettings.classList.remove("hidden");
-                this.__internal__messagesActions.classList.add("hidden");
-                this.__internal__messagesContainer.classList.add("hidden");
-                this.SettingsButton.classList.add("selected");
-                this.SettingsButton.title = "Logs";
-            } else {
-                BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
-                this.__internal__messagesActions.classList.remove("hidden");
-                this.__internal__messagesContainer.classList.remove("hidden");
-                this.SettingsButton.classList.remove("selected");
-                this.SettingsButton.title = "Paramètres";
-                BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-            }
-
-            BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, newStatus);
-        };
-
-        containingDiv.appendChild(this.SettingsButton);
     }
 
     /**

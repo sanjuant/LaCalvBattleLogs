@@ -61,8 +61,16 @@ class BattleLogsBuilder {
             // Add panel
             this.__internal__addBuilderPanel();
             // Add button
-            this.__internal__addBuilderButton(this.Settings.BuilderEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
-
+            //this.__internal__addBuilderButton(this.Settings.BuilderEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
+            this.__internal__builderButton = BattleLogs.Menu.createMenuButton(
+                "Builder",
+                this.Settings.BuilderEnable,
+                "svg_builder",
+                this.BuilderPanel,
+                "Afficher le Builder",
+                "Masquer le Builder"
+            )
+            
             this.__internal__computeAllStats();
 
         } else if (initStep === BattleLogs.InitSteps.Finalize) {
@@ -230,60 +238,10 @@ class BattleLogsBuilder {
         loaderBox.classList.add("loader");
         const loaderInfo = document.createElement("span");
         loaderInfo.textContent =  "En attente du chargement du jeu...";
-        const loader = document.createElement("div");
-        loader.classList.add("loader-animation");
         loaderBox.appendChild(loaderInfo);
-        loaderBox.appendChild(loader);
         this.BuilderPanel.appendChild(loaderBox);
         // Add Builder panel to DOM
         BattleLogs.Menu.BattleLogsWrapper.appendChild(this.BuilderPanel);
-    }
-
-    /**
-     * @desc Internal method to create and set up the stats button
-     *
-     * @param {string} id: The button id
-     * @param {Element} containingDiv: The div element to append the separator to
-     */
-    static __internal__addBuilderButton(id, containingDiv) {
-        // Add messages container to battle logs menu
-        this.__internal__builderButton = document.createElement("button");
-        this.__internal__builderButton.id = id;
-        this.__internal__builderButton.classList.add("svg_builder");
-        let inBuilder = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
-        if (inBuilder) {
-            BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
-            BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
-            this.__internal__builderButton.classList.add("selected");
-            this.__internal__builderButton.title = "Masquer le builder";
-        } else {
-            this.__internal__builderButton.title = "Afficher le builder";
-        }
-        this.__internal__builderButton.onclick = () => {
-            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) ===
-                "true");
-            if (newStatus) {
-                BattleLogs.Message.resetSelectedSettings()
-                BattleLogs.Glossary.resetSelected()
-                BattleLogs.Stats.resetSelected()
-                BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
-                BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
-                this.BuilderPanel.classList.remove("hidden");
-                this.__internal__builderButton.classList.add("selected");
-                this.__internal__builderButton.title = "Masquer le builder";
-            } else {
-                BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
-                BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
-                this.BuilderPanel.classList.add("hidden")
-                this.__internal__builderButton.classList.remove("selected");
-                this.__internal__builderButton.title = "Afficher le builder";
-                BattleLogs.Menu.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
-            }
-
-            BattleLogs.Utils.LocalStorage.setValue(this.__internal__builderButton.id, newStatus);
-        };
-
-        containingDiv.appendChild(this.__internal__builderButton);
     }
 
     static __internal__buildContainer(type){
