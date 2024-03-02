@@ -197,7 +197,7 @@ class BattleLogsBuilder {
                 for( const stat in equipmentStats) {
                     equipmentStats[stat] += this.calculateEquipmentStat(stat, equipment.effect[stat], object.level);
                 }
-                equipment.panoplies.forEach( pano => panos[pano] = panos[pano] ? panos[pano] + 1 : 1);
+                equipment.panoplies?.forEach( pano => panos[pano] = panos[pano] ? panos[pano] + 1 : 1);
         });
         Object.keys(panos)
             .filter(pano => panos[pano] > 1)
