@@ -41,14 +41,7 @@ class BattleLogsGlossary {
      * Reset selected status and update elements accordingly
      */
     static resetSelected() {
-        if (this.GlossaryButton) {
-            BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
-            BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
-            this.GlossaryPanel.classList.add("hidden");
-            this.GlossaryButton.classList.remove("selected");
-            this.GlossaryButton.title = "Afficher le glossaire";
-            BattleLogs.Utils.LocalStorage.setValue(this.GlossaryButton.id, "false");
-        }
+        BattleLogs.Menu.resetSelected(this.GlossaryButton, this.GlossaryPanel, "Afficher le Glossaire");
     }
 
     /*********************************************************************\

@@ -207,15 +207,7 @@ class BattleLogsMessage {
      * Reset selected status and update elements accordingly
      */
     static resetSelected() {
-        if (this.SettingsButton) {
-            BattleLogs.Utils.LocalStorage.setValue(BattleLogs.Menu.BattleLogsSettings.id, "false");
-            BattleLogs.Menu.BattleLogsSettings.classList.add("hidden");
-            this.__internal__messagesActions.classList.remove("hidden");
-            this.__internal__messagesContainer.classList.remove("hidden");
-            this.SettingsButton.classList.remove("selected");
-            this.SettingsButton.title = "Paramètres";
-            BattleLogs.Utils.LocalStorage.setValue(this.SettingsButton.id, "false");
-        }
+        BattleLogs.Menu.resetSelected(this.SettingsButton, BattleLogs.Menu.BattleLogsSettings, "Afficher les Paramètres");
     }
 
     /**

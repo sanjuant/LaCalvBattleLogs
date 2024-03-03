@@ -166,14 +166,7 @@ class BattleLogsStats {
      * Reset selected status and update elements accordingly
      */
     static resetSelected() {
-        if (this.__internal__statsButton) {
-            BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
-            BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
-            this.StatsPanel.classList.add("hidden");
-            this.__internal__statsButton.classList.remove("selected");
-            this.__internal__statsButton.title = "Afficher les stats";
-            BattleLogs.Utils.LocalStorage.setValue(this.__internal__statsButton.id, "false");
-        }
+        BattleLogs.Menu.resetSelected(this.__internal__statsButton, this.StatsPanel, "Afficher les Stats");
     }
 
     /**

@@ -458,6 +458,23 @@ class BattleLogsMenu {
         return button;
     }
 
+    /**
+     * Reset selected status and update elements accordingly
+     * 
+     * @param {Element} button: The button element to reset
+     * @param {Element} panel: The panel element to hide
+     * @param {string} inTitle: The title replacment
+     */
+    static resetSelected(button, panel, inTitle) {
+        if (button) {
+            BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
+            BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
+            panel.classList.add("hidden");
+            button.classList.remove("selected");
+            button.title = inTitle;
+            BattleLogs.Utils.LocalStorage.setValue(button.id, "false");
+        }
+    }
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
