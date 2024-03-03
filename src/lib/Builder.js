@@ -177,12 +177,15 @@ class BattleLogsBuilder {
         const weight = ids.map(id => this.BuilderPanel.querySelector(`#${id} option[value="${document.getElementById(id).value}"]`).dataset["weight"])
                           .reduce((sum, weight) => sum + +(weight), 0)
         console.log(`${weight}/32`)
-        return weight > maxWeight;
+        return { overweight: weight > maxWeight, value: weight };
     }
 
 
     static __internal__updateOutput() {
         const ids = ["calv-select", "arme-select", "item-1-select", "item-2-select", "item-3-select", "item-4-select", "item-5-select"];
+        const outputPane = document.getElementById("Builder-output");
+        outputPane.classList.add("hidden");
+        this.cachedLevel = document.getElementById("player-level-select").value;
         const selectedEquipment = ids.map(id => ({
                 short: document.getElementById(id).value, 
                 level: document.getElementById(`lvl-${id}`).value
@@ -218,6 +221,7 @@ class BattleLogsBuilder {
                 output.textContent += ` (+${panoStats[stat]})`;
             }
         })
+        outputPane.classList.remove("hidden");
         console.log(equipmentStats)
         console.log(panoStats)
         console.log(panos)
@@ -264,6 +268,97 @@ class BattleLogsBuilder {
         return paneContainer;
     }
 
+    static __internal__createPane(BuilderPanel) {
+        // Build pane for builder output
+        const paneOutput = this.__internal__buildContainer("output");
+
+        // Create output
+        const outputContainer = document.createElement("div");
+        outputContainer.classList.add("builder-output-body");
+        const outputValues = document.createElement("div");
+        outputValues.classList.add("builder-output-stats");
+        this.__internal__builderAllowedKey.forEach((key) => {
+            this.__internal__appendAttributes(0, key, outputValues);
+        })
+        const blockEffects = document.createElement("div");
+        blockEffects.classList.add("builder-output-effects");
+        outputContainer.appendChild(outputValues);
+        outputContainer.appendChild(blockEffects);
+        paneOutput.appendChild(outputContainer);
+        this.__internal__builderBlockValue = outputValues;
+        paneOutput.classList.add("hidden");
+        BuilderPanel.appendChild(paneOutput);
+
+        // Build pane for builder input
+        const paneInput = this.__internal__buildContainer("input")
+
+        //create input
+        const inputBody = document.createElement("div");
+        inputBody.classList.add("builder-input-body");
+        this.__internal__appendFilters(inputBody);
+        
+        const inputValues = document.createElement("div");
+        inputValues.classList.add("builder-input-equipment");
+        const inputLeft =document.createElement("div");
+        const calvs = BattleLogs.Load.Calvs.sort((a, b) => a.rarity < b.rarity);
+        const armes = BattleLogs.Load.Armes.sort((a, b) => a.rarity < b.rarity);
+        const items = BattleLogs.Load.Items.sort((a, b) => a.rarity < b.rarity);
+        this.__internal__appendInput(calvs, "Choisir une calv", "calv", "calv", inputLeft);
+        this.__internal__appendInput(armes, "Choisir une arme", "arme", "arme", inputLeft);
+        this.__internal__appendInput(items, "Choisir un item", "item", "item-1", inputLeft);
+        this.__internal__appendInput(items, "Choisir un item", "item", "item-2", inputLeft);
+        this.__internal__appendInput(items, "Choisir un item", "item", "item-3", inputLeft);
+        this.__internal__appendInput(items, "Choisir un item", "item", "item-4", inputLeft);
+        this.__internal__appendInput(items, "Choisir un item", "item", "item-5", inputLeft);
+
+        // Create right part of input
+        const inputRight = document.createElement("div");
+        inputRight.classList.add("builder-input-right");
+        const playerLevel = document.createElement("div");
+        const playerLevelLabel = document.createElement("label");
+        playerLevelLabel.classList.add("key");
+        playerLevelLabel.for = "player-level-select";
+        playerLevelLabel.textContent = "Niv. Joueur";
+        const playerLevelSelect = document.createElement("select");
+        playerLevelSelect.classList.add("value");
+        playerLevelSelect.id = "player-level-select";
+        [...Array(101).keys()].slice(1).forEach( level => {
+            const option = document.createElement("option");
+            option.value = level;
+            option.textContent = level;
+            playerLevelSelect.appendChild(option);
+        });
+        const weightBox = document.createElement("div");
+        const weightValue = document.createElement("span");
+        weightValue.classList.add("builder-input-weight")
+        weightValue.textContent = "0";
+        const weightInfo = document.createElement("span");
+        weightInfo.textContent = "/32";
+        weightBox.appendChild(weightValue);
+        weightBox.appendChild(weightInfo);
+        playerLevel.appendChild(playerLevelLabel);
+        playerLevel.appendChild(playerLevelSelect);
+        inputRight.appendChild(playerLevel);
+        inputRight.appendChild(weightBox);
+
+        const validateContainer = document.createElement("div");
+        const validateButton = document.createElement("button");
+        //validateButton.id= "builder-validate";
+        validateButton.textContent= "VALIDER";
+        validateButton.classList.add("builder-validate-btn");
+        validateButton.onclick = () => {
+            this.__internal__updateOutput();
+        };
+        validateContainer.appendChild(validateButton);
+        inputValues.appendChild(inputLeft);
+        inputValues.appendChild(inputRight);
+        inputBody.appendChild(inputValues);
+        inputBody.appendChild(validateContainer);
+        paneInput.appendChild(inputBody);
+        BuilderPanel.appendChild(paneInput);
+
+    }
+
     /**
      * @desc Append attributes of stuff in container
      *
@@ -293,7 +388,7 @@ class BattleLogsBuilder {
 
     static __internal__appendFilters(container) {
         const onclickFunc = (pano) => {
-            const options = this.BuilderPanel.querySelectorAll(".builder-input-equipment option");
+            const options = this.BuilderPanel.querySelectorAll(".builder-input-equipment .filtered-select option");
             console.log(pano);
             options.forEach( opt => {
                 if(pano === "" || opt.title.includes(pano)){
@@ -322,6 +417,7 @@ class BattleLogsBuilder {
         filtersBody.appendChild(panosFilter);
         container.appendChild(filtersBody);
     }
+
     /**
      * @desc Append attributes of stuff in container
      *
@@ -337,7 +433,10 @@ class BattleLogsBuilder {
         }
         const onclickFunc = () => {
             const validateBtn = this.BuilderPanel.querySelector("button");
-            if (this.__internal__isOverweight()){
+            const weightSpan = this.BuilderPanel.querySelector(".builder-input-weight")
+            const currentWeight = this.__internal__isOverweight();
+            weightSpan.textContent = currentWeight.value;
+            if (currentWeight.overweight){
                 validateBtn.setAttribute("disabled", "");
                 validateBtn.classList.add("warning");
                 validateBtn.textContent = "POIDS MAX DÉPASSÉ !";
@@ -356,6 +455,7 @@ class BattleLogsBuilder {
         const selectBox = document.createElement("select");
         selectBox.id =`${key}-select`;
         selectBox.classList.add("value");
+        selectBox.classList.add("filtered-select");
         const defaultOption = document.createElement("option");
         defaultOption.value = "";
         defaultOption.textContent = "--Vide--";
@@ -402,68 +502,6 @@ class BattleLogsBuilder {
         inputContainer.appendChild(rightPart)
         container.appendChild(inputContainer)
     }
-
-
-    static __internal__createPane(BuilderPanel) {
-        // Build pane for builder output
-        const paneOutput = this.__internal__buildContainer("output");
-
-        // Create output
-        const outputContainer = document.createElement("div");
-        outputContainer.classList.add("builder-output-body");
-        const outputValues = document.createElement("div");
-        outputValues.classList.add("builder-output-stats");
-        this.__internal__builderAllowedKey.forEach((key) => {
-            const playerStat = this.calculatePlayerStat(key, this.PlayerBaseStats[key])
-            console.log(playerStat)
-            this.__internal__appendAttributes(playerStat, key, outputValues);
-        })
-        const blockEffects = document.createElement("div");
-        blockEffects.classList.add("builder-output-effects");
-        outputContainer.appendChild(outputValues);
-        outputContainer.appendChild(blockEffects);
-        paneOutput.appendChild(outputContainer);
-        this.__internal__builderBlockValue = outputValues;
-        BuilderPanel.appendChild(paneOutput);
-
-        // Build pane for builder input
-        const paneInput = this.__internal__buildContainer("input")
-
-        //create input
-        const inputBody = document.createElement("div");
-        inputBody.classList.add("builder-input-body");
-        this.__internal__appendFilters(inputBody);
-        
-        const inputValues = document.createElement("div");
-        inputValues.classList.add("builder-input-equipment");
-        const calvs = BattleLogs.Load.Calvs.sort((a, b) => a.rarity < b.rarity);
-        const armes = BattleLogs.Load.Armes.sort((a, b) => a.rarity < b.rarity);
-        const items = BattleLogs.Load.Items.sort((a, b) => a.rarity < b.rarity);
-        this.__internal__appendInput(calvs, "Choisir une calv", "calv", "calv", inputValues);
-        this.__internal__appendInput(armes, "Choisir une arme", "arme", "arme", inputValues);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-1", inputValues);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-2", inputValues);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-3", inputValues);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-4", inputValues);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-5", inputValues);
-
-
-        const validateContainer = document.createElement("div");
-        const validateButton = document.createElement("button");
-        //validateButton.id= "builder-validate";
-        validateButton.textContent= "VALIDER";
-        validateButton.classList.add("builder-validate-btn");
-        validateButton.onclick = () => {
-            this.__internal__updateOutput();
-        };
-        validateContainer.appendChild(validateButton);
-        inputBody.appendChild(inputValues);
-        inputBody.appendChild(validateContainer);
-        paneInput.appendChild(inputBody);
-        BuilderPanel.appendChild(paneInput);
-
-    }
-
 
     /**
      * @desc Sets the Menu settings default values in the local storage

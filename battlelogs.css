@@ -808,9 +808,6 @@ body{
     background-color: #232327;
     line-height: 1.5rem;
 }
-.builder-input-equipment div > div{
-    display: inline-block;
-}
 .builder-validate-btn {
     display: block;
     width: 100%;
@@ -824,6 +821,27 @@ body{
 .builder-input-body select{
     width: 100%;
 }
+div.builder-input-equipment {
+    display: flex;
+    flex-direction: row;
+    justify-content : space-between;
+
+}
+.builder-input-equipment > div{
+    display: flex;
+    flex-direction: column;
+}
+.builder-input-equipment > div > div{
+    display: inline-flex;
+}
+.builder-input-equipment > div:nth-child(2){
+    justify-content: space-between;
+    align-items: end;
+}
+.builder-input-equipment > div:nth-child(2) > div{
+    display: block;
+}
+
 /********************/
 /* Format */
 .format-normal {}
