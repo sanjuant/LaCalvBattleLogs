@@ -293,6 +293,7 @@ class BattleLogsBuilder {
         const inputValues = document.createElement("div");
         inputValues.classList.add("builder-input-equipment");
         const inputLeft =document.createElement("div");
+        inputLeft.classList.add("builder-input-left");
         const calvs = BattleLogs.Load.Calvs.sort((a, b) => a.rarity < b.rarity);
         const armes = BattleLogs.Load.Armes.sort((a, b) => a.rarity < b.rarity);
         const items = BattleLogs.Load.Items.sort((a, b) => a.rarity < b.rarity);

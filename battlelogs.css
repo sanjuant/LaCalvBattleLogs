@@ -738,6 +738,7 @@ body{
     flex-wrap: wrap;
     padding: .5rem 1rem;
     gap: .7rem;
+    /*min-width: 260px;*/
 }
 .builder div[id^='Builder-'] {
     border: 1px solid black;
@@ -821,27 +822,52 @@ body{
 .builder-input-body select{
     width: 100%;
 }
+.builder-input-body option{
+    color: black;
+}
 div.builder-input-equipment {
+    container-type: size;
+    container-name: narrow;
+    contain-intrinsic-size: auto none auto 320px;
     display: flex;
     flex-direction: row;
     justify-content : space-between;
+    /*align-items: stretch;*/
+    flex-wrap: wrap;
 
 }
-.builder-input-equipment > div{
+.builder-input-left,
+.builder-input-right{
     display: flex;
     flex-direction: column;
+    /*justify-content : space-evenly;*/
 }
-.builder-input-equipment > div > div{
-    display: inline-flex;
+.builder-input-left {
+    min-width: 242px;
+    > div {
+        display: flex;
+        flex-direction: row;
+        align-items: end;
+        > div:nth-child(1){
+            flex-grow: 1;
+        }
+    }
 }
-.builder-input-equipment > div:nth-child(2){
+.builder-input-right{
+    flex-direction: column;
     justify-content: space-between;
     align-items: end;
+    /*flex-wrap: wrap;*/
+    > div{
+        display: block;
+    }
 }
-.builder-input-equipment > div:nth-child(2) > div{
-    display: block;
+@container narrow (max-width: 320px) {
+    .builder-input-right{
+        flex-direction: row;
+        width: 100%;
+    }
 }
-
 /********************/
 /* Format */
 .format-normal {}
