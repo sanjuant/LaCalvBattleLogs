@@ -211,6 +211,7 @@ class BattleLogsStatsAccount {
             "guérison" : 1425000,
             "blockhaus" : 1250000,
             "hivernale" : 3125000,
+            "magie" : 500000
         }
         let gemRateByRarity = {0: 0.01, 1: 0.02, 2: 0.1, 3: 0.5, 4: 1}
         let countAlopiece = 0
