@@ -168,7 +168,6 @@ class BattleLogsBuilder {
         const ids = ["calv-select", "arme-select", "item-1-select", "item-2-select", "item-3-select", "item-4-select", "item-5-select"]
         const weight = ids.map(id => this.BuilderPanel.querySelector(`#${id} option[value="${document.getElementById(id).value}"]`).dataset["weight"])
                           .reduce((sum, weight) => sum + +(weight), 0)
-        console.log(`${weight}/32`)
         return { overweight: weight > maxWeight, value: weight };
     }
 
@@ -214,9 +213,7 @@ class BattleLogsBuilder {
             }
         })
         outputPane.classList.remove("hidden");
-        /*console.log(equipmentStats)
-        console.log(panoStats)
-        console.log(panos)*/
+        //TODO Add effects
     }
 
     /**
@@ -382,7 +379,6 @@ class BattleLogsBuilder {
     static __internal__appendFilters(container) {
         const onclickFunc = (pano) => {
             const options = this.BuilderPanel.querySelectorAll(".builder-input-equipment .filtered-select option");
-            console.log(pano);
             options.forEach( opt => {
                 if(pano === "" || opt.title.includes(pano)){
                     opt.classList.remove("hidden");
