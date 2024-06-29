@@ -25,7 +25,6 @@ class BattleLogsGlossary {
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             // Add CSV button
             this.__internal__addGlossaryPanel()
-            //this.__internal__addGlossaryButton(this.Settings.GlossaryEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             this.GlossaryButton = BattleLogs.Menu.createMenuButton(
                 "Glossary",
                 this.Settings.GlossaryEnable, 

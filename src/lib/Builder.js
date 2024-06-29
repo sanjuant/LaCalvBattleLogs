@@ -61,7 +61,6 @@ class BattleLogsBuilder {
             // Add panel
             this.__internal__addBuilderPanel();
             // Add button
-            //this.__internal__addBuilderButton(this.Settings.BuilderEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             this.__internal__builderButton = BattleLogs.Menu.createMenuButton(
                 "Builder",
                 this.Settings.BuilderEnable,
@@ -215,9 +214,9 @@ class BattleLogsBuilder {
             }
         })
         outputPane.classList.remove("hidden");
-        console.log(equipmentStats)
+        /*console.log(equipmentStats)
         console.log(panoStats)
-        console.log(panos)
+        console.log(panos)*/
     }
 
     /**

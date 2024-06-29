@@ -270,10 +270,6 @@ class BattleLogsMessage {
         const buttonsGroup = BattleLogs.Menu.addButtonsGroup(
             BattleLogs.Menu.BattleLogsSettingsFooterLeft
         );
-        /*this.__internal__addSettingsButton(
-            this.Settings.MessageSettingsOpen,
-            buttonsGroup
-        );*/
         this.SettingsButton = BattleLogs.Menu.createMenuButton(
             "Message",
             this.Settings.MessageSettingsOpen,

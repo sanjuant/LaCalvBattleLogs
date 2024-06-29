@@ -38,7 +38,6 @@ class BattleLogsStats {
             // Add panel
             this.__internal__addStatsPanel()
             // Add button
-            //this.__internal__addStatsButton(this.Settings.StatsEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             this.__internal__statsButton = BattleLogs.Menu.createMenuButton(
                 this.Settings.Type,
                 this.Settings.StatsEnable,
