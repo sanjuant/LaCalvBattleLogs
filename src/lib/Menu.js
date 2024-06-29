@@ -411,7 +411,70 @@ class BattleLogsMenu {
             this.__internal__updateMessages();
         }
     }
+    
+    /**
+     * @desc Add a Settings button element
+     *
+     * @param {string} id: The button id (that will be used for the corresponding local storage item id as well)
+     */
+    static createMenuButton(targetClass, id, svgCss, panel, inTitle, outTitle, container = this.BattleLogsSettingsFooterLeft) {
+        const classNames = ["Message", "Glossary", "Stats", "Builder"]
+        const button = document.createElement("button");
+        button.id = id;
+        button.classList.add(svgCss);
 
+        let inButton = BattleLogs.Utils.LocalStorage.getValue(id) === "true";
+        if (inButton) {
+            BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
+            BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
+            button.classList.add("selected");
+            button.title = outTitle;
+        } else {
+            panel.classList.add("hidden");
+            button.title = inTitle;
+        }
+        button.onclick = () => {
+            const newStatus = !(BattleLogs.Utils.LocalStorage.getValue(id) === "true");
+            if (newStatus) {
+                classNames.filter(e => !(e === targetClass)).forEach(e => BattleLogs[e].resetSelected())
+                BattleLogs.Message.__internal__messagesActions.classList.add("hidden");
+                BattleLogs.Message.__internal__messagesContainer.classList.add("hidden");
+                panel.classList.remove("hidden");
+                button.classList.add("selected");
+                button.title = outTitle;
+                this.BattleLogsWrapper.scrollTop = 0;
+            } else {
+                BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
+                BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
+                panel.classList.add("hidden");
+                button.classList.remove("selected");
+                button.title = inTitle;
+                this.BattleLogsWrapper.scrollTop = BattleLogs.Menu.BattleLogsWrapper.scrollHeight;
+            }
+            BattleLogs.Utils.LocalStorage.setValue(button.id, newStatus);
+        };
+
+        container.appendChild(button);
+        return button;
+    }
+
+    /**
+     * Reset selected status and update elements accordingly
+     * 
+     * @param {Element} button: The button element to reset
+     * @param {Element} panel: The panel element to hide
+     * @param {string} inTitle: The title replacment
+     */
+    static resetSelected(button, panel, inTitle) {
+        if (button) {
+            BattleLogs.Message.__internal__messagesActions.classList.remove("hidden");
+            BattleLogs.Message.__internal__messagesContainer.classList.remove("hidden");
+            panel.classList.add("hidden");
+            button.classList.remove("selected");
+            button.title = inTitle;
+            BattleLogs.Utils.LocalStorage.setValue(button.id, "false");
+        }
+    }
     /*********************************************************************\
      /***    Internal members, should never be used by other classes    ***\
      /*********************************************************************/
