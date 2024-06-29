@@ -296,7 +296,7 @@ class BattleLogsBuilder {
         this.__internal__appendInput(calvs, "Choisir une calv", "calv", "calv", inputLeft);
         this.__internal__appendInput(armes, "Choisir une arme", "arme", "arme", inputLeft);
         for (let i = 1; i < 6; i++) { 
-            this.__internal__appendInput(items, "Choisir un item", "item", `item-{$i}`, inputLeft);
+            this.__internal__appendInput(items, "Choisir un item", "item", `item-${i}`, inputLeft);
         }
 
         // Create right part of input
@@ -378,7 +378,7 @@ class BattleLogsBuilder {
         const onclickFunc = (pano) => {
             const options = this.BuilderPanel.querySelectorAll(".builder-input-equipment .filtered-select option");
             options.forEach( opt => {
-                if(pano === "" || opt.title.includes(pano)){
+                if(pano === "" || opt.title.includes(pano) || opt.value === ""){
                     opt.classList.remove("hidden");
                 } else {
                     opt.classList.add("hidden");
