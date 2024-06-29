@@ -60,8 +60,8 @@ class BattleLogsStatsAccount {
         this.__internal__updateStatsProperty('calvs', Update.Calvs, Load.Calvs, 1);
         this.__internal__updateStatsProperty('items', Update.Items, Load.Items);
         this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, 6);
-
-        statsData.worth = this.__internal__calculateAccountValue() > 0 ? this.__internal__calculateAccountValue() : statsData.worth;
+        const newWorth = this.__internal__calculateAccountValue();
+        statsData.worth = newWorth > 0 ? newWorth : statsData.worth;
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsAccount, this.Data);
         this.__internal__updateAttributes(statsData);
     }
@@ -211,6 +211,7 @@ class BattleLogsStatsAccount {
             "guérison" : 1425000,
             "blockhaus" : 1250000,
             "hivernale" : 3125000,
+            "magie" : 500000
         }
         let gemRateByRarity = {0: 0.01, 1: 0.02, 2: 0.1, 3: 0.5, 4: 1}
         let countAlopiece = 0
@@ -239,7 +240,7 @@ class BattleLogsStatsAccount {
         BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
             let cost = 0;
-            if ("cost" in obj && obj["cost"] === 0 && obj["oeuf"]) {
+            if ("cost" in obj && obj["cost"] === 0 && "oeuf" in obj) {
                 cost = oeufsCost[obj["rarity"]] * (Math.floor(object["count"] / obj["needed"])); // coquilles
             } else if ("cost" in obj) {
                 cost = obj["cost"] * object["count"];
@@ -253,15 +254,15 @@ class BattleLogsStatsAccount {
             if (fam["sorts"].length === 4) {
                 fam["sorts"].forEach(famSort => {
                     let sortShop = BattleLogs.Utils.getObjectByShortName(famSort["short"]);
-                    if (sortShop["cost"]) countAlopiece += sortShop["cost"];
+                    if ("cost" in sortShop) countAlopiece += sortShop["cost"];
                 })
             }
-            if (obj["cost"]) countAlopiece += obj["cost"];
+            if ("cost" in obj) countAlopiece += obj["cost"];
         });
 
         BattleLogs.Update.Costumes.forEach(costume => {
             let obj = BattleLogs.Utils.getObjectByShortName(costume);
-            if (obj["cost"]) countAlopiece += obj["cost"];
+            if ("cost" in obj) countAlopiece += obj["cost"];
         })
 
 
