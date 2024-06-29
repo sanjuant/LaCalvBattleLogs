@@ -295,11 +295,9 @@ class BattleLogsBuilder {
         const items = BattleLogs.Load.Items.sort((a, b) => a.rarity < b.rarity);
         this.__internal__appendInput(calvs, "Choisir une calv", "calv", "calv", inputLeft);
         this.__internal__appendInput(armes, "Choisir une arme", "arme", "arme", inputLeft);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-1", inputLeft);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-2", inputLeft);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-3", inputLeft);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-4", inputLeft);
-        this.__internal__appendInput(items, "Choisir un item", "item", "item-5", inputLeft);
+        for (let i = 1; i < 6; i++) { 
+            this.__internal__appendInput(items, "Choisir un item", "item", `item-{$i}`, inputLeft);
+        }
 
         // Create right part of input
         const inputRight = document.createElement("div");
