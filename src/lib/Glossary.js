@@ -33,6 +33,19 @@ class BattleLogsGlossary {
                 "Afficher le Glossaire",
                 "Masquer le Glossaire"
             )
+
+            this.GlossaryButton.oncontextmenu = () => {
+                this.__internal__toggleGlossaryComparaison()
+                return false;
+            };
+    
+            this.GlossaryButton.onmouseup = (e) => {
+                // Check whether the wheel button has been clicked (central mouse button).
+                if (e.which === 2 || e.button === 4) {
+                    const urlNewTab = "https://lacalv.fr/stats/";
+                    window.open(urlNewTab, '_blank');
+                }
+            };
         }
     }
 
