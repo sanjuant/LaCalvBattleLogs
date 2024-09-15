@@ -6,7 +6,7 @@
  */
 class BattleLogsComponentLoader
 {
-    static gameUrl = "https://lacalv.fr/";
+    static gameUrl = "https://seragoniadev.ovh/";
     static __baseUrl = null;
     static __loadingList = [];
     static __loadingProgressTable = {};
@@ -23,8 +23,8 @@ class BattleLogsComponentLoader
     {
         const locationHref = window.location.href;
         const escapedGameUrl = this.gameUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`^${escapedGameUrl}(?:/m|/soon|/)?$`, 'i');
-
+        const regex = new RegExp(`^${escapedGameUrl}(?:/m|/soon|/)?\\?code=[^&]+`, 'i');
+        
         // Don't load script on subpage
         if (!regex.test(locationHref)) return;
 
