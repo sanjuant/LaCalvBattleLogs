@@ -15,7 +15,7 @@ class BattleLogsShop {
         } catch (e) {
             return;
         }
-        this.__internal__shop = BattleLogs.Utils.pakoUncompress(data["shop"]);
+        this.__internal__shop = BattleLogs.Utils.pakoUncompress(data["shopv2"]);
 
         BattleLogs.Message.updateMessages()
     }
@@ -37,7 +37,7 @@ class BattleLogsShop {
      */
     static getObjects() {
         const internalArrays = [
-            this.__internal__shop,
+            this.__internal__shop.all,
         ];
         return [].concat(...internalArrays)
     }
