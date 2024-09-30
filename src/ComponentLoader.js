@@ -23,7 +23,7 @@ class BattleLogsComponentLoader
     {
         const locationHref = window.location.href;
         const escapedGameUrl = this.gameUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`^${escapedGameUrl}(?:/m|/soon|/)?\\?code=[^&]+`, 'i');
+        const regex = new RegExp(`^${escapedGameUrl}(?:/m|/soon|/\?code=[^&]+|/)?`, 'i');
         
         // Don't load script on subpage
         if (!regex.test(locationHref)) return;
