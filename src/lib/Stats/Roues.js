@@ -13,9 +13,9 @@ class BattleLogsStatsRoues {
             cost: "{0} alopièce{1} dépensée{2}"
         },
         coquille: {
-            name: "Stats des coquilles",
+            name: "Stats des fragments de coeuffre",
             title: "{0} <span class='item-name'>{1}</span>",
-            cost: "{0} coquille{1} cassée{2}"
+            cost: "{0} fragment{1} assemblé{2}"
         },
         ticket: {
             name: "Stats des tickets",
@@ -190,15 +190,19 @@ class BattleLogsStatsRoues {
     static __internal__createOrUpdateRouesTitle(statsData, statsType, roueTypeTitle, item) {
         let total = statsData[item.short]["total"];
         let name;
+        name = item.name.split(" ");
         if (total > 1) {
-            name = item.name.split(" ");
             if (name.length > 1) {
-                name = name[0] + "s " + name[1] + "s";
+                name = name[2] + "s " + name[3] + "s";
             } else {
                 name = name[0] + "s"
             }
         } else {
-            name = item.name;
+            if (name.length > 1) {
+                name = name[2] + " " + name[3];
+            } else {
+                name = item.name;
+            }
         }
         let cost = Math.round(statsData[item.short].cost);
         let costFormatted = BattleLogs.Utils.formatNumber(cost);

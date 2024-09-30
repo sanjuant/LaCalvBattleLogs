@@ -62,6 +62,7 @@ class BattleLogsInterceptor {
         if (xhr.responseURL === baseUrl + "play/load") {
             BattleLogs.Load.parseResponse(xhr)
             BattleLogs.Shop.parseResponse(xhr)
+            BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/update")) {
             BattleLogs.Update.parseResponse(xhr)
         } else if (xhr.responseURL === baseUrl + "play/wbclassement") {
@@ -80,10 +81,7 @@ class BattleLogsInterceptor {
             BattleLogs.Histoire.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/multiBattleHistoire")) {
             BattleLogs.Histoire.parseResponse(xhr);
-        } else if (xhr.responseURL.startsWith(baseUrl + "play/roues")) {
-            BattleLogs.Roues.parseResponse(xhr)
-        } else if (xhr.responseURL.match(new RegExp(`^${baseUrl}play/(c|d|r|re|beta)\\?count`))
-            || xhr.responseURL.match(new RegExp(`^${baseUrl}play/(coquille_c|coquille_d|coquille_r|coquille_re)\\?count`))
+        } else if (xhr.responseURL.match(new RegExp(`^${baseUrl}play/(c|d|r|re|beta)`))
             || xhr.responseURL.startsWith(baseUrl + "play/exclusive")) {
             BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/stopexpeditions")) {

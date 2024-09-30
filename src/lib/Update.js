@@ -44,7 +44,9 @@ class BattleLogsUpdate {
      * @return true if load objects has loaded else false
      */
     static hasLoaded() {
-        if (this.BaseStats === undefined) {
+        if (this.Armes.length === 0
+            || this.Items.length === 0
+            || this.Calvs.length === 0) {
             return false;
         }
         return true;
