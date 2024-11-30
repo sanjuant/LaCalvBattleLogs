@@ -178,12 +178,12 @@ class BattleLogsStatsAccount {
     }
 
     static __internal__calculateAccountValue() {
-        if (BattleLogs.Update.Armes.length === 0
-            || BattleLogs.Update.Items.length === 0
-            || BattleLogs.Update.Calvs.length === 0
+        if (!BattleLogs.Load.hasLoaded()
+            || !BattleLogs.Roues.hasLoaded()
+            || !BattleLogs.Shop.hasLoaded()
+            || !BattleLogs.Update.hasLoaded()
         ) return;
         let cheveuxCost = {0: 2000, 1: 5000, 2: 10000, 3: 30000, 4: 100000, 5: 300000, 6: 300000}
-        let oeufsCost = {1: 2000, 2: 10000, 3: 20000, 4: 40000}
         let upgradeProbabilities = {
             1: 1,
             2: 0.85,
@@ -240,9 +240,7 @@ class BattleLogsStatsAccount {
         BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
             let cost = 0;
-            if ("cost" in obj && obj["cost"] === 0 && "oeuf" in obj) {
-                cost = oeufsCost[obj["rarity"]] * (Math.floor(object["count"] / obj["needed"])); // coquilles
-            } else if ("cost" in obj) {
+            if ("cost" in obj && obj["cost"] !== 0) {
                 cost = obj["cost"] * object["count"];
             }
 

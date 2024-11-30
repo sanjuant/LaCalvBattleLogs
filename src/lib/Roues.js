@@ -51,9 +51,9 @@ class BattleLogsRoues {
 
         const gameUrl = BattleLogsComponentLoader.gameUrl;
         const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
-        if (xhr.responseURL === baseUrl + "play/roues") {
-            this.__internal__roues = BattleLogs.Utils.pakoUncompress(data["roues"]);
-            this.Multiplier = data["multiplier"];
+        if (xhr.responseURL === baseUrl + "play/load") {
+            this.__internal__roues = BattleLogs.Utils.pakoUncompress(data["shopv2"])["gachapon"];
+            this.Multiplier = data["multiplierShop"];
         } else {
             const url = new URL(xhr.responseURL);
             const segments = url.pathname.split('/');
@@ -63,14 +63,10 @@ class BattleLogsRoues {
             let rouesType;
             let multiplier = 1;
             if (short.match(/^(c|d|r|re|beta)$/)) {
-                rouesType = "oeuf"
-                multiplier = count * BattleLogs.Roues.Multiplier
-            } else if (short.match(/^(coquille_c|coquille_d|coquille_r|coquille_re)$/)) {
-                rouesType = "coquille"
-                shortStats = short.split('_')[1]
+                rouesType = "coquille";
             } else if (short.match(/^exclusive*/)) {
-                rouesType = "ticket"
-                shortStats = rouesType
+                rouesType = "ticket";
+                shortStats = rouesType;
             } else {
                 return;
             }
@@ -140,10 +136,10 @@ class BattleLogsRoues {
                     type: "checkbox"
                 },
                 coquille: {
-                    name: "Coquilles",
+                    name: "Coeuffres",
                     display: true,
                     setting: true,
-                    text: "Afficher les ouvertures de coquilles",
+                    text: "Afficher les ouvertures de coeuffres",
                     type: "checkbox"
                 },
                 ticket: {
@@ -184,7 +180,7 @@ class BattleLogsRoues {
     static __internal__addRouesToLog(count, short, dataItems, rouesType) {
         const itemsArray = this.__internal__createRewardItemsArray(dataItems);
         const isCoquille = rouesType === "coquille";
-        const verb = isCoquille ? "cassé" : "ouvert";
+        const verb = isCoquille ? "assemblé" : "ouvert";
         count = isCoquille ? count * 100 : count;
         let cost = 0;
 
@@ -202,10 +198,10 @@ class BattleLogsRoues {
                 cost = count;
             }
             if (object["name"]) {
-                name = object["name"]
+                name = object["name"];
             }
             if (count > 1) {
-                name = name.split(" ")[0] + "s " + name.split(" ")[1] + "s";
+                name = name.split(" ")[0] + "s " + name.split(" ").slice(1).join(" ");
             }
         }
 

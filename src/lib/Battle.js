@@ -86,6 +86,11 @@ class BattleLogsBattle {
             case "PVE":
             case "HISTOIRE":
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffsPVE)
+                break;
+            case "DJ":
+                const stuffData = data["A"]["player"];
+                const stuffs = [{name: "Survie", arme: stuffData["arme"], calv: stuffData["calv"], items: stuffData["item"], famAtk: stuffData["linked"], famDef: stuffData["defenseFam"]},];
+                this.__internal__setStuff(stuff, 1, stuffs);
 
         }
 

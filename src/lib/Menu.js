@@ -55,6 +55,18 @@ class BattleLogsMenu {
         if(BattleLogs.Utils.LocalStorage.getValue(BattleLogs.Menu.Settings.MenuLock) === "true") {
             this.__internal__battleLogsContainer.classList.add('battlelogs-locked')
         }
+        // If the user is on a phone, add special phone-related UI scale
+        if (this.__internal__isPhone) {
+            this.Menu.classList.add("battlelogs-phone");
+            this.Menu.classList.remove("draggable");
+            btnImg.style["width"] = "5.5vw";
+        }
+
+        // if on authentification page, don't show
+        if (document.getElementById("GameDiv") === null){
+            this.ToggleButton.classList.add("hidden");
+            this.Menu.classList.add("hidden");
+        }
 
         // Append menu
         document.body.appendChild(this.Menu);
@@ -88,7 +100,7 @@ class BattleLogsMenu {
         let offsetX, offsetY;
 
         // Check if the menu should be expanded based on local storage value
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.MenuExpanded) === "true") {
+        if (!this.__internal__isPhone && BattleLogs.Utils.LocalStorage.getValue(this.Settings.MenuExpanded) === "true") {
             menu.classList.add('open');
             toggleButton.classList.add("enable");
             content.style.display = 'block';
@@ -113,11 +125,10 @@ class BattleLogsMenu {
                 }
             }
             mouseMoved = false;
-            BattleLogs.Menu.adjustMenuPosition()
         }
 
         // Event listeners for toggle button
-        toggleButton.addEventListener('click', mouseClick)
+        toggleButton.addEventListener('click', mouseClick);
 
         let timeout;
 
@@ -127,6 +138,7 @@ class BattleLogsMenu {
             const heightPercentage = (y / window.innerHeight) * 100;
             element.style.left = `${widthPercentage}%`;
             element.style.top = `${heightPercentage}%`;
+            BattleLogs.Utils.LocalStorage.setValue(element.id, `left: ${widthPercentage}%; top:${heightPercentage}%;`);
         }
 
         // Handle drag movement for the toggle button
@@ -135,10 +147,9 @@ class BattleLogsMenu {
             const x = e.clientX - offsetX;
             const y = e.clientY - offsetY;
             applyPercentagePosition(toggleButton, x, y);
-            BattleLogs.Utils.LocalStorage.setValue(toggleButton.id, `${x}px,${y}px`);
             mouseMoved = true;
         }
-
+        
         function startDraggingToggleButton(e) {
             document.addEventListener('mousemove', toggleButtonMove);
             isDragging = true;
@@ -148,51 +159,78 @@ class BattleLogsMenu {
             offsetY = e.clientY - rect.top;
         }
 
-        toggleButton.addEventListener('mousedown', function (e) {
-            timeout = setTimeout(() => startDraggingToggleButton(e), 100);
-        });
-
-        toggleButton.addEventListener('mouseup', function () {
-            clearTimeout(timeout);
-            isDragging = false;
-            document.removeEventListener('mousemove', toggleButtonMove);
-            document.querySelector("#GameDiv").classList.remove("pointer-none");
-            toggleButton.addEventListener('click', mouseClick)
-        });
-
-        // Handle drag movement for the main menu
-        function menuMove(e) {
-            if (!isDragging) return;
-            const x = e.clientX - offsetX;
-            const y = e.clientY - offsetY;
-            applyPercentagePosition(menu, x, y);
-            BattleLogs.Utils.LocalStorage.setValue(menu.id, `${x}px,${y}px`);
+        // Handle drag movement for the toggle button on mobile
+        function toggleButtonMoveOnMobile(e) {
+            if (!isDragging && e.targetTouches.length !== 1) return;
+            const touch = e.targetTouches[0];
+            const x = touch.pageX - offsetX;
+            const y = touch.pageY - offsetY;
+            applyPercentagePosition(toggleButton, x, y);
             mouseMoved = true;
         }
 
-        function startDraggingMenu(e) {
-            document.addEventListener('mousemove', menuMove);
+        function startDraggingToggleButtonOnMobile(e) {
             isDragging = true;
             document.querySelector("#GameDiv").classList.add("pointer-none");
-            const rect = menu.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
+            const rect = toggleButton.getBoundingClientRect();
+            const touch = e.targetTouches[0];
+            offsetX = touch.pageX - rect.left;
+            offsetY = touch.pageY - rect.top;
+            document.addEventListener('touchmove', toggleButtonMoveOnMobile);
         }
 
-        menuHeader.addEventListener('mousedown', function (e) {
-            timeout = setTimeout(() => startDraggingMenu(e), 100);
-        });
+        if(this.__internal__isPhone){
+            toggleButton.addEventListener('touchstart', function (e) {
+                timeout = setTimeout(() => startDraggingToggleButtonOnMobile(e), 100);
+            });
+            toggleButton.addEventListener('touchend', function () {
+                clearTimeout(timeout);
+                isDragging = false;
+                document.removeEventListener('touchmove', toggleButtonMoveOnMobile);
+                document.querySelector("#GameDiv").classList.remove("pointer-none");
+                toggleButton.addEventListener('click', mouseClick)
+            });
+        } else {
+            toggleButton.addEventListener('mousedown', function (e) {
+                timeout = setTimeout(() => startDraggingToggleButton(e), 100);
+            });
+            toggleButton.addEventListener('mouseup', function () {
+                clearTimeout(timeout);
+                isDragging = false;
+                document.removeEventListener('mousemove', toggleButtonMove);
+                document.querySelector("#GameDiv").classList.remove("pointer-none");
+                toggleButton.addEventListener('click', mouseClick)
+            });
 
-        menuHeader.addEventListener('mouseup', function () {
-            clearTimeout(timeout);
-            isDragging = false;
-            document.removeEventListener('mousemove', menuMove);
-            document.querySelector("#GameDiv").classList.remove("pointer-none");
-            BattleLogs.Menu.adjustMenuPosition()
-        });
+            // Handle drag movement for the main menu
+            function menuMove(e) {
+                if (!isDragging) return;
+                const x = e.clientX - offsetX;
+                const y = e.clientY - offsetY;
+                applyPercentagePosition(menu, x, y);
+                mouseMoved = true;
+            }
 
-        // Adjust the menu position when the window is resized
-        window.addEventListener('resize', this.adjustMenuPosition);
+            function startDraggingMenu(e) {
+                document.addEventListener('mousemove', menuMove);
+                isDragging = true;
+                document.querySelector("#GameDiv").classList.add("pointer-none");
+                const rect = menu.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+            }
+
+            menuHeader.addEventListener('mousedown', function (e) {
+                timeout = setTimeout(() => startDraggingMenu(e), 100);
+            });
+
+            menuHeader.addEventListener('mouseup', function () {
+                clearTimeout(timeout);
+                isDragging = false;
+                document.removeEventListener('mousemove', menuMove);
+                document.querySelector("#GameDiv").classList.remove("pointer-none");
+            });
+        }
 
         // Observer to save menu's position when it is resized
         const observer = new MutationObserver((mutations) => {
@@ -212,14 +250,6 @@ class BattleLogsMenu {
         this.__internal__addOpacityButton(this.Settings.MenuOpacity, headerButtons);
         this.__internal__addExpandButton(this.Settings.MenuExpanded, headerButtons);
 
-        // If the user is on a phone, add special phone-related UI elements
-        if (this.__internal__isPhone) {
-            this.__internal__addPhoneElement(
-                "battlelogs-phone_expand",
-                this.__internal__battleLogsContainer
-            );
-        }
-
         // Set internal references to various UI elements
         this.BattleLogsWrapper = document.getElementById("battlelogs-wrapper");
         this.BattleLogsActions = document.getElementById("battlelogs-actions");
@@ -235,50 +265,6 @@ class BattleLogsMenu {
         this.BattleLogsSettings.id = "battlelogs-menu_settings";
         this.BattleLogsSettings.classList.add('unlocked');
         this.BattleLogsWrapper.appendChild(this.BattleLogsSettings);
-    }
-
-    static adjustMenuPosition() {
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        const toggleButton = document.getElementById(BattleLogs.Menu.Settings.ToggleButtonPosition);
-        const toggleButtonWidth = toggleButton.offsetWidth;
-        const toggleButtonHeight = toggleButton.offsetHeight;
-
-        const toggleButtonLeft = parseInt(toggleButton.style.left, 10);
-        const toggleButtonTop = parseInt(toggleButton.style.top, 10);
-        if (toggleButtonLeft + toggleButtonWidth > viewportWidth) {
-            toggleButton.style.left = (viewportWidth - toggleButtonWidth) + 'px';
-        }
-        if (toggleButtonTop + toggleButtonHeight > viewportHeight) {
-            toggleButton.style.top = (viewportHeight - toggleButtonHeight) + 'px';
-        }
-        if (toggleButtonLeft < 0) {
-            toggleButton.style.left = '0';
-        }
-        if (toggleButtonTop < 0) {
-            toggleButton.style.top = '0';
-        }
-        BattleLogs.Utils.LocalStorage.setValue(toggleButton.id, toggleButton.style.cssText);
-
-        const menu = document.getElementById(BattleLogs.Menu.Settings.MenuPosition);
-        const menuWidth = menu.offsetWidth;
-        const menuHeight = menu.offsetHeight;
-        const menuLeft = parseInt(menu.style.left, 10);
-        const menuTop = parseInt(menu.style.top, 10);
-        if (menuLeft + menuWidth > viewportWidth) {
-            menu.style.left = (viewportWidth - menuWidth) + 'px';
-        }
-        if (menuTop + menuHeight > viewportHeight) {
-            menu.style.top = (viewportHeight - menuHeight) + 'px';
-        }
-        if (menuLeft < 0) {
-            menu.style.left = '0';
-        }
-        if (menuTop < 0) {
-            menu.style.top = '0';
-        }
-        BattleLogs.Utils.LocalStorage.setValue(menu.id, menu.style.cssText);
     }
 
     /**
@@ -510,10 +496,6 @@ class BattleLogsMenu {
             buttonElem.title = "Réduire";
         }
         buttonElem.onclick = () => {
-            if (this.__internal__isPhone) {
-                this.__internal__battleLogsConsole.classList.add("hidden");
-                return;
-            }
             content.style.display = 'none';
             let toggleButton = BattleLogs.Menu.ToggleButton
             toggleButton.classList.remove("hidden")
@@ -561,48 +543,6 @@ class BattleLogsMenu {
         this.__internal__delayUpdate = setTimeout(function () {
             BattleLogs.Message.updateMessages()
         }, 1500);
-    }
-
-    /**
-     * @desc Add phone element
-     *
-     * @param {string} id: The button id
-     * @param {Element} containingDiv: The div element to append the separator to
-     */
-    static __internal__addPhoneElement(id, containingDiv) {
-        // Create horizontal element
-        const phoneElem = document.createElement("div");
-        phoneElem.id = id;
-        phoneElem.classList.add("header");
-
-        // Add title
-        const titleDiv = document.createElement("div");
-        titleDiv.classList.add("title");
-        titleDiv.innerText = "LaCalv Battle Logs";
-
-        // Set SVG
-        const svgSpan = document.createElement("span");
-        svgSpan.classList.add("svg_chevron-right");
-
-        // Append spans to phone element
-        phoneElem.appendChild(titleDiv);
-        phoneElem.appendChild(svgSpan);
-
-        // Add onclick event
-        phoneElem.onclick = () => {
-            this.__internal__battleLogsConsole.classList.toggle("hidden");
-            this.BattleLogsWrapper.scrollTop = this.BattleLogsWrapper
-                .scrollHeight;
-        };
-
-        // Append element to container
-        containingDiv.appendChild(phoneElem);
-
-        // Set class to change comportment
-        this.__internal__battleLogsConsole.classList.add("hidden");
-        this.__internal__battleLogsResizeElement.classList.add("hidden");
-        this.__internal__battleLogsDockSideElement.classList.add("hidden");
-        this.__internal__battleLogsConsole.classList.add("phone");
     }
 
     /**
@@ -718,7 +658,7 @@ class BattleLogsMenu {
         BattleLogs.Utils.LocalStorage.setDefaultValue(this.Settings.MenuOpacity,
             "1.0");
         BattleLogs.Utils.LocalStorage.setDefaultValue(this.Settings.ToggleButtonPosition,
-            "left: 10px; top: 10px;");
+            "left: 0.7%; top: 70%;");
         BattleLogs.Utils.LocalStorage.setDefaultValue(this.Settings.MenuWidth,
             "500px");
         BattleLogs.Utils.LocalStorage.setDefaultValue(
