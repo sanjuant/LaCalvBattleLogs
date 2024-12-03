@@ -56,6 +56,9 @@ class BattleLogsInterceptor {
      * @param {XMLHttpRequest} xhr: The XMLHttpRequest object.
      */
     static __internal__realProcess(xhr) {
+        if (xhr.status >= 400) {
+            return;
+        }
         const gameUrl = BattleLogsComponentLoader.gameUrl;
         const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
 
