@@ -126,11 +126,11 @@ class BattleLogsWbclassement {
      */
     static __internal__formatRankingLine(user, rank, isPlayer = false) {
         if (isPlayer) {
-            user.pseudoTwitch = "Vous"
+            user.pseudo = "Vous"
             user.damage = user.damages
         }
         const pad = (rank).toString().length > 2 ? (rank).toString().length : 2
-        let spacing = 25 - user["pseudoTwitch"].length;
-        return `${(rank).toString().padEnd(pad)} - ${user["pseudoTwitch"]} ${user["damage"].toString().padStart(spacing)} dommages`;
+        let spacing = 25 - user["pseudo"].length;
+        return `${(rank).toString().padEnd(pad)} - ${user["pseudo"]} ${user["damage"].toString().padStart(spacing)} dommages`;
     }
 }

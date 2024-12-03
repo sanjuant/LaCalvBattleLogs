@@ -97,8 +97,8 @@ class BattleLogsUpdate {
         if (data["id"]) {
             this.__internal__id = data["id"];
         }
-        if (data["pseudoTwitch"]) {
-            this.__internal__pseudoTwitch = data["pseudoTwitch"];
+        if (data["pseudo"]) {
+            this.__internal__pseudo = data["pseudo"];
         }
         if (data["player"]) {
             this.__internal__parse_player_stuffs(data["player"]);
@@ -196,7 +196,7 @@ class BattleLogsUpdate {
             let nounce = this.__internal__nounce
             if (nounce !== null) {
                 let c = window.btoa(JSON.stringify({
-                    "name": this.__internal__pseudoTwitch,
+                    "name": this.__internal__pseudo,
                     "time": new Date().getTime().toString()
                 }))
                 nounce.c = window.btoa(c + this.__internal__id)
@@ -252,7 +252,7 @@ class BattleLogsUpdate {
     static __internal__importantNotifs = ["Boss des Mondes", "Admin"];
     static __internal__nounce = null;
     static __internal__dateForSoundBossAvailable = null;
-    static __internal__pseudoTwitch = null
+    static __internal__pseudo = null
     static __internal__id = null
 
     /**
