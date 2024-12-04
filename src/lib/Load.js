@@ -28,9 +28,12 @@ class BattleLogsLoad {
         } catch (e) {
             return;
         }
-        this.Items = BattleLogs.Utils.pakoUncompress(data["items"]);
-        this.Armes = BattleLogs.Utils.pakoUncompress(data["armes"]);
-        this.Calvs = BattleLogs.Utils.pakoUncompress(data["calvs"]);
+
+        const discardInvalidFormatObjects = (data) => data.filter(e => e.name !== "Non implémenté");
+
+        this.Items = discardInvalidFormatObjects(BattleLogs.Utils.pakoUncompress(data["items"]));
+        this.Armes = discardInvalidFormatObjects(BattleLogs.Utils.pakoUncompress(data["armes"]));
+        this.Calvs = discardInvalidFormatObjects(BattleLogs.Utils.pakoUncompress(data["calvs"]));
         this.Familiers = BattleLogs.Utils.pakoUncompress(data["familiers"]);
         this.Histoire = BattleLogs.Utils.pakoUncompress(data["histoire"]);
         this.Effects = BattleLogs.Utils.pakoUncompress(data["effectsv2"]);
