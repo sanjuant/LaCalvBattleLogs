@@ -239,13 +239,14 @@ class BattleLogsStatsAccount {
         BattleLogs.Update.Objects.forEach(object => {
             let obj = BattleLogs.Utils.getObjectByName(object["name"]);
             let cost = 0;
+            if("betaOnly" in obj && obj["betaOnly"] === true) { return;}
             if ("cost" in obj && obj["cost"] !== 0) {
                 cost = obj["cost"] * object["count"];
             }
 
             countAlopiece += cost;
         });
-
+        
         BattleLogs.Update.Familiers.forEach(fam => {
             let obj = BattleLogs.Utils.getObjectByName(fam["name"]);
             if (fam["sorts"].length === 4) {
