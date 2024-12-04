@@ -457,9 +457,6 @@ class BattleLogsBuilder {
             option.textContent = `${object.name}`;
             option.dataset["weight"] = weight[type][object.rarity];
             option.classList.add(`bar-rarity-${object.rarity}`);
-            if(object.rarity === 1) {
-                option.classList.add("hidden");
-            }
 
             option.onclick = onclickFunc;
             selectBox.appendChild(option);
