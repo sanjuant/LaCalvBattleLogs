@@ -7,8 +7,7 @@ class BattleLogsSound {
     }
 
     static SoundEmitted = {
-        bossAvailable: false,
-        bossFightAvailable: false
+        bossAvailable: false
     }
 
     /**
@@ -34,16 +33,6 @@ class BattleLogsSound {
         if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) === "true" && !this.SoundEmitted.bossAvailable) {
             this.SoundEmitted.bossAvailable = true;
             this.__internal__playSound(this.__internal__sounds.gong);
-        }
-    }
-
-    /**
-     * @desc Play sound when boss fight available
-     */
-    static notifWhenBossFightAvailable() {
-        if (BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundEnable) === "true" && !this.SoundEmitted.bossFightAvailable) {
-            this.SoundEmitted.bossFightAvailable = true;
-            this.__internal__playSound(this.__internal__sounds.bell);
         }
     }
 
