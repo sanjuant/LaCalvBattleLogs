@@ -66,14 +66,8 @@ class BattleLogsUpdate {
         }
 
         // Set roues and load if not loaded
-        if (!BattleLogs.Roues.hasLoaded()) {
-            BattleLogs.Update.queryUrl("roues", "GET")
-        }
-        if (!BattleLogs.Load.hasLoaded()) {
-            BattleLogs.Update.queryUrl("load", "GET")
-        }
-        if (!BattleLogs.Shop.hasLoaded()) {
-            BattleLogs.Update.queryUrl("shop", "GET")
+        if (!BattleLogs.Roues.hasLoaded() || !BattleLogs.Load.hasLoaded() || !BattleLogs.Shop.hasLoaded()) {
+            BattleLogs.Update.queryUrl("load", "GET");
         }
 
         if ("streaming" in data) {
