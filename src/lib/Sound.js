@@ -122,7 +122,12 @@ class BattleLogsSound {
             volumePercentage.style.width = newVolume * 100 + '%';
             BattleLogs.Utils.LocalStorage.setValue(this.Settings.SoundVolume, newVolume);
           }, false)
-
+        audioArea.addEventListener('mouseenter', e => {
+            volumeSlider.classList.remove("hidden");
+        }, false)
+        audioArea.addEventListener('mouseleave', e => {
+            volumeSlider.classList.add("hidden");
+        }, false)
         volumeSlider.appendChild(volumePercentage);
         audioArea.appendChild(soundButton);
         audioArea.appendChild(volumeSlider);
