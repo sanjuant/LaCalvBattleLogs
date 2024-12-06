@@ -77,6 +77,7 @@ class BattleLogsSound {
         const audioArea = document.createElement("div");
         const soundButton = document.createElement("button");
         audioArea.id = id;
+        audioArea.classList.add("unlocked");
         soundButton.classList.add("svg_sound-off");
         soundButton.title = "Activer les notifications sonores";
 
