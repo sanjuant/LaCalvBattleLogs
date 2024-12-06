@@ -113,6 +113,7 @@ class BattleLogsSound {
         volumePercentage.style.width = this.__internal__sounds.gong.volume * 100 + '%';
         volumePercentage.classList.add("volume-percentage");
         volumeSlider.classList.add("volume-slider");
+        volumeSlider.classList.add("hidden");
         audioArea.classList.add("volume-container");
         
         volumeSlider.addEventListener('click', e => {
