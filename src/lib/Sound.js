@@ -4,6 +4,8 @@
 class BattleLogsSound {
     static Settings = {
         SoundEnable: "Sound-Enable",
+        SoundVolume: "Sound-Volume",
+        DefaultVolume: 0.5
     }
 
     static SoundEmitted = {
@@ -17,12 +19,15 @@ class BattleLogsSound {
      */
     static initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
+            // Set default settings
+            this.__internal__setDefaultSettingValues();
+
+            // Get custom settings
+            this.__internal__sounds.gong.volume = BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundVolume) || this.Settings.DefaultVolume;
+
             // Add CSV button
             BattleLogs.Menu.addSeparator(BattleLogs.Menu.BattleLogsSettingsFooterLeft);
             this.__internal__addSoundButton(this.Settings.SoundEnable, BattleLogs.Menu.BattleLogsSettingsFooterLeft);
-
-            // Set default settings
-            this.__internal__setDefaultSettingValues();
         }
     }
 
@@ -69,8 +74,9 @@ class BattleLogsSound {
      */
     static __internal__addSoundButton(id, containingDiv) {
         // Add messages container to battle logs menu
+        const audioArea = document.createElement("div");
         const soundButton = document.createElement("button");
-        soundButton.id = id;
+        audioArea.id = id;
         soundButton.classList.add("svg_sound-off");
         soundButton.title = "Activer les notifications sonores";
 
@@ -98,10 +104,28 @@ class BattleLogsSound {
                     soundButton.title = "Activer les notifications sonores";
                 }
             }
-            BattleLogs.Utils.LocalStorage.setValue(soundButton.id, newStatus);
+            BattleLogs.Utils.LocalStorage.setValue(id, newStatus);
         }
+        
+        const volumeSlider = document.createElement("div");
+        const volumePercentage = document.createElement("div");
+        volumePercentage.style.width = this.__internal__sounds.gong.volume * 100 + '%';
+        volumePercentage.classList.add("volume-percentage");
+        volumeSlider.classList.add("volume-slider");
+        audioArea.classList.add("volume-container");
+        
+        volumeSlider.addEventListener('click', e => {
+            const sliderWidth = window.getComputedStyle(volumeSlider).width;
+            const newVolume = e.offsetX / parseInt(sliderWidth);
+            this.__internal__sounds.gong.volume = newVolume;
+            volumePercentage.style.width = newVolume * 100 + '%';
+            BattleLogs.Utils.LocalStorage.setValue(this.Settings.SoundVolume, newVolume);
+          }, false)
 
-        containingDiv.appendChild(soundButton);
+        volumeSlider.appendChild(volumePercentage);
+        audioArea.appendChild(soundButton);
+        audioArea.appendChild(volumeSlider);
+        containingDiv.appendChild(audioArea);
     }
 
     /**

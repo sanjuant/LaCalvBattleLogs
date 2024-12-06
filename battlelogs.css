@@ -980,7 +980,29 @@ button.selected {
     height: auto;
 }
 
-
+.volume-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px
+}
+.volume-container .volume-slider {
+    width: 0;
+    height: 15px;
+    background: #232327;
+    border-radius : 4px;
+    box-shadow: 0 0 20px #000a;
+    transition: 0.25s;
+    overflow: hidden;
+}
+.volume-container .volume-slider .volume-percentage {
+    background: #595959;
+    height: 100%;
+    width: 75%;
+}
+.volume-container:hover .volume-slider {
+    width: 60px;
+}
 /********************/
 /* Objects colors   */
 /********************/
