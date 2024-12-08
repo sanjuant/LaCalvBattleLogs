@@ -104,6 +104,7 @@ class BattleLogsBattle {
             this.__internal__incrementVdv(user, opponent, action);
             this.__internal__incrementHemorragie(user, opponent, action);
             this.__internal__incrementRenvoi(user, opponent, action);
+            this.__internal__incrementGardien(user, opponent, action);
             this.__internal__incrementTour(user, opponent, action);
 
             if (action.events && action.events.length > 0) {
@@ -545,6 +546,17 @@ class BattleLogsBattle {
             text: "Dégâts d'exécution",
             type: "checkbox"
         },
+        gardien: {
+            name: {
+                normal: "Gardien",
+                short: "Gard",
+                list: "Gardien"
+            },
+            display: false,
+            setting: true,
+            text: "Dégâts du gardien",
+            type: "checkbox"
+        },
         result: {
             name: {
                 normal: "Résultat",
@@ -961,7 +973,7 @@ class BattleLogsBattle {
      * @param {Object} player: player of battle
      */
     static calculateTotalDamage(player) {
-        const damageTypes = ['dmg', 'brulure', 'maraboutage', 'poison', 'saignement', 'renvoi', 'intimidation', 'venin', 'electrocution', 'hemorragie', 'execution', 'famDmg', 'famRenvoi'];
+        const damageTypes = ['dmg', 'brulure', 'maraboutage', 'poison', 'saignement', 'renvoi', 'intimidation', 'venin', 'electrocution', 'hemorragie', 'execution', 'gardien', 'famDmg', 'famRenvoi'];
         return damageTypes.reduce((total, type) => total + player[type], 0);
     }
 
@@ -1477,6 +1489,21 @@ class BattleLogsBattle {
     }
 
     /**
+     * @desc Increment gardien of player
+     *
+     * @param {Object} user: User of battle
+     * @param {Object} opponent: Opponent of battle
+     * @param {JSON} action: Action of battle
+     * @param {JSON} event: Event of battle
+     */
+    static __internal__incrementGardien(user, opponent, action) {
+        if("gardien" in action["attacker"]["computed"] && action["attacker"]["computed"]["gardien"] > 0) {
+            const gardienIncrement = action["attacker"]["computed"]["gardien"];
+            this.__internal__updateAttribute(action["attacker"]["name"], user, opponent, "gardien", gardienIncrement);
+        }
+    }
+
+    /**
      * @desc Sets the Menu settings default values in the local storage
      */
     static __internal__setDefaultSettingsValues() {
@@ -1516,6 +1543,7 @@ class BattleLogsBattle {
         player.paralysie = 0;
         player.hemorragie = 0;
         player.execution = 0;
+        player.gardien = 0;
         player.famTour = 0;
         player.famVie = 0;
         player.famDmg = 0;
