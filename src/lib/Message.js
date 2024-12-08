@@ -393,8 +393,8 @@ class BattleLogsMessage {
             formatButton.id = "format-" + key;
             formatButton.title = this.__internal__format[key].title;
             formatButton.classList.add("svg_format-" + key);
-            if (this.__internal__format[key].selected) {
-                formatButton.classList.add("selected");
+            if (!this.__internal__format[key].selected) {
+                formatButton.classList.add("hidden");
             }
             // Add event listener on format button
             this.__internal__toggleFormatButton(formatButton);
@@ -435,17 +435,14 @@ class BattleLogsMessage {
      */
     static __internal__toggleFormatButton(buttonElem) {
         buttonElem.onclick = () => {
-            const formatButtons = buttonElem.parentNode.querySelectorAll(
-                "button");
-            formatButtons.forEach((button) => {
-                button.classList.remove("selected");
-                this.__internal__format[button.id.split(/-/).pop()].selected =
-                    false;
-            });
-            buttonElem.classList.add("selected");
+            buttonElem.classList.add("hidden");
             this.__internal__format[buttonElem.id.split(/-/).pop()].selected =
+                false;
+            const nextButtonElem = buttonElem.nextElementSibling !== null ? buttonElem.nextElementSibling : buttonElem.parentElement.firstElementChild;
+            nextButtonElem.classList.remove("hidden");
+            this.__internal__format[nextButtonElem.id.split(/-/).pop()].selected =
                 true;
-            this.Settings.Format = buttonElem.id.split(/-/).pop();
+            this.Settings.Format = nextButtonElem.id.split(/-/).pop();
             BattleLogs.Utils.LocalStorage.setValue(
                 this.Settings.MessageFormat,
                 this.Settings.Format

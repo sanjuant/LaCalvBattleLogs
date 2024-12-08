@@ -992,8 +992,6 @@ button.selected {
     height: 15px;
     background: #232327;
     border-radius : 4px;
-    box-shadow: 0 0 20px #000a;
-    transition: 0.25s;
     overflow: hidden;
 }
 .volume-container .volume-slider .volume-percentage {
