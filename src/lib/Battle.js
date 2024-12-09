@@ -1089,7 +1089,8 @@ class BattleLogsBattle {
                         items.push({name: `Gemme ${item.value}`, count: item.count, rarity: item.rarity, type: type});
                         continue;
                     }
-                    let object = BattleLogs.Utils.getObjectByShortName(item.value);
+
+                    let object = "short" in item ? BattleLogs.Utils.getObjectByShortName(item.short) : BattleLogs.Utils.getObjectByShortName(item.value);
                     if (typeof object === "string") {
                         object = {name: item.value, count: item.count, rarity: -1, type: type};
                     }
