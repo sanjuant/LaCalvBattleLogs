@@ -502,16 +502,12 @@ body{
     text-align: right;
     font-weight: normal;
 }
-#Stats-stuffs {
-    flex: 1 0 100%;
-}
 .stats-stuffs-container {
-    width: 100%;
     padding: .7rem;
     display: flex;
     flex-wrap: wrap;
     align-items:flex-start;
-    gap: 1rem;
+    gap: .5rem;
 }
 .stats-stuff {
     background-color: #595959;
