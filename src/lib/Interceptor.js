@@ -89,6 +89,8 @@ class BattleLogsInterceptor {
             BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/stopexpeditions")) {
             BattleLogs.Expedition.parseResponse(xhr)
+        } else if (xhr.responseURL.startsWith(baseUrl + "play/isOnline")) {
+            BattleLogs.Utils.IndexedDB.parseResponse(xhr)
         }
     }
 }

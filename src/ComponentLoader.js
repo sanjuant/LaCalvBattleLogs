@@ -33,9 +33,13 @@ class BattleLogsComponentLoader
 
         // From the least dependant, to the most dependent
         this.__addScript("src/lib/Utils/LocalStorage.js");
+        this.__addScript("src/lib/Utils/IndexedDB.js");
         this.__addScript("src/lib/Stats/Roues.js");
         this.__addScript("src/lib/Stats/Stuffs.js");
         this.__addScript("src/lib/Stats/Account.js");
+
+        this.__loadingOrder += 1;
+        this.__addScript("src/lib/Utils.js");
 
         this.__loadingOrder += 1;
         this.__addScript("src/lib/Interceptor.js");
@@ -52,7 +56,6 @@ class BattleLogsComponentLoader
         this.__addScript("src/lib/Battle.js");
         this.__addScript("src/lib/Message.js");
         this.__addScript("src/lib/Menu.js");
-        this.__addScript("src/lib/Utils.js");
         this.__addScript("src/lib/Csv.js");
         this.__addScript("src/lib/Sound.js");
         this.__addScript("src/lib/Battlewbtry.js");

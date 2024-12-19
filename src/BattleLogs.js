@@ -46,13 +46,16 @@ class BattleLogs
     /**
      * @desc BattleLogs entry point
      */
-    static start()
+    static async start()
     {
         console.log(`%cStarting BattleLogs..`, "color:#00A7FF;font-weight:900;");
 
         for (let initKey in this.InitSteps)
         {
             let initStep = this.InitSteps[initKey];
+
+            // Open and initialize database
+            await this.Utils.IndexedDB.initialize(initStep)
 
             // Load interceptor to hijack xhr responses
             this.Interceptor.initialize(initStep)
@@ -86,7 +89,7 @@ class BattleLogs
 
             // Additionnal components
             this.Csv.initialize(initStep);
-            this.Sound.initialize(initStep);
+            await this.Sound.initialize(initStep);
             // this.Video.initialize(initStep);
             this.Glossary.initialize(initStep);
             this.Stats.initialize(initStep);

@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "Live Preview",
+			"workspacePath": "d:\\Bazards\\LaCalv\\LaCalv_dev\\LaCalvBattleLogs",
+			"problemMatcher": [],
+			"label": "Live Preview: Run Server"
+		}
+	]
+}

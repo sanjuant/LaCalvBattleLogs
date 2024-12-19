@@ -3,6 +3,7 @@
  */
 class BattleLogsUtils {
     // Aliases on the other classes
+    static IndexedDB = BattleLogsUtilsIndexedDB;
     static LocalStorage = BattleLogsUtilsLocalStorage;
 
     /**

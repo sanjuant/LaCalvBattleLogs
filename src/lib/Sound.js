@@ -17,11 +17,13 @@ class BattleLogsSound {
      *
      * @param initStep: The current battle logs init step
      */
-    static initialize(initStep) {
+    static async initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
             // Set default settings
             this.__internal__setDefaultSettingValues();
-
+            let result = await BattleLogs.Utils.IndexedDB.setValue(...this.Settings.SoundVolume.split("-"), this.Settings.DefaultVolume);
+            console.log(result);
+            
             // Get custom settings
             this.__internal__sounds.gong.volume = BattleLogs.Utils.LocalStorage.getValue(this.Settings.SoundVolume) || this.Settings.DefaultVolume;
 
