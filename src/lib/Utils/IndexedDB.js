@@ -5,6 +5,7 @@ class BattleLogsUtilsIndexedDB
 {
     static openRequest = null;
     static db = null;
+    static playerId = null;
 
     /**
      * @desc Parse XMLHttpRequest response
@@ -16,10 +17,10 @@ class BattleLogsUtilsIndexedDB
         try {
             data = xhr.response;
             if (typeof data !== "string") return;
+            this.playerId = data;
         } catch (e) {
             return
         }
-
     }
 
     /**
@@ -29,8 +30,17 @@ class BattleLogsUtilsIndexedDB
      */
     static async initialize(initStep) {
         if (initStep === BattleLogs.InitSteps.BuildMenu) {
+            const gameUrl = BattleLogsComponentLoader.gameUrl;
+            const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
+
+            await fetch(baseUrl+"play/isOnline")
+                .then(response => console.log(response.status) || response)
+                .then(response => response.text())
+                .then(body => this.playerId = body) 
+            console.log(this.playerId);
+            if (this.playerId.includes("disconnected")) { return false; }
             await new Promise((resolve, reject) => {
-                this.openRequest = indexedDB.open("Battlelogs", 1);
+                this.openRequest = indexedDB.open(`Battlelogs-${this.playerId}`, 1);
 
                 this.openRequest.onupgradeneeded = this.__internal__onUpgradeNeeded.bind(this);
                 
@@ -54,6 +64,7 @@ class BattleLogsUtilsIndexedDB
                 };
             });
         }
+        return true;
     }
     
     /**
@@ -92,6 +103,46 @@ class BattleLogsUtilsIndexedDB
     }
 
     /**
+     * @desc Gets the value associated to @p key from the local storage
+     *
+     * @param {string} storeName: The key to set the value of
+     * @param {any} value: The value
+     * @param {Number} limit: The limit size of messages logs
+     */
+    static async setComplexValue(storeName, value, limit=null)
+    {
+        await new Promise(async (resolve, reject) => {
+            const txn = this.db.transaction(storeName, "readwrite");
+            const store = txn.objectStore(storeName);
+            let count = 0;
+            const countRequest = store.count();
+            countRequest.onsuccess = function() {
+                count = countRequest.result;
+                console.log(count)
+                
+                if (limit != null) {
+                    const multilogsType = [
+                        BattleLogs.Survie.Settings.Type,
+                        BattleLogs.Histoire.Settings.Type
+                    ]
+                    if ( !multilogsType.includes(value.type) && count === (limit - 1) ||
+                            multilogsType.includes(value.type) && count === (limit - 3) ) {
+                        BattleLogs.Message.appendMessage(`Tu approches de la limite de ${limit} messages pour le type ${value.type}. Pour tout conserver, pense à les exporter. Fais de la place en supprimant les anciens, ou laisse faire le nettoyage automatique.`, "Info", {"type": "Info", "time": new Date().toISOString()});
+                    }
+                    if (count === limit) {
+                        let cursorRequest = store.openCursor();
+                        cursorRequest.onsuccess = () => store.delete(cursorRequest.result.key);
+                    }
+                }
+                store.add(value);
+                txn.oncomplete = () => resolve();
+                txn.onerror = error => reject(error);
+                txn.onabort = event => reject(event);
+            }
+        })
+    }
+    
+    /**
      * @desc Sets the value associated to @p key to @p value from the local storage
      *
      * @param {string} key: The key to set the value of
@@ -125,21 +176,33 @@ class BattleLogsUtilsIndexedDB
     static __internal__onUpgradeNeeded(event)
     {
         let db = this.openRequest.result;
+        const populateDB = (storeName, key='time') => {
+            if(!db.objectStoreNames.contains(storeName)){
+                const store = db.createObjectStore(storeName, { keyPath: key});
+                let items = BattleLogs.Utils.LocalStorage.getComplexValue(storeName)
+                if (items !== null){
+                    console.log("toto")
+                    items.forEach(item => {
+                        store.add(item);
+                    })
+                }
+            }
+        };
+
         switch(event.oldVersion) { // existing db version
             case 0:
                 // version 0 means that the client had no database
                 // perform initialization
                 db.createObjectStore('Sound');
-                if(!db.objectStoreNames.contains('Boss-Logs')){
-                    const store = db.createObjectStore(BattleLogs.Boss.Settings.Logs, { keyPath: 'time'});
-                    let bossLogs = BattleLogs.Utils.LocalStorage.getComplexValue(BattleLogs.Boss.Settings.Logs)
-                    if (bossLogs !== null){
-                        console.log("toto")
-                        bossLogs.forEach(log => {
-                            store.add(log);
-                        })
-                    }
-                }
+                populateDB(BattleLogs.Boss.Settings.Logs);
+                populateDB(BattleLogs.Summarize.Settings.x10.Logs);
+                populateDB(BattleLogs.Summarize.Settings.x50.Logs);
+                populateDB(BattleLogs.Summarize.Settings.x100.Logs);
+                populateDB(BattleLogs.Histoire.Settings.Logs);
+                populateDB(BattleLogs.Notif.Settings.Logs);
+                populateDB(BattleLogs.Pvp.Settings.Logs);
+                populateDB(BattleLogs.Survie.Settings.Logs);
+                populateDB(BattleLogs.Tob.Settings.Logs);
             case 1:
                 // client had version 1
                 // update

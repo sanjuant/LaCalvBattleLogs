@@ -55,11 +55,8 @@ class BattleLogs
             let initStep = this.InitSteps[initKey];
 
             // Open and initialize database
-            await this.Utils.IndexedDB.initialize(initStep)
-
-            // Load interceptor to hijack xhr responses
-            this.Interceptor.initialize(initStep)
-
+            let isConnected = await this.Utils.IndexedDB.initialize(initStep)
+            if (!isConnected) {return }
             // Load utils used in other components
             this.Utils.initialize(initStep);
 
@@ -95,6 +92,9 @@ class BattleLogs
             this.Stats.initialize(initStep);
             this.Option.initialize(initStep);
             this.Builder.initialize(initStep);
+
+            // Load interceptor to hijack xhr responses
+            this.Interceptor.initialize(initStep)
         }
 
         console.log(`%cBattleLogs started`, "color:#00A7FF;font-weight:900;");

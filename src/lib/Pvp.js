@@ -155,7 +155,7 @@ class BattleLogsPvp {
         const log = new this.Logs(this.Settings.Type, user, opponent, rewards, stuff);
         this.LogsArray.push(log);
         BattleLogs.Utils.LocalStorage.setComplexValue(this.Settings.Logs, log, this.Settings.Limit);
-
+        BattleLogs.Utils.IndexedDB.setComplexValue(this.Settings.Logs, log, this.Settings.Limit);
         return log;
     }
 
