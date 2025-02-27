@@ -21,6 +21,9 @@ class BattleLogsStatsAccount {
     };
 
     static Data;
+    static WEAPONSSTOSUBSTRACT = 2;
+    static CALVSTOSUBSTRACT = 1;
+    static PETSTOSUBSTRACT = 6;
 
     /**
      * @desc Creates and appends statistical panes for each type of wheel within the stats panel.
@@ -56,10 +59,10 @@ class BattleLogsStatsAccount {
         statsData.alopiece = Update.Alopiece;
         statsData.ticket = Update.Tickets;
 
-        this.__internal__updateStatsProperty('armes', Update.Armes, Load.Armes, 1);
-        this.__internal__updateStatsProperty('calvs', Update.Calvs, Load.Calvs, 1);
+        this.__internal__updateStatsProperty('armes', Update.Armes, Load.Armes, this.WEAPONSSTOSUBSTRACT);
+        this.__internal__updateStatsProperty('calvs', Update.Calvs, Load.Calvs, this.CALVSTOSUBSTRACT);
         this.__internal__updateStatsProperty('items', Update.Items, Load.Items);
-        this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, 6);
+        this.__internal__updateStatsProperty('familiers', Update.Familiers, Load.Familiers, this.PETSTOSUBSTRACT);
         const newWorth = this.__internal__calculateAccountValue();
         statsData.worth = newWorth > 0 ? newWorth : statsData.worth;
         BattleLogs.Utils.LocalStorage.setComplexValue(BattleLogs.Stats.Settings.StatsAccount, this.Data);
@@ -249,9 +252,9 @@ class BattleLogsStatsAccount {
         
         BattleLogs.Update.Familiers.forEach(fam => {
             let obj = BattleLogs.Utils.getObjectByName(fam["name"]);
-            if (fam["sorts"].length === 4) {
-                fam["sorts"].forEach(famSort => {
-                    let sortShop = BattleLogs.Utils.getObjectByShortName(famSort["short"]);
+            if (fam["knownSorts"].length > 0) {
+                fam["knownSorts"].forEach(famSort => {
+                    let sortShop = BattleLogs.Utils.getObjectByShortName(famSort);
                     if ("cost" in sortShop) countAlopiece += sortShop["cost"];
                 })
             }

@@ -89,7 +89,7 @@ class BattleLogsUpdate {
             this.__internal__pseudo = data["pseudo"];
         }
         if (data["player"]) {
-            this.__internal__parse_player_stuffs(data["player"]);
+            this.stuffs = data["player"]["stuffs"];
         }
         if (data["tickets"]) {
             this.Tickets = data["tickets"]
@@ -255,41 +255,4 @@ class BattleLogsUpdate {
         }
     }
 
-    /**
-     * @desc Sets the stuffs of player
-     *
-     * @param {Object} player: Player object
-     */
-    static __internal__parse_player_stuffs(player) {
-        let setStuffs = (player, stuffs, calvs, armes, items, familiers) => {
-            if (calvs in player && items in player && armes in player && stuffs in player) {
-                for (let i = 0; i < player[calvs].length; i++) {
-                    let name = "Slot #"+ (i + 1).toString()
-                    if (i in player[stuffs]) {
-                        name = player[stuffs][i] ? player[stuffs][i] : "Slot #"+ (i + 1).toString()
-                    }
-                    this[stuffs][i] = {"name": name, "calv": player[calvs][i], "arme": player[armes][i], "items": player[items][i]}
-                    if (familiers in player) {
-                        if (player[familiers][i] === null || player[familiers][i] === undefined) {
-                            continue
-                        }
-                        if ("attack" in player[familiers][i]) {
-                            this[stuffs][i].famAtk = player[familiers][i]["attack"].capitalize()
-                        }
-                        if ("defense" in player[familiers][i]) {
-                            this[stuffs][i].famDef = player[familiers][i]["defense"].capitalize()
-                        }
-                    }
-                }
-            }
-        }
-        
-        this.stuffs = {};
-        this.stuffsPVE = {};
-        this.stuffsWB = {};
-
-        setStuffs(player, "stuffs", "calvs", "armes", "items", "familiers");
-        setStuffs(player, "stuffsPVE", "calvsPVE", "armesPVE", "itemsPVE", "familiersPVE");
-        setStuffs(player, "stuffsWB", "calvsWB", "armesWB", "itemsWB", "familiersWB");
-    }
 }

@@ -6,7 +6,7 @@
  */
 class BattleLogsComponentLoader
 {
-    static gameUrl = "https://lacalv.fr/";
+    static gameUrl = "https://seragoniadev.ovh/";
     static __baseUrl = null;
     static __loadingList = [];
     static __loadingProgressTable = {};

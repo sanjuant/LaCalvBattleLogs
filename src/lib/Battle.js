@@ -81,11 +81,11 @@ class BattleLogsBattle {
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
                 break;
             case "WB":
-                this.__internal__setStuff(stuff, BattleLogs.Update.stuffWB, BattleLogs.Update.stuffsWB)
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffWB, BattleLogs.Update.stuffs)
                 break;
             case "PVE":
             case "HISTOIRE":
-                this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffsPVE)
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffs)
                 break;
             case "DJ":
                 const stuffData = data["A"]["player"];
@@ -1058,9 +1058,9 @@ class BattleLogsBattle {
             stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
         }
 
-        let objectFamAtk = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famAtk);
+        let objectFamAtk = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famiAtk.split('_')[0].capitalize());
         stuff.famAtk = objectFamAtk === '_' ? objectFamAtk : {name: objectFamAtk["name"], rarity: objectFamAtk["rarity"]};
-        let objectFamDef = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famDef);
+        let objectFamDef = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famiDef.split('_')[0].capitalize());
         stuff.famDef = objectFamDef === '_' ? objectFamDef : {name: objectFamDef["name"], rarity: objectFamDef["rarity"]};
     }
 
