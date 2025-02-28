@@ -88,8 +88,9 @@ class BattleLogsBattle {
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffs)
                 break;
             case "DJ":
-                const stuffData = data["A"]["player"];
-                const stuffs = [{name: "Survie", arme: stuffData["arme"], calv: stuffData["calv"], items: stuffData["item"], famAtk: stuffData["linked"], famDef: stuffData["defenseFam"]},];
+                const playerData = data["A"]["player"];
+                const stuffData = playerData["stuffs"][0];
+                const stuffs = [{name: "Survie", arme: stuffData["arme"], calv: stuffData["calv"], items: stuffData["item"], famiAtk: playerData["linked"], famiDef: playerData["defenseFam"]},];
                 this.__internal__setStuff(stuff, 1, stuffs);
 
         }
