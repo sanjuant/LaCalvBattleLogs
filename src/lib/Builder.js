@@ -290,9 +290,9 @@ class BattleLogsBuilder {
         inputValues.classList.add("builder-input-equipment");
         const inputLeft =document.createElement("div");
         inputLeft.classList.add("builder-input-left");
-        const calvs = BattleLogs.Load.Calvs.sort((a, b) => a.rarity < b.rarity);
-        const armes = BattleLogs.Load.Armes.sort((a, b) => a.rarity < b.rarity);
-        const items = BattleLogs.Load.Items.sort((a, b) => a.rarity < b.rarity);
+        const calvs = BattleLogs.Load.Calvs.sort((a, b) => b.rarity - a.rarity);
+        const armes = BattleLogs.Load.Armes.sort((a, b) => b.rarity - a.rarity);
+        const items = BattleLogs.Load.Items.sort((a, b) => b.rarity - a.rarity);
         this.__internal__appendInput(calvs, "Choisir une calv", "calv", "calv", inputLeft);
         this.__internal__appendInput(armes, "Choisir une arme", "arme", "arme", inputLeft);
         for (let i = 1; i < 6; i++) { 
@@ -449,7 +449,7 @@ class BattleLogsBuilder {
         defaultOption.dataset["weight"] = 0;
         defaultOption.onclick = onclickFunc;
         selectBox.appendChild(defaultOption);
-        objects.sort((a, b) => a.rarity < b.rarity);
+        objects.sort((a, b) => b.rarity - a.rarity);
         objects.forEach( object => {
             const option = document.createElement("option");
             option.value = object.short;
