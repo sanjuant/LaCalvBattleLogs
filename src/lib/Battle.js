@@ -80,12 +80,14 @@ class BattleLogsBattle {
             case "PVP":
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffAtk, BattleLogs.Update.stuffs)
                 break;
-            case "WB":
-                this.__internal__setStuff(stuff, BattleLogs.Update.stuffWB, BattleLogs.Update.stuffs)
+            case "HISTOIRE":
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffHistoire, BattleLogs.Update.stuffs)
                 break;
             case "PVE":
-            case "HISTOIRE":
                 this.__internal__setStuff(stuff, BattleLogs.Update.stuffPVE, BattleLogs.Update.stuffs)
+                break;
+            case "WB":
+                this.__internal__setStuff(stuff, BattleLogs.Update.stuffWB, BattleLogs.Update.stuffs)
                 break;
             case "DJ":
                 const playerData = data["A"]["player"];
