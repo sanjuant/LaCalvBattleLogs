@@ -121,6 +121,9 @@ class BattleLogsUpdate {
         if (data["player"] && data["player"]["stuffAtk"] >= 0) {
             this.stuffAtk = data["player"]["stuffAtk"] + 1;
         }
+        if (data["player"] && data["player"]["stuffHistoire"] >= 0) {
+            this.stuffHistoire = data["player"]["stuffHistoire"] + 1;
+        }
         if (data["player"] && data["player"]["stuffPVE"] >= 0) {
             this.stuffPVE = data["player"]["stuffPVE"] + 1;
         }
