@@ -132,7 +132,7 @@ class BattleLogsCsv {
         for (let key in log) {
             const newKey = parentKey ? `${parentKey.charAt(0)}.${key}` : key;
             if (parentKey !== '' && this.__internal__bannedSubKeys.includes(key)) continue;
-            if (BattleLogs.Utils.isObject(log[key]) && !["calv", "arme"].includes(key)) {
+            if (BattleLogs.Utils.isObject(log[key]) && !["calv", "arme", "famAtk", "famDef"].includes(key) || key === "rewards") {
                 this.__internal__getKeys(log[key], headers, key);
             } else {
                 headers.add(newKey);
@@ -157,9 +157,9 @@ class BattleLogsCsv {
                 return log[headerKey] === null ? "" : log[headerKey].toString();
             } else if (newKey === headerKey && parentKey !== '') {
                 if (BattleLogs.Utils.isArray(log[key]) && log[key].length > 0) {
-                    return JSON.stringify(log[key])
+                    return log[key].map(e => e.count && e.count>1?`${e.name} (${e.count})`:e.name).join(' | ');
                 } else if (BattleLogs.Utils.isObject(log[key])){
-                    return JSON.stringify(log[key])
+                    return log[key]['name'];
                 }
                 return log[key] === null ? "" : log[key].toString();
             }
