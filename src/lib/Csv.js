@@ -41,7 +41,7 @@ class BattleLogsCsv {
 
             let csvContent = headers.join(';') + "\n" + rows.map(row => row.join(";")).join("\n");
             let link = document.createElement("a");
-            link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURI(csvContent));
+            link.setAttribute("href", "data:text/csv;charset=utf-8,%EF%BB%BF" + encodeURIComponent(csvContent));
             let fileName = this.__internal__buildFileName();
             link.setAttribute("download", fileName);
             link.click();
