@@ -80,7 +80,7 @@ class BattleLogsInterceptor {
             BattleLogs.Tob.parseResponse(xhr);
         } else if (path === baseUrl + "play/battlewb") {
             BattleLogs.Boss.parseResponse(xhr);
-        } else if (xhr.responseURL.startsWith(baseUrl + "play/battleDonjon")) {
+        } else if (xhr.responseURL.startsWith(baseUrl + "play/battleDonjon") || path === baseUrl + "play/survie/climb") {
             BattleLogs.Survie.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/battleHistoire")) {
             BattleLogs.Histoire.parseResponse(xhr);
