@@ -55,8 +55,10 @@ class BattleLogsHistoire extends BattleLogsSurvie {
             BattleLogs.Stats.Stuffs.updateStats(this.Settings.Type, stat.stuff, stat.user);
         }
 
+        // A lost or empty answer has no results
+        if (stats.length === 0) return;
         const lastBattle = stats[stats.length - 1];
-        
+
         const log = this.__internal__addLog(uid, choice, lastBattle.user, lastBattle.opponent, lastBattle.rewards, lastBattle.stuff, lastBattle.nbBattle);
         this.appendMessage(log);
     }

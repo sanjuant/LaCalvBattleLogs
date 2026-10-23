@@ -200,7 +200,8 @@ class BattleLogsUtils {
      * @return object uncompressed
      */
     static pakoUncompress(compressedData) {
-        if (compressedData === null) return [];
+        // The server omits empty fields instead of sending null
+        if (compressedData == null) return [];
         let pako;
         if (window.pako) {
             pako = window.pako;
