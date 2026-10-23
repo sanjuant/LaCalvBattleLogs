@@ -32,6 +32,8 @@ class BattleLogsComponentLoader
         this.__baseUrl = baseUrl;
 
         // From the least dependant, to the most dependent
+        // The game no longer loads pako (window.pako) itself: bring the version it used to load
+        this.__addScript("https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js");
         this.__addScript("src/lib/Utils/LocalStorage.js");
         this.__addScript("src/lib/Stats/Roues.js");
         this.__addScript("src/lib/Stats/Stuffs.js");
@@ -109,7 +111,8 @@ class BattleLogsComponentLoader
             }.bind(this);
 
         // Download the content
-        request.open("GET", this.__baseUrl + fileRelativePath, true);
+        const url = fileRelativePath.startsWith("https://") ? fileRelativePath : this.__baseUrl + fileRelativePath;
+        request.open("GET", url, true);
         request.send();
     }
 
