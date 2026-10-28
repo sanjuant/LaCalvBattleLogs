@@ -61,24 +61,26 @@ class BattleLogsInterceptor {
         }
         const gameUrl = BattleLogsComponentLoader.gameUrl;
         const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
+        // The game appends query params (lang=, raw=) to every request
+        const path = xhr.responseURL.split("?")[0];
 
-        if (xhr.responseURL === baseUrl + "play/load") {
+        if (path === baseUrl + "play/load") {
             BattleLogs.Load.parseResponse(xhr)
             BattleLogs.Shop.parseResponse(xhr)
             BattleLogs.Roues.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/update")) {
             BattleLogs.Update.parseResponse(xhr)
-        } else if (xhr.responseURL === baseUrl + "play/wbclassement") {
+        } else if (path === baseUrl + "play/wbclassement") {
             BattleLogs.Wbclassement.parseResponse(xhr)
-        } else if (xhr.responseURL === baseUrl + "play/battlewbtry") {
+        } else if (path === baseUrl + "play/battlewbtry") {
             BattleLogs.Battlewbtry.parseResponse(xhr)
         } else if (xhr.responseURL.startsWith(baseUrl + "play/battle?opponent")) {
             BattleLogs.Pvp.parseResponse(xhr);
         } else if (xhr.responseURL.match(new RegExp(`^${baseUrl}play/(battlepve|multibattlepve)\\?step`))) {
             BattleLogs.Tob.parseResponse(xhr);
-        } else if (xhr.responseURL === baseUrl + "play/battlewb") {
+        } else if (path === baseUrl + "play/battlewb") {
             BattleLogs.Boss.parseResponse(xhr);
-        } else if (xhr.responseURL.startsWith(baseUrl + "play/battleDonjon")) {
+        } else if (xhr.responseURL.startsWith(baseUrl + "play/battleDonjon") || path === baseUrl + "play/survie/climb") {
             BattleLogs.Survie.parseResponse(xhr);
         } else if (xhr.responseURL.startsWith(baseUrl + "play/battleHistoire")) {
             BattleLogs.Histoire.parseResponse(xhr);

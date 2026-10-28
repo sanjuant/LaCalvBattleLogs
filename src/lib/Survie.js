@@ -62,6 +62,9 @@ class BattleLogsSurvie {
         } catch (e) {
             return
         }
+        // play/survie/climb wraps the battleDonjon answer in `battle` (null when it stopped before a fight)
+        if (data && "battle" in data) data = data["battle"];
+        if (!data) return;
 
         let stats = []
         if (data["results"]) {
@@ -78,7 +81,8 @@ class BattleLogsSurvie {
         }
 
         const url = new URL(xhr.responseURL);
-        const choice = new URLSearchParams(url.search).get('choice');
+        const params = new URLSearchParams(url.search);
+        const choice = params.get('choice') ?? params.get('difficulty');
         const uid = crypto.randomUUID()
         for (const stat of stats) {
             const log = this.__internal__addLog(uid, choice, stat.user, stat.opponent, stat.rewards, stat.stuff);

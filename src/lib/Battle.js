@@ -1056,14 +1056,15 @@ class BattleLogsBattle {
         stuff.element = objectArme.short === '_' ? "Banal" : objectArme["element"];
 
         stuff.items = [];
-        for (const item of stuffs[stuffAtk - 1].items) {
+        for (const item of stuffs[stuffAtk - 1].items ?? []) {
             let objectItem = BattleLogs.Utils.getObjectByName(item);
             stuff.items.push({name: objectItem["name"], rarity: objectItem["rarity"]})
         }
 
-        let objectFamAtk = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famiAtk.split('_')[0].capitalize());
+        // No pet in the slot: the server sends null
+        let objectFamAtk = BattleLogs.Utils.getObjectByShortName((stuffs[stuffAtk - 1].famiAtk || '_').split('_')[0].capitalize());
         stuff.famAtk = objectFamAtk === '_' ? objectFamAtk : {name: objectFamAtk["name"], rarity: objectFamAtk["rarity"]};
-        let objectFamDef = BattleLogs.Utils.getObjectByShortName(stuffs[stuffAtk - 1].famiDef.split('_')[0].capitalize());
+        let objectFamDef = BattleLogs.Utils.getObjectByShortName((stuffs[stuffAtk - 1].famiDef || '_').split('_')[0].capitalize());
         stuff.famDef = objectFamDef === '_' ? objectFamDef : {name: objectFamDef["name"], rarity: objectFamDef["rarity"]};
     }
 

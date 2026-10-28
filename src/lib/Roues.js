@@ -51,7 +51,7 @@ class BattleLogsRoues {
 
         const gameUrl = BattleLogsComponentLoader.gameUrl;
         const baseUrl = gameUrl.endsWith("/") ? gameUrl : gameUrl + "/";
-        if (xhr.responseURL === baseUrl + "play/load") {
+        if (xhr.responseURL.split("?")[0] === baseUrl + "play/load") {
             this.__internal__roues = BattleLogs.Utils.pakoUncompress(data["shopv2"])["gachapon"];
             this.Multiplier = data["multiplierShop"];
         } else {
